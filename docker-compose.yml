@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  colidencia:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - BUDGET_SEMANAL_USD=18.0
+      - DATABASE_URL=sqlite:////app/data/colidencia.db
+    restart: unless-stopped

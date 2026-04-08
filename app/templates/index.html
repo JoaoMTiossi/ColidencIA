@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ColidencIA — Detecção de Colidência de Marcas</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <span style="font-size:24px">⚖️</span>
+  <div>
+    <h1>ColidencIA</h1>
+    <div class="subtitle">Sistema de Detecção de Colidência de Marcas — RPI/INPI</div>
+  </div>
+</header>
+
+<div class="app-layout">
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- 1. Upload -->
+    <div class="card">
+      <div class="card-title"><span class="icon">📂</span> Arquivos de Entrada</div>
+      <div class="upload-grid">
+        <!-- Carteira -->
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--color-muted)">
+            Carteira de Clientes (.xlsx)
+          </div>
+          <div class="upload-zone" id="zone-carteira">
+            <input type="file" id="input-carteira" accept=".xlsx,.xls">
+            <div class="upload-icon">📊</div>
+            <div class="upload-label">Selecione o Excel da Carteira</div>
+            <div class="upload-hint">Arraste e solte ou clique para selecionar</div>
+          </div>
+        </div>
+        <!-- RPI -->
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:8px;color:var(--color-muted)">
+            RPI Semanal (.xml)
+          </div>
+          <div class="upload-zone" id="zone-rpi">
+            <input type="file" id="input-rpi" accept=".xml">
+            <div class="upload-icon">📄</div>
+            <div class="upload-label">Selecione o XML da RPI</div>
+            <div class="upload-hint">Arraste e solte ou clique para selecionar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Configuração -->
+    <div class="card" id="config-card">
+      <div class="card-title"><span class="icon">⚙️</span> Configuração</div>
+
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--color-muted)">
+        Selecione os despachos a analisar:
+      </div>
+
+      <div id="despachos-container"></div>
+
+      <div class="total-marcas" id="total-marcas">0 marcas serão analisadas</div>
+
+      <button class="btn-executar" id="btn-executar" disabled>
+        ▶ Executar Análise
+      </button>
+    </div>
+
+    <!-- 3. Progresso -->
+    <div class="card" id="area-progresso">
+      <div class="card-title"><span class="icon">⏳</span> Progresso do Pipeline</div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+
+      <div class="progress-status">
+        <span id="progress-message">Aguardando...</span>
+        <span class="progress-timer" id="progress-timer">0:00</span>
+        <span style="float:right;margin-right:12px;font-weight:700" id="progress-pct">0%</span>
+      </div>
+
+      <ul class="progress-steps" style="margin-top:16px">
+        <li class="progress-step" id="step-0">
+          <span class="step-icon">📊</span>
+          <span>Carregando carteira e RPI...</span>
+        </li>
+        <li class="progress-step" id="step-1">
+          <span class="step-icon">🔍</span>
+          <span>Camada 1: Nomes idênticos</span>
+        </li>
+        <li class="progress-step" id="step-2">
+          <span class="step-icon">🔊</span>
+          <span>Camada 2: Filtro fonético</span>
+        </li>
+        <li class="progress-step" id="step-3">
+          <span class="step-icon">📋</span>
+          <span>Camada 3: Filtro de especificação</span>
+        </li>
+        <li class="progress-step" id="step-4">
+          <span class="step-icon">🎯</span>
+          <span>Camada 4: Scoring composto</span>
+        </li>
+        <li class="progress-step" id="step-5">
+          <span class="step-icon">🤖</span>
+          <span>Camada 5: Refinamento IA</span>
+        </li>
+        <li class="progress-step" id="step-6">
+          <span class="step-icon">📝</span>
+          <span>Gerando relatório</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 4. Resultados -->
+    <div id="area-resultados">
+
+      <!-- Resumo geral -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📊</span> Resumo dos Alertas</div>
+
+        <div class="resumo-grid">
+          <div class="resumo-card alta">
+            <div class="num" id="num-alta">0</div>
+            <div class="lbl">🔴 ALTA</div>
+          </div>
+          <div class="resumo-card media">
+            <div class="num" id="num-media">0</div>
+            <div class="lbl">🟡 MÉDIA</div>
+          </div>
+          <div class="resumo-card baixa">
+            <div class="num" id="num-baixa">0</div>
+            <div class="lbl">🟢 BAIXA</div>
+          </div>
+          <div class="resumo-card oposicao">
+            <div class="num" id="num-oposicao">0</div>
+            <div class="lbl">⚡ OPOSIÇÃO<br><small style="font-weight:400">60 dias</small></div>
+          </div>
+          <div class="resumo-card pan">
+            <div class="num" id="num-pan">0</div>
+            <div class="lbl">⚖️ PAN<br><small style="font-weight:400">180 dias</small></div>
+          </div>
+          <div class="resumo-card total">
+            <div class="num" id="num-total">0</div>
+            <div class="lbl">TOTAL</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabela de resultados -->
+      <div class="card">
+        <div class="card-title"><span class="icon">📋</span> Alertas Detalhados</div>
+
+        <div class="filtros-bar">
+          <select id="filtro-tipo">
+            <option value="">Todos os tipos</option>
+            <option value="OPOSICAO">OPOSIÇÃO</option>
+            <option value="PAN">PAN</option>
+          </select>
+          <select id="filtro-class">
+            <option value="">Todas as classificações</option>
+            <option value="ALTA">ALTA</option>
+            <option value="MEDIA">MÉDIA</option>
+            <option value="BAIXA">BAIXA</option>
+          </select>
+          <div style="flex:1"></div>
+          <a class="btn-download" id="dl-xlsx" href="#" download>
+            📥 Baixar XLSX
+          </a>
+          <a class="btn-download" id="dl-csv" href="#" download>
+            📥 Baixar CSV
+          </a>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tipo</th>
+                <th>Classificação</th>
+                <th>Score</th>
+                <th>Marca Base</th>
+                <th>Marca RPI</th>
+                <th>Despacho / Processo</th>
+                <th>Titular RPI</th>
+                <th>Justificativa IA</th>
+                <th>Camada</th>
+                <th>Spec Base</th>
+                <th>Spec RPI</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-body">
+              <tr>
+                <td colspan="12" class="empty-state">Execute uma análise para ver os resultados.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="paginacao"></div>
+      </div>
+
+    </div><!-- /area-resultados -->
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">📅 Histórico (últimos 60 dias)</div>
+    <div id="historico-lista">
+      <div class="empty-state">Carregando...</div>
+    </div>
+  </aside>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

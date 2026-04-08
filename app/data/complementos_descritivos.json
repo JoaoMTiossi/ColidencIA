@@ -1,0 +1,16 @@
+[
+  "studio", "estudio", "atelier", "atelie", "oficina", "loja", "casa",
+  "centro", "espaco", "clinica", "consultorio", "laboratorio", "academia",
+  "instituto", "escola", "farmacia", "drogaria", "hamburgueria", "pizzaria",
+  "padaria", "confeitaria", "sorveteria", "barbearia", "petshop",
+  "store", "boutique", "shop", "market", "megastore", "outlet",
+  "moda", "infantil", "kids", "baby", "trade", "telecom", "tech",
+  "comercio", "servicos", "produtos", "industria", "importacao", "exportacao",
+  "grupo", "rede", "franquia", "import", "export", "racing", "motorsports",
+  "solucoes", "inteligencia", "assessoria", "consultoria",
+  "design", "conceito", "multivendas", "climatizacao", "moveis",
+  "placas", "motos", "transports", "componentes",
+  "digital", "online", "express", "plus", "premium", "gold", "pro",
+  "delivery", "fitness", "pilates", "yoga", "crossfit",
+  "croche", "malhas", "tecidos", "confeccao", "costura"
+]
