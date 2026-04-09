@@ -262,8 +262,20 @@ async function verificarStatus() {
   if (!state.execucaoId) return;
   try {
     const resp = await fetch(`/api/status/${state.execucaoId}`);
-    const data = await resp.json();
 
+    if (resp.status === 404) {
+      // Servidor reiniciado — execução perdida
+      clearInterval(state.pollInterval);
+      clearInterval(state.timerInterval);
+      state.execucaoId = null;
+      hide($('area-progresso'));
+      toast('Servidor reiniciado — execução anterior perdida. Inicie uma nova análise.', 'error', 8000);
+      const btn = $('btn-executar');
+      if (btn) { btn.disabled = false; btn.textContent = '▶ Executar Análise'; }
+      return;
+    }
+
+    const data = await resp.json();
     atualizarProgresso(data);
 
     if (data.status === 'concluido') {

@@ -96,6 +96,14 @@ def camada3(candidatos: list[dict]) -> list[dict]:
     """
     Filtra candidatos pela afinidade de especificação.
     Mantém apenas pares com score_spec ≥ THRESHOLD_ESPECIFICACAO.
+
+    Lógica de pontuação (em ordem de prioridade):
+      1. Correlatas: tabela curada de afinidade entre classes — valor direto.
+      2. Texto (TF-IDF): similaridade das especificações — valor primário.
+         Classes colidentes adicionam bônus (+0.15 mesma / +0.10 colidentes)
+         mas NÃO aprovam automaticamente sem overlap textual.
+      3. Sem texto: apenas mesma classe passa (com cap conservador).
+         Classes apenas colidentes (diferentes) são rejeitadas sem texto.
     """
     aprovados: list[dict] = []
 
@@ -106,10 +114,22 @@ def camada3(candidatos: list[dict]) -> list[dict]:
         spec_b = par.get("spec_rpi", "")
 
         sc_3a = _afinidade_correlatas(ncl_a, ncl_b)
-        sc_3b = _afinidade_classes(ncl_a, ncl_b)
+        sc_3b = _afinidade_classes(ncl_a, ncl_b)  # 0.8 mesma / 0.7 colidentes / 0.0
         sc_3c = _afinidade_tfidf(spec_a, spec_b)
 
-        score_spec = max(sc_3a, sc_3b, sc_3c)
+        if sc_3b == 0.0:
+            # Classes sem colisão: apenas texto ou correlatas
+            score_spec = max(sc_3a, sc_3c)
+        elif spec_a and spec_b:
+            # Classes colidentes E texto presente: texto é primário, classe é bônus
+            bonus = 0.15 if sc_3b >= 0.8 else 0.10
+            score_spec = min(1.0, sc_3c + bonus)
+            score_spec = max(score_spec, sc_3a)
+        else:
+            # Classes colidentes mas sem texto: apenas mesma classe passa
+            # (classes apenas colidentes sem spec são descartadas)
+            score_spec = sc_3b * 0.52 if sc_3b >= 0.8 else 0.0
+            score_spec = max(score_spec, sc_3a)
 
         if score_spec >= THRESHOLD_ESPECIFICACAO:
             updated = dict(par)

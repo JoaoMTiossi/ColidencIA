@@ -24,9 +24,9 @@ DESPACHOS_NOMES: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Thresholds
 # ---------------------------------------------------------------------------
-THRESHOLD_FONETICO: float = float(os.getenv("THRESHOLD_FONETICO", "0.70"))
+THRESHOLD_FONETICO: float = float(os.getenv("THRESHOLD_FONETICO", "0.72"))
 THRESHOLD_ESPECIFICACAO: float = float(os.getenv("THRESHOLD_ESPECIFICACAO", "0.40"))
-THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.55"))
+THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.60"))
 THRESHOLD_NUCLEO: float = 0.80
 
 # ---------------------------------------------------------------------------

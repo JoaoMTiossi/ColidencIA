@@ -84,6 +84,11 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         )
         score = min(1.0, score)
 
+        # Gate: nome deve ter similaridade mínima (elimina pares onde só a
+        # classe ou o bônus sustenta o score mas os nomes são muito distintos)
+        if s_nome < 0.72 and s_nucleo < 0.82:
+            continue
+
         # Override: nome idêntico → mínimo 0.85
         if par.get("camada_deteccao") == 1 and "nome_identico" in str(par.get("motivo", "")):
             score = max(score, 0.85)
