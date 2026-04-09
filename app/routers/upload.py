@@ -12,6 +12,7 @@ from fastapi.responses import JSONResponse
 
 from ..config import DESPACHOS_NOMES, DESPACHOS_OPOSICAO, DESPACHOS_PAN, UPLOAD_DIR
 from ..parsers.parse_xml import parse_rpi_summary
+from ..utils.log_buffer import add_log
 
 router = APIRouter(prefix="/api/upload", tags=["upload"])
 
@@ -45,6 +46,7 @@ async def upload_carteira(file: UploadFile) -> JSONResponse:
     tamanho = os.path.getsize(path)
 
     _uploads[upload_id] = {"tipo": "carteira", "path": path, "filename": file.filename}
+    add_log("INFO", f"📊 Carteira carregada: {file.filename} ({tamanho/1024:.0f} KB)", "upload")
 
     return JSONResponse({
         "upload_id": upload_id,
@@ -105,6 +107,12 @@ async def upload_rpi(file: UploadFile) -> JSONResponse:
         "rpi_numero": rpi_numero,
         "rpi_data": rpi_data,
     }
+
+    relevantes = [d for d in despachos_disponiveis if d["relevante"]]
+    total_marcas = sum(d["com_nome"] for d in relevantes)
+    add_log("INFO",
+        f"📄 RPI {rpi_numero} ({rpi_data}) carregada — {total_marcas:,} marcas relevantes "
+        f"({tamanho/1024/1024:.1f} MB)", "upload")
 
     return JSONResponse({
         "upload_id": upload_id,

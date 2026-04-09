@@ -18,6 +18,9 @@ const state = {
   pollInterval: null,
   timerInterval: null,
   timerStart: null,
+  logInterval: null,
+  lastLogId: 0,
+  logsPaused: false,
 };
 
 // ---------------------------------------------------------------------------
@@ -448,6 +451,90 @@ function aplicarFiltros() {
 }
 
 // ---------------------------------------------------------------------------
+// Log Panel
+// ---------------------------------------------------------------------------
+const LOG_LEVEL_CLASS = {
+  INFO: 'log-info',
+  WARNING: 'log-warn',
+  WARN: 'log-warn',
+  ERROR: 'log-error',
+  DEBUG: 'log-debug',
+};
+
+function iniciarLogPolling() {
+  if (state.logInterval) clearInterval(state.logInterval);
+  state.logInterval = setInterval(fetchLogs, 2500);
+  fetchLogs(); // imediato
+}
+
+async function fetchLogs() {
+  if (state.logsPaused) return;
+  try {
+    const resp = await fetch(`/api/logs?limit=80&since_id=${state.lastLogId}`);
+    if (!resp.ok) return;
+    const data = await resp.json();
+    if (data.logs && data.logs.length) {
+      appendLogs(data.logs);
+    }
+  } catch (e) {
+    // silencioso
+  }
+}
+
+function appendLogs(entries) {
+  const panel = $('log-panel');
+  if (!panel) return;
+
+  // Remove placeholder inicial
+  const placeholder = panel.querySelector('.log-entry.log-info[data-placeholder]');
+  if (placeholder) placeholder.remove();
+
+  entries.forEach(entry => {
+    if (entry.id > state.lastLogId) state.lastLogId = entry.id;
+
+    const div = document.createElement('div');
+    const lvl = LOG_LEVEL_CLASS[entry.level] || 'log-info';
+    div.className = `log-entry ${lvl}`;
+
+    const ts = document.createElement('span');
+    ts.className = 'log-ts';
+    ts.textContent = entry.ts || '';
+
+    const src = document.createElement('span');
+    src.className = 'log-src';
+    src.textContent = entry.source || '';
+
+    const msg = document.createElement('span');
+    msg.className = 'log-msg';
+    msg.textContent = entry.msg || '';
+
+    div.appendChild(ts);
+    div.appendChild(src);
+    div.appendChild(msg);
+    panel.appendChild(div);
+
+    // Limitar a 150 entradas no DOM
+    while (panel.children.length > 150) {
+      panel.removeChild(panel.firstChild);
+    }
+  });
+
+  // Auto-scroll para o fim
+  panel.scrollTop = panel.scrollHeight;
+}
+
+function limparLogsUI() {
+  const panel = $('log-panel');
+  if (!panel) return;
+  panel.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'log-entry log-info';
+  div.setAttribute('data-placeholder', '1');
+  div.innerHTML = '<span class="log-ts">--:--:--</span><span class="log-msg">Logs limpos — aguardando atividade...</span>';
+  panel.appendChild(div);
+}
+
+// ---------------------------------------------------------------------------
 // Histórico
 // ---------------------------------------------------------------------------
 async function carregarHistorico() {
@@ -529,6 +616,17 @@ document.addEventListener('DOMContentLoaded', () => {
   if (filtroTipo) filtroTipo.addEventListener('change', aplicarFiltros);
   if (filtroClass) filtroClass.addEventListener('change', aplicarFiltros);
 
+  const btnClearLogs = $('btn-clear-logs');
+  if (btnClearLogs) btnClearLogs.addEventListener('click', limparLogsUI);
+
+  // Marcar placeholder
+  const panel = $('log-panel');
+  if (panel) {
+    const first = panel.querySelector('.log-entry');
+    if (first) first.setAttribute('data-placeholder', '1');
+  }
+
   carregarHistorico();
+  iniciarLogPolling();
   hide($('config-card'));
 });

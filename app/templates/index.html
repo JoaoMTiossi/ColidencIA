@@ -208,10 +208,29 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-title">📅 Histórico (últimos 60 dias)</div>
-    <div id="historico-lista">
-      <div class="empty-state">Carregando...</div>
+
+    <!-- Log Panel -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-header">
+        <span class="sidebar-section-title">🖥️ Atividade em Tempo Real</span>
+        <button class="log-clear-btn" id="btn-clear-logs" title="Limpar logs exibidos">✕</button>
+      </div>
+      <div class="log-panel" id="log-panel">
+        <div class="log-entry log-info">
+          <span class="log-ts">--:--:--</span>
+          <span class="log-msg">Aguardando atividade...</span>
+        </div>
+      </div>
     </div>
+
+    <!-- Histórico -->
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">📅 Histórico (últimos 60 dias)</div>
+      <div id="historico-lista">
+        <div class="empty-state">Carregando...</div>
+      </div>
+    </div>
+
   </aside>
 </div>
 

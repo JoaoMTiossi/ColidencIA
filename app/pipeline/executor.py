@@ -10,6 +10,7 @@ from typing import Callable
 from ..config import DESPACHOS_OPOSICAO, DESPACHOS_PAN
 from ..parsers.parse_excel import parse_excel
 from ..parsers.parse_xml import parse_rpi_xml
+from ..utils.log_buffer import add_log
 from .fonetica import camada2
 from .ia_refinamento import camada5
 from .nome_identico import camada1
@@ -45,19 +46,20 @@ def executar_pipeline(
 
     def _progress(msg: str, pct: int = 0) -> None:
         logger.info("[%d%%] %s", pct, msg)
+        add_log("INFO", f"[{pct}%] {msg}", "pipeline")
         if progress_cb:
             progress_cb(msg, pct)
 
     # -----------------------------------------------------------------------
     # Camada 0 — Carregar e pré-processar
     # -----------------------------------------------------------------------
-    _progress("Carregando carteira de clientes...", 5)
+    _progress("📂 Carregando carteira de clientes...", 5)
     carteira_raw = parse_excel(path_carteira)
-    _progress(f"Carteira carregada: {len(carteira_raw)} registros", 10)
+    _progress(f"📊 Carteira: {len(carteira_raw):,} registros carregados", 10)
 
     carteira = preprocessar_lote(carteira_raw)
 
-    _progress("Carregando RPI...", 15)
+    _progress("📄 Carregando RPI (XML)...", 15)
     rpi_raw, rpi_numero, rpi_data = parse_rpi_xml(path_rpi)
 
     # Filtrar por despachos selecionados
@@ -67,37 +69,40 @@ def executar_pipeline(
     total_rpi_oposicao = sum(1 for r in rpi_raw if r["despacho_codigo"] in DESPACHOS_OPOSICAO)
     total_rpi_pan = sum(1 for r in rpi_raw if r["despacho_codigo"] in DESPACHOS_PAN)
 
-    _progress(f"RPI {rpi_numero} ({rpi_data}): {len(rpi_raw)} marcas filtradas", 20)
+    _progress(
+        f"📰 RPI {rpi_numero} ({rpi_data}): {len(rpi_raw):,} marcas "
+        f"({total_rpi_oposicao:,} oposição + {total_rpi_pan:,} PAN)", 20
+    )
     rpi = preprocessar_lote(rpi_raw)
 
     # -----------------------------------------------------------------------
     # Camada 1 — Nome idêntico
     # -----------------------------------------------------------------------
-    _progress("Camada 1: Verificando nomes idênticos...", 30)
+    _progress("🔍 Camada 1: Verificando nomes idênticos...", 30)
     alertas_c1, rpi_restante = camada1(carteira, rpi)
-    _progress(f"Camada 1: {len(alertas_c1)} colidências automáticas encontradas", 35)
+    _progress(f"✅ Camada 1: {len(alertas_c1):,} colidências automáticas (nome idêntico)", 35)
 
     # -----------------------------------------------------------------------
     # Camada 2 — Filtro fonético
     # -----------------------------------------------------------------------
-    _progress(f"Camada 2: Filtro fonético ({len(rpi_restante)} marcas restantes)...", 40)
+    _progress(f"🔊 Camada 2: Filtro fonético ({len(rpi_restante):,} marcas restantes)...", 40)
     candidatos_c2, _ = camada2(carteira, rpi_restante)
-    _progress(f"Camada 2: {len(candidatos_c2)} candidatos após filtro fonético", 50)
+    _progress(f"✅ Camada 2: {len(candidatos_c2):,} candidatos fonéticos", 50)
 
     # -----------------------------------------------------------------------
     # Camada 3 — Filtro de especificação
     # -----------------------------------------------------------------------
-    _progress("Camada 3: Filtro de especificação...", 55)
+    _progress("📋 Camada 3: Filtro de especificação/afinidade...", 55)
     candidatos_c3 = camada3(candidatos_c2)
-    _progress(f"Camada 3: {len(candidatos_c3)} candidatos com afinidade suficiente", 60)
+    _progress(f"✅ Camada 3: {len(candidatos_c3):,} pares com afinidade suficiente", 60)
 
     # -----------------------------------------------------------------------
     # Camada 4 — Scoring composto
     # -----------------------------------------------------------------------
-    _progress("Camada 4: Calculando scores...", 65)
-    todos_candidatos = candidatos_c3  # alertas da camada 1 já têm score
+    _progress("🎯 Camada 4: Calculando scores compostos...", 65)
+    todos_candidatos = candidatos_c3
     scored_c4 = camada4(todos_candidatos)
-    _progress(f"Camada 4: {len(scored_c4)} pares acima do threshold", 70)
+    _progress(f"✅ Camada 4: {len(scored_c4):,} pares acima do threshold de score", 70)
 
     # Unir resultados da camada 1 com os da camada 4
     todos_resultados = alertas_c1 + scored_c4
@@ -107,10 +112,10 @@ def executar_pipeline(
     # -----------------------------------------------------------------------
     custo_ia = 0.0
     if usar_ia and todos_resultados:
-        _progress(f"Camada 5: Refinamento IA ({len(todos_resultados)} pares)...", 75)
+        _progress(f"🤖 Camada 5: Refinamento IA ({len(todos_resultados):,} pares)...", 75)
 
         def _ia_progress(msg: str) -> None:
-            _progress(f"Camada 5: {msg}", 80)
+            _progress(f"🤖 {msg}", 80)
 
         todos_resultados, custo_ia = camada5(todos_resultados, _ia_progress)
         _progress(f"Camada 5: Refinamento IA concluído (custo: ${custo_ia:.4f})", 90)

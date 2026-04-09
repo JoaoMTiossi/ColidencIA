@@ -45,7 +45,7 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: 1fr 280px;
+  grid-template-columns: 1fr 300px;
   gap: 0;
   max-width: 1600px;
   margin: 0 auto;
@@ -346,12 +346,80 @@ tr:hover td { background: #fafbfc; }
 .page-btn.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 .page-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-/* ---------- Sidebar / Histórico ---------- */
-.sidebar-title {
-  font-size: 14px;
+/* ---------- Sidebar ---------- */
+.sidebar-section {
+  margin-bottom: 20px;
+}
+.sidebar-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.sidebar-section-title, .sidebar-title {
+  font-size: 13px;
   font-weight: 700;
-  margin-bottom: 14px;
   color: var(--color-text);
+}
+
+/* ---------- Log Panel ---------- */
+.log-panel {
+  background: #0f172a;
+  border-radius: 6px;
+  padding: 8px 0;
+  height: 260px;
+  overflow-y: auto;
+  font-family: 'Menlo', 'Consolas', 'Monaco', monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f172a;
+}
+.log-panel::-webkit-scrollbar { width: 5px; }
+.log-panel::-webkit-scrollbar-track { background: #0f172a; }
+.log-panel::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+.log-entry {
+  display: grid;
+  grid-template-columns: 54px 64px 1fr;
+  gap: 4px;
+  padding: 1px 8px;
+  border-bottom: 1px solid #1e293b;
+  word-break: break-all;
+}
+.log-entry:last-child { border-bottom: none; }
+.log-ts { color: #475569; white-space: nowrap; }
+.log-src {
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.log-msg { color: #cbd5e1; }
+
+.log-info .log-msg  { color: #cbd5e1; }
+.log-warn .log-msg  { color: #fbbf24; }
+.log-error .log-msg { color: #f87171; }
+.log-debug .log-msg { color: #64748b; }
+
+.log-warn  { background: rgba(251,191,36,.04); }
+.log-error { background: rgba(248,113,113,.06); }
+
+.log-clear-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 3px;
+  line-height: 1;
+}
+.log-clear-btn:hover { color: #94a3b8; background: #1e293b; }
+
+/* ---------- Histórico ---------- */
+.sidebar-title {
+  margin-bottom: 14px;
 }
 .historico-item {
   padding: 10px;

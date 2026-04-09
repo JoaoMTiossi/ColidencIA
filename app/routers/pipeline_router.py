@@ -20,6 +20,7 @@ from ..database import get_db
 from ..models import Execucao, Resultado
 from ..pipeline.executor import executar_pipeline
 from ..pipeline.relatorio import gerar_xlsx
+from ..utils.log_buffer import add_log
 from .upload import get_upload_path
 
 router = APIRouter(prefix="/api", tags=["pipeline"])
@@ -67,6 +68,7 @@ async def executar(req: ExecutarRequest, db: AsyncSession = Depends(get_db)) -> 
 
     execucao_id = execucao.id
     _progresso[execucao_id] = {"mensagem": "Iniciando...", "percentual": 0}
+    add_log("INFO", f"🚀 Pipeline #{execucao_id} iniciado — {len(despachos)} despacho(s) selecionado(s)", "pipeline")
 
     # Executar em thread background (pipeline é síncrono)
     def _run():
@@ -101,6 +103,7 @@ async def _executar_async(
         )
     except Exception as e:
         logger.exception("Erro no pipeline execucao_id=%d", execucao_id)
+        add_log("ERROR", f"❌ Pipeline #{execucao_id} falhou: {e}", "pipeline")
         async with AsyncSessionLocal() as db:
             execucao = await db.get(Execucao, execucao_id)
             if execucao:
@@ -187,6 +190,11 @@ async def _executar_async(
         await db.commit()
 
     _progresso[execucao_id] = {"mensagem": "Concluído", "percentual": 100}
+    add_log("INFO",
+        f"✅ Pipeline #{execucao_id} concluído — {len(resultados)} alertas "
+        f"(Alta: {stats.get('alertas_alta',0)}, Média: {stats.get('alertas_media',0)}, "
+        f"Baixa: {stats.get('alertas_baixa',0)}) em {output.get('tempo_seg',0):.1f}s",
+        "pipeline")
     logger.info("Pipeline execucao_id=%d concluído: %d alertas", execucao_id, len(resultados))
 
 
