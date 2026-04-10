@@ -57,28 +57,42 @@ def camada2(
         prefixo = cod[:4] if cod else ""
         indice_fonetico.setdefault(prefixo, []).append(marca)
 
+    # Construir índice invertido de bigramas para blocking rápido O(1) por bigrama
+    # Em vez de comparar cada RPI com todas as 49k marcas, busca só as que
+    # compartilham bigramas (evita O(n×m) = 392M iterações Python)
+    indice_bigrama: dict[str, set[int]] = {}  # bigrama → set de índices na carteira
+    for idx, marca in enumerate(carteira):
+        for bg in (marca.get("bigrams_set") or set()):
+            indice_bigrama.setdefault(bg, set()).add(idx)
+
     candidatos: list[dict] = []
 
     for marca_rpi in rpi_restante:
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
-        bg_rpi = marca_rpi.get("bigrams_set", set())
+        bg_rpi = marca_rpi.get("bigrams_set") or set()
 
         # Obter candidatos via blocking fonético
         cands_foneticos = _buckets_vizinhos(cod_rpi, indice_fonetico)
 
-        # Também adicionar via blocking por bigramas (Jaccard ≥ 0.3)
+        # Blocking por bigramas via índice invertido — O(|bigramas_rpi|) não O(n)
         cands_por_bigrama: list[dict] = []
         if bg_rpi:
-            for marca in carteira:
-                bg_cart = marca.get("bigrams_set", set())
-                if bg_cart and bg_rpi:
-                    inter = len(bg_rpi & bg_cart)
-                    union = len(bg_rpi | bg_cart)
-                    if union > 0 and inter / union >= 0.3:
-                        cands_por_bigrama.append(marca)
+            # Contar quantos bigramas em comum cada marca da carteira tem
+            contagem: dict[int, int] = {}
+            for bg in bg_rpi:
+                for idx in indice_bigrama.get(bg, set()):
+                    contagem[idx] = contagem.get(idx, 0) + 1
+
+            denom_rpi = len(bg_rpi)
+            for idx, inter in contagem.items():
+                marca = carteira[idx]
+                bg_cart = marca.get("bigrams_set") or set()
+                union = denom_rpi + len(bg_cart) - inter
+                if union > 0 and inter / union >= 0.3:
+                    cands_por_bigrama.append(marca)
 
         # Unir candidatos (sem duplicatas)
-        todos_ids = set()
+        todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
         for m in cands_foneticos + cands_por_bigrama:
             mid = id(m)
