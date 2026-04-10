@@ -73,22 +73,182 @@ PORT: int = int(os.getenv("PORT", "8000"))
 
 # ---------------------------------------------------------------------------
 # Complementos descritivos (removidos do núcleo marcário)
+# Todos em lowercase sem acentos — devem ser tokens individuais pois a
+# extração de núcleo processa palavra por palavra.
 # ---------------------------------------------------------------------------
 COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
-    "studio", "estudio", "atelier", "atelie", "oficina", "loja", "casa",
-    "centro", "espaco", "clinica", "consultorio", "laboratorio", "academia",
-    "instituto", "escola", "farmacia", "drogaria", "hamburgueria", "pizzaria",
-    "padaria", "confeitaria", "sorveteria", "barbearia", "petshop",
-    "store", "boutique", "shop", "market", "megastore", "outlet",
-    "moda", "infantil", "kids", "baby", "trade", "telecom", "tech",
-    "comercio", "servicos", "produtos", "industria", "importacao", "exportacao",
-    "grupo", "rede", "franquia", "import", "export", "racing", "motorsports",
-    "solucoes", "inteligencia", "assessoria", "consultoria",
-    "design", "conceito", "multivendas", "climatizacao", "moveis",
-    "placas", "motos", "transports", "componentes",
-    "digital", "online", "express", "plus", "premium", "gold", "pro",
-    "delivery", "fitness", "pilates", "yoga", "crossfit",
-    "croche", "malhas", "tecidos", "confeccao", "costura",
+
+    # ── Automotivo / Transporte ──────────────────────────────────────────────
+    "posto", "autopecas", "autocentro", "autocenter", "autoservice",
+    "lavajato", "borracharia", "estacionamento", "garagem", "automoveis",
+    "veiculos", "motos", "motocicletas", "transportadora", "logistica",
+    "mudancas", "reboque", "guincho", "concessionaria", "revendedora",
+    "despachante", "fretamento", "mototaxi", "taxi", "motorista", "frota",
+    "oficina", "mecanica", "funilaria", "pintura", "blindagem",
+
+    # ── Alimentação / Bebidas ────────────────────────────────────────────────
+    "restaurante", "bar", "lanchonete", "churrascaria", "pizzaria",
+    "hamburgueria", "padaria", "confeitaria", "sorveteria", "cafeteria",
+    "cafe", "bistro", "boteco", "botequim", "acougue", "mercearia",
+    "quitanda", "hortifruti", "frutaria", "verdureiro", "emporio",
+    "delicatessen", "doceria", "rotisseria", "choperia", "cervejaria",
+    "vineria", "sushi", "temaki", "crepe", "tapioca", "espeteria",
+    "espetinho", "marmitaria", "salgaderia", "pastelaria", "coxinharia",
+    "leiteria", "sanduicheria", "boulangerie", "brasserie", "gastropub",
+    "foodtruck", "self-service", "selfservice", "cantina", "taberna",
+    "adega", "distribuidora", "atacado", "atacarejo",
+
+    # ── Varejo / Comércio ────────────────────────────────────────────────────
+    "loja", "comercio", "boutique", "store", "shop", "mercado",
+    "supermercado", "hipermercado", "minimercado", "bazar", "armarinho",
+    "papelaria", "livraria", "tabacaria", "brinquedos", "presentes",
+    "utilidades", "variedades", "magazine", "galeria", "shopping",
+    "importados", "multimarcas", "distribuidora", "representacoes",
+    "agencia", "representante", "revendas", "revendas", "outlet",
+    "megastore", "market", "multivendas", "atacarejo",
+
+    # ── Saúde / Bem-estar ────────────────────────────────────────────────────
+    "clinica", "consultorio", "laboratorio", "farmacia", "drogaria",
+    "hospital", "policlinica", "ambulatorio", "optica", "otica",
+    "ortopedia", "odontologia", "dentista", "psicologia", "fisioterapia",
+    "nutricao", "veterinaria", "petshop", "petcare", "canil", "gatil",
+    "vacina", "hemoterapia", "dialise", "oncologia", "cardiologia",
+    "radiologia", "tomografia", "endoscopia", "oftalmologia",
+    "dermatologia", "ginecologia", "pediatria", "geriatria", "ortese",
+    "protese", "reabilitacao", "homecare", "home care",
+
+    # ── Beleza / Estética ────────────────────────────────────────────────────
+    "salao", "barbearia", "cabeleireiro", "cabeleireira", "studio",
+    "estudio", "estetica", "spa", "manicure", "pedicure", "depilacao",
+    "sobrancelha", "micropigmentacao", "tatuagem", "piercing",
+    "bronzeamento", "massagem", "podologia", "nailbar", "beauty",
+    "atelier", "atelie",
+
+    # ── Fitness / Esporte ────────────────────────────────────────────────────
+    "academia", "fitness", "gym", "crossfit", "pilates", "yoga",
+    "natacao", "danca", "ballet", "ginastica", "funcional", "esporte",
+    "esportes", "running", "cycling", "spinning", "zumba", "aerobica",
+    "lutas", "jujitsu", "muaythai", "boxe", "judô", "judo", "karate",
+    "taekwondo", "capoeira", "artes marciais",
+
+    # ── Educação / Cultura ───────────────────────────────────────────────────
+    "escola", "colegio", "instituto", "curso", "treinamento",
+    "capacitacao", "faculdade", "universidade", "idiomas", "ingles",
+    "reforco", "biblioteca", "editora", "grafica", "creche", "bercario",
+    "preescola", "ensino", "educacional", "pedagogico", "coaching",
+    "mentoria", "elearning",
+
+    # ── Construção / Imóveis ─────────────────────────────────────────────────
+    "construtora", "imobiliaria", "incorporadora", "engenharia",
+    "arquitetura", "reforma", "pinturas", "eletrica", "hidraulica",
+    "marcenaria", "serralheria", "vidracaria", "marmoraria", "ceramicas",
+    "pisos", "revestimentos", "coberturas", "instalacoes", "empreiteira",
+    "predial", "condominio", "zeladoria", "facilities",
+
+    # ── Serviços Empresariais ────────────────────────────────────────────────
+    "servicos", "solucoes", "sistemas", "tecnologia", "informatica",
+    "software", "hardware", "consultoria", "assessoria", "contabilidade",
+    "contabil", "auditoria", "advocacia", "juridico", "marketing",
+    "publicidade", "propaganda", "gestao", "administracao", "financeira",
+    "seguros", "seguradora", "corretora", "investimentos", "cobranca",
+    "terceirizacao", "outsourcing", "rh", "recrutamento", "selecao",
+    "headhunter", "producao", "comunicacao", "midia", "branding",
+    "conteudo", "redacao", "jornalismo",
+
+    # ── Casa / Decoração ─────────────────────────────────────────────────────
+    "moveis", "decoracao", "interiores", "colchoes", "enxoval",
+    "cortinas", "persianas", "tapetes", "iluminacao", "lustres",
+    "antiquario", "jardinagem", "paisagismo", "piscinas", "climatizacao",
+    "componentes", "placas",
+
+    # ── Moda / Vestuário ─────────────────────────────────────────────────────
+    "moda", "confeccao", "costura", "malhas", "tecidos", "croche",
+    "bordado", "alfaiataria", "uniformes", "camisetas", "estamparia",
+    "calcados", "sapatos", "bolsas", "acessorios", "joias", "joalheria",
+    "relojoaria", "semijoias", "otica", "infantil", "kids", "baby",
+
+    # ── Turismo / Hospedagem ─────────────────────────────────────────────────
+    "hotel", "pousada", "hostel", "motel", "resort", "flat", "albergue",
+    "turismo", "viagens", "excursoes", "transfer", "receptivo",
+    "cruzeiros", "camping", "chale", "ecoresort",
+
+    # ── Eventos / Entretenimento ─────────────────────────────────────────────
+    "buffet", "eventos", "cerimonial", "festas", "cinema", "teatro",
+    "circo", "show", "espetaculo", "parque", "brinquedoteca", "boliche",
+    "karaoke", "danceteria", "balada", "clube",
+
+    # ── Música / Foto / Audiovisual ──────────────────────────────────────────
+    "musica", "gravadora", "sonorizacao", "fotografia", "fotografo",
+    "videomaker", "filmagem", "audiovisual", "producao",
+
+    # ── Agronegócio / Rural ──────────────────────────────────────────────────
+    "agropecuaria", "agro", "fazenda", "sitio", "chacara", "rancho",
+    "granja", "avicultura", "suinocultura", "bovinocultura",
+    "piscicultura", "apicultura", "floricultura", "viveiro", "sementes",
+    "mudas", "fertilizantes", "defensivos", "agricola", "rural",
+    "cooperativa", "agrotech", "irrigacao",
+
+    # ── Energia / Utilities ──────────────────────────────────────────────────
+    "energia", "solar", "fotovoltaico", "eletricidade", "gerador",
+    "internet", "provedor", "fibra", "antena", "saneamento", "agua",
+    "esgoto", "gas", "telecom", "telecomunicacoes",
+
+    # ── Segurança / Vigilância ───────────────────────────────────────────────
+    "seguranca", "vigilancia", "monitoramento", "alarme", "rastreamento",
+    "escolta", "portaria", "investigacao", "detetive",
+
+    # ── Limpeza / Conservação ────────────────────────────────────────────────
+    "limpeza", "conservacao", "higienizacao", "lavanderia", "lavagem",
+    "tinturaria", "dedetizacao", "desentupidora",
+
+    # ── Jurídico / Contábil ──────────────────────────────────────────────────
+    "advogados", "direito", "tabelionato", "cartorio", "contadores",
+    "pericia", "fiscal", "tributario", "previdenciario", "trabalhista",
+    "societario",
+
+    # ── Saúde Mental / Terapias ──────────────────────────────────────────────
+    "psicologo", "psicanalise", "terapia", "terapeuta", "hipnose",
+    "acupuntura", "homeopatia",
+
+    # ── Tecnologia / Inovação ────────────────────────────────────────────────
+    "tech", "inovacao", "startup", "digital", "online", "virtual",
+    "app", "aplicativo", "plataforma", "desenvolvimento", "web",
+    "automacao", "robotica", "cloud", "dados", "analytics", "fintech",
+    "ecommerce",
+
+    # ── Financeiro / Crédito ─────────────────────────────────────────────────
+    "credito", "emprestimos", "financiamentos", "consorcio", "cambio",
+    "pagamentos", "banco", "caixa",
+
+    # ── Meio Ambiente ────────────────────────────────────────────────────────
+    "ambiental", "eco", "sustentavel", "sustentabilidade", "reciclagem",
+    "residuos", "organico", "natural", "green",
+
+    # ── Gráfica / Impressão ──────────────────────────────────────────────────
+    "impressao", "plotagem", "sinalizacao", "banner", "letreiro",
+    "adesivo", "embalagem", "rotulo",
+
+    # ── Manutenção / Assistência ─────────────────────────────────────────────
+    "assistencia", "manutencao", "conserto", "reparo", "instalacao",
+    "refrigeracao",
+
+    # ── Ferramentas / Industrial ─────────────────────────────────────────────
+    "ferramentas", "equipamentos", "maquinas", "industrial", "metalurgica",
+    "soldagem", "soldas", "usinagem", "ferramentaria", "moldes",
+    "fundicao", "caldeiraria",
+
+    # ── Arte / Design ────────────────────────────────────────────────────────
+    "arte", "artes", "design", "conceito", "editorial", "galeria",
+
+    # ── Estrutura Empresarial / Modificadores ────────────────────────────────
+    "grupo", "rede", "franquia", "holding", "associacao", "sindicato",
+    "federacao", "polo", "hub", "nucleo", "casa", "espaco", "centro",
+    "super", "mega", "ultra", "maxi", "max", "hiper", "hyper",
+    "master", "prime", "premium", "gold", "pro", "plus", "top",
+    "best", "fast", "smart", "express", "brasil", "brazil", "nacional",
+    "global", "internacional", "novo", "nova", "elite", "vip",
+    "import", "export", "importacao", "exportacao", "trade",
+    "racing", "motorsports", "delivery", "transports",
 })
 
 # ---------------------------------------------------------------------------

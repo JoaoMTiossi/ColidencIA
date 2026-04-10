@@ -10,12 +10,18 @@ from .normalizacao import normalizar_base
 
 # Stopwords que indicam início do complemento descritivo
 _STOPWORDS: frozenset[str] = frozenset({
+    # Preposições e artigos PT
     "de", "do", "da", "dos", "das", "e", "em", "com", "para", "por",
-    "ltda", "me", "epp", "eireli", "sa", "ss", "mei", "s/a",
+    "no", "na", "nos", "nas", "ao", "aos", "a", "o",
+    # Formas jurídicas
+    "ltda", "me", "epp", "eireli", "sa", "ss", "mei",
+    # Termos empresariais que sempre vêm depois do núcleo
     "comercio", "industria", "servicos", "solucoes", "assessoria",
-    "consultoria", "grupo", "holding", "participacoes",
+    "consultoria", "grupo", "holding", "participacoes", "distribuidora",
+    "representacoes", "importacao", "exportacao", "producao", "agencia",
+    # EN / ES
     "and", "of", "the", "for", "by", "with",
-    "y", "del", "los", "las",
+    "y", "del", "los", "las", "de", "la",
 })
 
 # Padrão de sigla: 2-4 letras maiúsculas, pode ter ponto separando
