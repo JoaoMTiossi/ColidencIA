@@ -95,12 +95,46 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
 # Elementos desgastados (baixa distintividade)
 # ---------------------------------------------------------------------------
 ELEMENTOS_DESGASTADOS: frozenset[str] = frozenset({
-    "super", "max", "maxi", "mega", "ultra", "hiper", "hyper",
-    "casa", "centro", "rede", "grupo", "brasil", "brazil",
-    "nacional", "global", "master", "prime", "top", "plus",
-    "gold", "premium", "express", "fast", "smart", "tech",
-    "eco", "bio", "green", "life", "nova", "novo", "total",
-    "good", "best", "ponto", "ideal", "real",
+    # Intensificadores e superlativos
+    "super", "max", "maxi", "mega", "ultra", "hiper", "hyper", "extra",
+    "multi", "mini", "micro", "macro", "big", "grande", "grande",
+    # Qualidade/excelência
+    "prime", "premium", "master", "gold", "silver", "platinum", "diamond",
+    "top", "plus", "best", "good", "great", "first", "one", "numero",
+    "royal", "imperial", "classic", "classico", "original", "autentico",
+    "exclusive", "exclusivo", "unique", "unico", "especial", "special",
+    "superior", "elite", "vip",
+    # Modernidade e tecnologia
+    "smart", "tech", "digital", "online", "virtual", "net", "web",
+    "express", "fast", "rapid", "quick", "agil", "veloz",
+    # Sustentabilidade
+    "eco", "bio", "green", "nature", "natural", "organico", "organic",
+    # Localização e escopo
+    "brasil", "brazil", "nacional", "global", "mundial", "internacional",
+    "local", "regional", "universal", "total", "geral",
+    "casa", "centro", "rede", "grupo", "holding", "corporacao",
+    # Estilo de vida
+    "life", "lifestyle", "living", "home", "house", "place", "spot",
+    "zone", "city", "world", "way", "point", "ponto",
+    # Cores e elementos visuais
+    "nova", "novo", "blue", "red", "white", "black",
+    # Adjetivos fracos
+    "ideal", "real", "forte", "puro", "pura", "leve", "light", "soft",
+    "hard", "only", "pure", "moderno", "modern",
+    # Elementos naturais e celestiais
+    "sol", "lua", "estrela", "star", "terra", "planeta", "universo",
+    "universe", "fenix",
+    # Metais e minerais preciosos (sem marca própria)
+    "crystal", "magic", "magia",
+    # Títulos e tratamentos comuns
+    "santa", "santo", "sao", "dom", "dona", "rei", "king", "queen",
+    "jr", "junior", "filho", "irmaos", "brothers", "family", "familia",
+    # Letras gregas e símbolos genéricos
+    "alfa", "beta", "delta", "omega",
+    # Outros muito comuns
+    "power", "energy", "force", "forte", "vitoria", "sucesso",
+    "clube", "club", "art", "studio", "store", "shop", "market",
+    "nossa", "nosso", "meu", "minha",
 })
 
 # ---------------------------------------------------------------------------

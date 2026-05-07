@@ -158,6 +158,9 @@ def _criar_candidato(
         "camada_deteccao": 2,
         "classificacao": None,
         "classes_colidem_flag": col,
-        "is_sigla": marca_rpi.get("is_sigla", False),
-        "is_desgastado": marca_rpi.get("is_desgastado", False),
+        "is_sigla": bool(marca_base.get("is_sigla") or marca_rpi.get("is_sigla")),
+        "is_desgastado": bool(marca_base.get("is_desgastado") or marca_rpi.get("is_desgastado")),
+        "is_marca_generica": bool(marca_base.get("is_marca_generica") or marca_rpi.get("is_marca_generica")),
+        "nucleo_base_generico": bool(marca_base.get("is_marca_generica")),
+        "nucleo_rpi_generico": bool(marca_rpi.get("is_marca_generica")),
     }

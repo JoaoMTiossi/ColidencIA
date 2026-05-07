@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from ..config import (
     CLASSES_CAUTELA_ALTA,
+    ELEMENTOS_DESGASTADOS,
     FATOR_CAUTELA,
     PESO_AFINIDADE_SPEC,
     PESO_BONUS,
@@ -15,6 +16,19 @@ from ..config import (
     PESO_TIPO_MARCA,
     THRESHOLD_SCORE_FINAL,
 )
+from ..utils.normalizacao import normalizar_base
+
+
+def _fator_distintividade(nucleo: str) -> float:
+    """Fator 0.3–1.0 baseado na força distintiva do núcleo."""
+    toks = normalizar_base(nucleo).split()
+    if not toks:
+        return 0.7
+    desg = sum(t in ELEMENTOS_DESGASTADOS for t in toks)
+    base = 1.0 - 0.5 * (desg / len(toks))
+    if len("".join(toks)) <= 3:
+        base *= 0.7
+    return max(0.3, base)
 
 
 def _classificar(score: float) -> str:
@@ -83,6 +97,23 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             bonus    * PESO_BONUS
         )
         score = min(1.0, score)
+
+        # Gate: nome deve ter similaridade mínima (elimina pares onde só a
+        # classe ou o bônus sustenta o score mas os nomes são muito distintos)
+        if s_nome < 0.72 and s_nucleo < 0.82:
+            continue
+
+        # Gate: ambos núcleos triviais — só passa se quase idêntico ou
+        # mesma classe com núcleo quase igual
+        ambos_genericos = par.get("nucleo_base_generico") and par.get("nucleo_rpi_generico")
+        if ambos_genericos:
+            if s_nome < 0.92 and not (ncl_a == ncl_b and s_nucleo >= 0.95):
+                continue
+
+        # Penalidade cross-class: marcas frágeis em classes distintas
+        if not par.get("classes_colidem_flag") and ncl_a != ncl_b:
+            fator = _fator_distintividade(par.get("nucleo_base", "")) * _fator_distintividade(par.get("nucleo_rpi", ""))
+            score = score * fator
 
         # Override: nome idêntico → mínimo 0.85
         if par.get("camada_deteccao") == 1 and "nome_identico" in str(par.get("motivo", "")):

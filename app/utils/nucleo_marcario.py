@@ -42,7 +42,11 @@ def extrair_nucleo(marca: str) -> str:
             break
         nucleo.append(tok)
 
-    return " ".join(nucleo) if nucleo else norm
+    nucleo_str = " ".join(nucleo) if nucleo else norm
+    # Se o núcleo extraído é minúsculo (ex: artigo solto), usar o nome completo
+    if len(nucleo_str.replace(" ", "")) < 3:
+        return norm
+    return nucleo_str
 
 
 def is_sigla(texto: str) -> bool:
@@ -60,11 +64,18 @@ def is_nome_proprio(texto: str) -> bool:
 
 
 def is_marca_generica(nucleo: str) -> bool:
-    """Retorna True se o núcleo é composto apenas por elementos desgastados."""
-    tokens = set(normalizar_base(nucleo).split())
+    """Retorna True se o núcleo é composto majoritariamente por elementos desgastados."""
+    tokens = normalizar_base(nucleo).split()
     if not tokens:
         return False
-    return bool(tokens & ELEMENTOS_DESGASTADOS) and len(tokens) <= 2
+    desg = sum(1 for t in tokens if t in ELEMENTOS_DESGASTADOS)
+    if desg == len(tokens):
+        return True
+    if len(tokens) >= 3 and desg / len(tokens) >= 2 / 3:
+        return True
+    if len(tokens) <= 2 and desg >= 1:
+        return True
+    return False
 
 
 def is_desgastado(marca: str) -> bool:
