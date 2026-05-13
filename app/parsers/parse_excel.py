@@ -64,21 +64,35 @@ def _limpar_marca(marca_raw: str | None, apresentacao: str | None = None) -> str
 # ---------------------------------------------------------------------------
 
 _RE_CLASSE_COMPLETA = re.compile(r'Ncl\((\d+)\)\s*(\d+)', re.IGNORECASE)
+# Formato "35/10" ou "07/60" — primeiro número é a classe
+_RE_CLASSE_BARRA = re.compile(r'^(\d{1,2})/')
 _RE_CLASSE_FALLBACK = re.compile(r'\b(\d{1,2})\s*$')
 
 
 def _parse_classe(classe_raw: str | None) -> int | None:
-    """Extrai o número da classe NCL do campo CLASSE ('Ncl(13) 35' → 35)."""
+    """
+    Extrai o número da classe NCL. Suporta múltiplos formatos:
+      'Ncl(12) 35' → 35
+      '35/10'      → 35  (formato interno: CLASSE/código)
+      '35'         → 35
+    """
     if not classe_raw:
         return None
     s = str(classe_raw).strip()
+    # Formato "NCL(12) 35"
     m = _RE_CLASSE_COMPLETA.search(s)
     if m:
         n = int(m.group(2))
         return n if 1 <= n <= 45 else None
-    m2 = _RE_CLASSE_FALLBACK.search(s)
+    # Formato "35/10" — classe é o PRIMEIRO número
+    m2 = _RE_CLASSE_BARRA.match(s)
     if m2:
         n = int(m2.group(1))
+        return n if 1 <= n <= 45 else None
+    # Fallback: único número no campo
+    m3 = _RE_CLASSE_FALLBACK.search(s)
+    if m3:
+        n = int(m3.group(1))
         return n if 1 <= n <= 45 else None
     return None
 
@@ -228,6 +242,10 @@ def parse_excel(filepath: str) -> list[dict]:
         ncl = _parse_classe(classe_raw)
         if ncl is None:
             continue
+
+        # Titular: remover sufixo de país "(BR/SP)" se presente
+        if titular_raw:
+            titular_raw = re.sub(r'\s*\([A-Z]{2}(?:/[A-Z]{2})?\)\s*$', '', titular_raw).strip()
 
         # Número do processo: limpar e normalizar (apenas dígitos)
         processo_limpo = ""
