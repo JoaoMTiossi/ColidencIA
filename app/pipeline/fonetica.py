@@ -125,10 +125,13 @@ def _criar_candidato(
     col: bool,
 ) -> dict:
     return {
+        "processo_base": marca_base.get("processo", ""),
         "marca_base": marca_base.get("marca") or marca_base.get("nome_marca", ""),
         "ncl_base": marca_base.get("ncl", 0),
+        "ncl_versao_base": marca_base.get("ncl_versao", 12),
         "spec_base": marca_base.get("especificacao", ""),
         "nucleo_base": marca_base.get("nucleo", ""),
+        "titular_base": marca_base.get("titular", ""),
         "marca_rpi": marca_rpi.get("nome_marca", ""),
         "ncl_rpi": marca_rpi.get("ncl", 0),
         "spec_rpi": marca_rpi.get("especificacao", ""),

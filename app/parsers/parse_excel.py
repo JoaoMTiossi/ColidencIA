@@ -63,7 +63,7 @@ def _limpar_marca(marca_raw: str | None, apresentacao: str | None = None) -> str
 # Parsing da CLASSE
 # ---------------------------------------------------------------------------
 
-_RE_CLASSE = re.compile(r'Ncl\(\d+\)\s*(\d+)', re.IGNORECASE)
+_RE_CLASSE_COMPLETA = re.compile(r'Ncl\((\d+)\)\s*(\d+)', re.IGNORECASE)
 _RE_CLASSE_FALLBACK = re.compile(r'\b(\d{1,2})\s*$')
 
 
@@ -72,16 +72,25 @@ def _parse_classe(classe_raw: str | None) -> int | None:
     if not classe_raw:
         return None
     s = str(classe_raw).strip()
-    m = _RE_CLASSE.search(s)
+    m = _RE_CLASSE_COMPLETA.search(s)
     if m:
-        n = int(m.group(1))
+        n = int(m.group(2))
         return n if 1 <= n <= 45 else None
-    # Fallback: último número no campo
     m2 = _RE_CLASSE_FALLBACK.search(s)
     if m2:
         n = int(m2.group(1))
         return n if 1 <= n <= 45 else None
     return None
+
+
+def _parse_ncl_versao(classe_raw: str | None) -> int:
+    """Extrai a versão da NCL ('Ncl(12) 35' → 12). Retorna 12 como default."""
+    if not classe_raw:
+        return 12
+    m = _RE_CLASSE_COMPLETA.search(str(classe_raw))
+    if m:
+        return int(m.group(1))
+    return 12
 
 
 # ---------------------------------------------------------------------------
@@ -110,16 +119,63 @@ def _parse_especificacao(spec_raw: str | None) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Parser principal
+# Detecção de colunas a partir do cabeçalho
 # ---------------------------------------------------------------------------
 
-# Índices das colunas relevantes (base 0)
-_COL_MARCA = 3
-_COL_CLASSE = 4
-_COL_APRESENTACAO = 5
-_COL_ESPECIFICACAO = 18
-_COL_TITULAR = 20
+# Colunas padrão (fallback quando não há cabeçalho reconhecível)
+_COL_MARCA_DEFAULT = 3
+_COL_CLASSE_DEFAULT = 4
+_COL_APRESENTACAO_DEFAULT = 5
+_COL_ESPECIFICACAO_DEFAULT = 18
+_COL_TITULAR_DEFAULT = 20
+_COL_PROCESSO_DEFAULT = 2  # estimativa; detectado via header quando possível
 
+_KEYWORDS_PROCESSO = {"processo", "número", "numero", "nro", "no.", "proc"}
+_KEYWORDS_MARCA = {"marca"}
+_KEYWORDS_CLASSE = {"classe", "class", "ncl"}
+_KEYWORDS_APRESENTACAO = {"apresentação", "apresentacao", "tipo"}
+_KEYWORDS_ESPECIFICACAO = {"especificação", "especificacao", "especif"}
+_KEYWORDS_TITULAR = {"titular", "proprietário", "proprietario", "cliente"}
+
+
+def _detectar_colunas(header_row: tuple) -> dict[str, int]:
+    """
+    Detecta índices de colunas a partir da linha de cabeçalho.
+    Retorna dict com chaves: processo, marca, classe, apresentacao, especificacao, titular.
+    """
+    cols: dict[str, int] = {
+        "processo": _COL_PROCESSO_DEFAULT,
+        "marca": _COL_MARCA_DEFAULT,
+        "classe": _COL_CLASSE_DEFAULT,
+        "apresentacao": _COL_APRESENTACAO_DEFAULT,
+        "especificacao": _COL_ESPECIFICACAO_DEFAULT,
+        "titular": _COL_TITULAR_DEFAULT,
+    }
+
+    mapping = {
+        "processo": _KEYWORDS_PROCESSO,
+        "marca": _KEYWORDS_MARCA,
+        "classe": _KEYWORDS_CLASSE,
+        "apresentacao": _KEYWORDS_APRESENTACAO,
+        "especificacao": _KEYWORDS_ESPECIFICACAO,
+        "titular": _KEYWORDS_TITULAR,
+    }
+
+    for idx, cell in enumerate(header_row):
+        if cell is None:
+            continue
+        val = str(cell).lower().strip()
+        for field, keywords in mapping.items():
+            if any(kw in val for kw in keywords):
+                cols[field] = idx
+                break
+
+    return cols
+
+
+# ---------------------------------------------------------------------------
+# Parser principal
+# ---------------------------------------------------------------------------
 
 def parse_excel(filepath: str) -> list[dict]:
     """
@@ -134,12 +190,14 @@ def parse_excel(filepath: str) -> list[dict]:
     records: list[dict] = []
     rows: Iterator = ws.iter_rows(values_only=True)
 
-    # Pular cabeçalho (primeira linha)
+    # Primeira linha: cabeçalho — detectar colunas
     try:
-        next(rows)
+        header_row = next(rows)
     except StopIteration:
         wb.close()
         return records
+
+    cols = _detectar_colunas(header_row)
 
     for row in rows:
         def _cell(idx: int) -> str | None:
@@ -149,11 +207,12 @@ def parse_excel(filepath: str) -> list[dict]:
             except IndexError:
                 return None
 
-        marca_raw = _cell(_COL_MARCA)
-        apresentacao = _cell(_COL_APRESENTACAO)
-        classe_raw = _cell(_COL_CLASSE)
-        spec_raw = _cell(_COL_ESPECIFICACAO)
-        titular_raw = _cell(_COL_TITULAR)
+        marca_raw = _cell(cols["marca"])
+        apresentacao = _cell(cols["apresentacao"])
+        classe_raw = _cell(cols["classe"])
+        spec_raw = _cell(cols["especificacao"])
+        titular_raw = _cell(cols["titular"])
+        processo_raw = _cell(cols["processo"])
 
         # Filtrar apresentações figurativas puras (sem nome)
         if apresentacao and apresentacao.upper() == "FIGURATIVA":
@@ -170,13 +229,23 @@ def parse_excel(filepath: str) -> list[dict]:
         if ncl is None:
             continue
 
+        # Número do processo: limpar e normalizar (apenas dígitos)
+        processo_limpo = ""
+        if processo_raw:
+            digits = re.sub(r"\D", "", processo_raw)
+            if len(digits) >= 6:
+                processo_limpo = digits
+
         records.append({
             "marca": marca_limpa,
             "ncl": ncl,
+            "ncl_versao": _parse_ncl_versao(classe_raw),
             "apresentacao": apresentacao or "",
             "especificacao": _parse_especificacao(spec_raw),
             "titular": titular_raw or "",
+            "processo": processo_limpo,
         })
 
     wb.close()
     return records
+

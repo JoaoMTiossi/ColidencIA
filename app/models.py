@@ -60,9 +60,12 @@ class Resultado(Base):
     tipo_acao: Mapped[str | None] = mapped_column(String(20))   # OPOSICAO | PAN
     despacho_codigo: Mapped[str | None] = mapped_column(String(20))
     despacho_nome: Mapped[str | None] = mapped_column(String(200))
+    processo_base: Mapped[str | None] = mapped_column(String(50))
     marca_base: Mapped[str | None] = mapped_column(String(500))
     ncl_base: Mapped[int | None] = mapped_column(Integer)
+    ncl_versao_base: Mapped[int | None] = mapped_column(Integer)
     spec_base: Mapped[str | None] = mapped_column(Text)
+    titular_base: Mapped[str | None] = mapped_column(String(500))
     marca_rpi: Mapped[str | None] = mapped_column(String(500))
     ncl_rpi: Mapped[int | None] = mapped_column(Integer)
     spec_rpi: Mapped[str | None] = mapped_column(Text)

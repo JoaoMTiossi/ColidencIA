@@ -21,14 +21,30 @@ class Base(DeclarativeBase):
 
 
 async def init_db() -> None:
-    """Cria todas as tabelas se não existirem."""
-    # Garantir que o diretório do banco existe
+    """Cria tabelas se não existirem e aplica migrações de colunas novas."""
     db_path = DATABASE_URL.replace("sqlite:///", "")
     os.makedirs(os.path.dirname(os.path.abspath(db_path)), exist_ok=True)
 
     async with engine.begin() as conn:
         from . import models  # noqa: F401
         await conn.run_sync(Base.metadata.create_all)
+        # Migração incremental: adiciona colunas novas sem recriar o banco
+        await conn.run_sync(_migrar_colunas)
+
+
+def _migrar_colunas(conn) -> None:
+    """Adiciona colunas novas via ALTER TABLE quando ainda não existem (SQLite)."""
+    from sqlalchemy import inspect, text
+    insp = inspect(conn)
+    cols_existentes = {c["name"] for c in insp.get_columns("resultados")}
+    novas = [
+        ("processo_base", "VARCHAR(50)"),
+        ("ncl_versao_base", "INTEGER"),
+        ("titular_base", "VARCHAR(500)"),
+    ]
+    for col, tipo in novas:
+        if col not in cols_existentes:
+            conn.execute(text(f"ALTER TABLE resultados ADD COLUMN {col} {tipo}"))
 
 
 async def get_db():

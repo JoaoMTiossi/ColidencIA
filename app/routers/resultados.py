@@ -162,7 +162,8 @@ async def download_csv(
     rows = result.scalars().all()
     resultados = [_resultado_to_dict(r) for r in rows]
 
-    csv_bytes = gerar_csv_bytes(resultados)
+    csv_stats = {"rpi_data": execucao.data_rpi or ""}
+    csv_bytes = gerar_csv_bytes(resultados, csv_stats)
     filename = f"Colidencia_RPI{execucao.numero_rpi}_{execucao_id}.csv"
     return Response(
         content=csv_bytes,
@@ -257,9 +258,12 @@ def _resultado_to_dict(r: Resultado) -> dict:
         "tipo_acao": r.tipo_acao,
         "despacho_codigo": r.despacho_codigo,
         "despacho_nome": r.despacho_nome,
+        "processo_base": r.processo_base,
         "marca_base": r.marca_base,
         "ncl_base": r.ncl_base,
+        "ncl_versao_base": r.ncl_versao_base or 12,
         "spec_base": r.spec_base,
+        "titular_base": r.titular_base,
         "marca_rpi": r.marca_rpi,
         "ncl_rpi": r.ncl_rpi,
         "spec_rpi": r.spec_rpi,
@@ -276,6 +280,7 @@ def _resultado_to_dict(r: Resultado) -> dict:
         "justificativa_ia": r.justificativa_ia,
         "nucleo_base": r.nucleo_base,
         "nucleo_rpi": r.nucleo_rpi,
+        "classes_colidem_flag": r.classes_colidem,
         "classes_colidem": r.classes_colidem,
         "is_sigla": r.is_sigla,
         "is_desgastado": r.is_desgastado,
