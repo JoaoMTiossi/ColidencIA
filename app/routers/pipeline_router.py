@@ -66,7 +66,7 @@ async def executar(req: ExecutarRequest, db: AsyncSession = Depends(get_db)) -> 
     await db.refresh(execucao)
 
     execucao_id = execucao.id
-    _progresso[execucao_id] = {"mensagem": "Iniciando...", "percentual": 0}
+    _progresso[execucao_id] = {"mensagem": "Iniciando...", "percentual": 0, "logs": []}
 
     # Executar em thread background (pipeline é síncrono)
     def _run():
@@ -89,7 +89,11 @@ async def _executar_async(
     from ..database import AsyncSessionLocal
 
     def _progress(msg: str, pct: int) -> None:
-        _progresso[execucao_id] = {"mensagem": msg, "percentual": pct}
+        entry = {"ts": datetime.utcnow().strftime("%H:%M:%S"), "msg": msg, "pct": max(0, pct)}
+        prog = _progresso.setdefault(execucao_id, {"mensagem": "", "percentual": 0, "logs": []})
+        prog["mensagem"] = msg
+        prog["percentual"] = pct
+        prog["logs"].append(entry)
 
     try:
         output = executar_pipeline(
@@ -107,7 +111,8 @@ async def _executar_async(
                 execucao.status = "erro"
                 execucao.erro_msg = str(e)
                 await db.commit()
-        _progresso[execucao_id] = {"mensagem": f"Erro: {e}", "percentual": -1}
+        _progress(f"❌ Erro: {e}", 0)
+        _progresso[execucao_id]["percentual"] = -1
         return
 
     resultados = output["resultados"]
@@ -189,7 +194,9 @@ async def _executar_async(
 
         await db.commit()
 
-    _progresso[execucao_id] = {"mensagem": "Concluído", "percentual": 100}
+    prog = _progresso.get(execucao_id, {})
+    prog.update({"mensagem": "Concluído", "percentual": 100})
+    _progresso[execucao_id] = prog
     logger.info("Pipeline execucao_id=%d concluído: %d alertas", execucao_id, len(resultados))
 
 
@@ -200,13 +207,14 @@ async def status(execucao_id: int, db: AsyncSession = Depends(get_db)) -> JSONRe
     if not execucao:
         raise HTTPException(404, "Execução não encontrada")
 
-    prog = _progresso.get(execucao_id, {"mensagem": "", "percentual": 0})
+    prog = _progresso.get(execucao_id, {"mensagem": "", "percentual": 0, "logs": []})
 
     return JSONResponse({
         "execucao_id": execucao_id,
         "status": execucao.status,
         "mensagem": prog["mensagem"],
         "percentual": prog["percentual"],
+        "logs": prog.get("logs", []),
         "alertas_total": execucao.alertas_total,
         "alertas_alta": execucao.alertas_alta,
         "alertas_media": execucao.alertas_media,

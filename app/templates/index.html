@@ -112,6 +112,23 @@
           <span>Gerando relatório</span>
         </li>
       </ul>
+
+      <!-- Log de execução -->
+      <div class="log-panel" style="margin-top:20px">
+        <div class="log-header">
+          <span class="log-title">📋 Log de Execução</span>
+          <div class="log-actions">
+            <label class="log-autoscroll-label">
+              <input type="checkbox" id="log-autoscroll" checked>
+              auto-scroll
+            </label>
+            <button class="log-btn-copy" id="log-btn-copy" title="Copiar log completo">⎘ Copiar</button>
+          </div>
+        </div>
+        <div class="log-body" id="log-body">
+          <div class="log-empty">Aguardando início da execução...</div>
+        </div>
+      </div>
     </div>
 
     <!-- 4. Resultados -->

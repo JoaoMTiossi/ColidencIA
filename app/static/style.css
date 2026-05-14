@@ -420,6 +420,99 @@ tr:hover td { background: #fafbfc; }
 .toast.info { background: var(--color-oposicao-bg); color: var(--color-oposicao); border: 1px solid #93c5fd; }
 @keyframes slideIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform:none; } }
 
+/* ---------- Log de Execução ---------- */
+.log-panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: #1e293b;
+}
+
+.log-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: .04em;
+}
+
+.log-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.log-autoscroll-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #94a3b8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.log-btn-copy {
+  background: none;
+  border: 1px solid #475569;
+  color: #94a3b8;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.log-btn-copy:hover { background: #334155; color: #e2e8f0; border-color: #64748b; }
+
+.log-body {
+  background: #0f172a;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 #0f172a;
+}
+.log-body::-webkit-scrollbar { width: 6px; }
+.log-body::-webkit-scrollbar-track { background: #0f172a; }
+.log-body::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+.log-empty {
+  color: #475569;
+  font-style: italic;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.log-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 2px;
+  border-bottom: 1px solid #1e293b;
+  line-height: 1.5;
+  animation: logFadeIn .2s ease;
+}
+.log-entry:last-child { border-bottom: none; }
+@keyframes logFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.log-ts   { color: #475569; min-width: 70px; flex-shrink: 0; }
+.log-pct  { color: #64748b; min-width: 38px; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.log-icon { min-width: 22px; text-align: center; flex-shrink: 0; }
+.log-msg  { color: #cbd5e1; flex: 1; word-break: break-word; }
+
+.log-entry.log-error .log-msg  { color: #f87171; }
+.log-entry.log-error .log-pct  { color: #f87171; }
+.log-entry.log-success .log-msg { color: #4ade80; }
+.log-entry.log-success .log-pct { color: #4ade80; }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
   .app-layout { grid-template-columns: 1fr; }

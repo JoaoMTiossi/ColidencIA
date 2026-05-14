@@ -18,6 +18,7 @@ const state = {
   pollInterval: null,
   timerInterval: null,
   timerStart: null,
+  logsCount: 0,          // entradas de log já renderizadas
 };
 
 // ---------------------------------------------------------------------------
@@ -236,6 +237,8 @@ async function executar() {
     const data = await resp.json();
     state.execucaoId = data.execucao_id;
 
+    state.logsCount = 0;
+    resetLogPanel();
     show($('area-progresso'));
     hide($('area-resultados'));
     iniciarTimer();
@@ -262,6 +265,7 @@ async function verificarStatus() {
     const data = await resp.json();
 
     atualizarProgresso(data);
+    atualizarLog(data.logs || []);
 
     if (data.status === 'concluido') {
       clearInterval(state.pollInterval);
@@ -289,6 +293,59 @@ function atualizarProgresso(data) {
 
   const pctEl = $('progress-pct');
   if (pctEl) pctEl.textContent = `${pct}%`;
+}
+
+// ---------------------------------------------------------------------------
+// Log de execução
+// ---------------------------------------------------------------------------
+
+function resetLogPanel() {
+  const body = $('log-body');
+  if (body) body.innerHTML = '<div class="log-empty">Aguardando início da execução...</div>';
+}
+
+function _logIcon(pct) {
+  if (pct <= 0)  return '▶';
+  if (pct <= 15) return '📊';
+  if (pct <= 35) return '🔍';
+  if (pct <= 50) return '🔊';
+  if (pct <= 60) return '📋';
+  if (pct <= 70) return '🎯';
+  if (pct <= 92) return '🤖';
+  return '✅';
+}
+
+function _appendLogEntry(entry) {
+  const body = $('log-body');
+  if (!body) return;
+
+  const empty = body.querySelector('.log-empty');
+  if (empty) empty.remove();
+
+  const div = document.createElement('div');
+  const isError = entry.msg.startsWith('❌') || entry.pct < 0;
+  const isDone  = entry.pct >= 100;
+  div.className = 'log-entry' + (isError ? ' log-error' : isDone ? ' log-success' : '');
+
+  const pctStr = entry.pct < 0 ? 'ERR' : String(entry.pct).padStart(3) + '%';
+  div.innerHTML =
+    `<span class="log-ts">[${esc(entry.ts)}]</span>` +
+    `<span class="log-pct">${pctStr}</span>` +
+    `<span class="log-icon">${_logIcon(entry.pct)}</span>` +
+    `<span class="log-msg">${esc(entry.msg)}</span>`;
+
+  body.appendChild(div);
+
+  const autoScroll = $('log-autoscroll');
+  if (!autoScroll || autoScroll.checked) {
+    body.scrollTop = body.scrollHeight;
+  }
+}
+
+function atualizarLog(logs) {
+  if (!logs || logs.length <= state.logsCount) return;
+  logs.slice(state.logsCount).forEach(_appendLogEntry);
+  state.logsCount = logs.length;
 }
 
 // ---------------------------------------------------------------------------
@@ -528,6 +585,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const filtroClass = $('filtro-class');
   if (filtroTipo) filtroTipo.addEventListener('change', aplicarFiltros);
   if (filtroClass) filtroClass.addEventListener('change', aplicarFiltros);
+
+  const btnCopyLog = $('log-btn-copy');
+  if (btnCopyLog) {
+    btnCopyLog.addEventListener('click', () => {
+      const entries = document.querySelectorAll('#log-body .log-entry');
+      const text = Array.from(entries).map(e => e.textContent.trim()).join('\n');
+      navigator.clipboard.writeText(text).then(
+        () => toast('Log copiado!', 'success'),
+        () => toast('Erro ao copiar', 'error'),
+      );
+    });
+  }
 
   carregarHistorico();
   hide($('config-card'));
