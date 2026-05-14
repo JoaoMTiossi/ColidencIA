@@ -156,6 +156,10 @@ def _detectar_colunas(header_row: tuple) -> dict[str, int]:
     """
     Detecta índices de colunas a partir da linha de cabeçalho.
     Retorna dict com chaves: processo, marca, classe, apresentacao, especificacao, titular.
+
+    Usa "primeiro match vence": carteiras com várias colunas cujo cabeçalho
+    contém a mesma palavra-chave (ex: "MARCA", "GRUPO DA MARCA", "MARCA LICENCIADA")
+    mapeiam corretamente para a primeira coluna encontrada.
     """
     cols: dict[str, int] = {
         "processo": _COL_PROCESSO_DEFAULT,
@@ -175,13 +179,18 @@ def _detectar_colunas(header_row: tuple) -> dict[str, int]:
         "titular": _KEYWORDS_TITULAR,
     }
 
+    found: set[str] = set()
+
     for idx, cell in enumerate(header_row):
         if cell is None:
             continue
         val = str(cell).lower().strip()
         for field, keywords in mapping.items():
+            if field in found:
+                continue
             if any(kw in val for kw in keywords):
                 cols[field] = idx
+                found.add(field)
                 break
 
     return cols
