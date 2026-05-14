@@ -89,6 +89,21 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "digital", "online", "express", "plus", "premium", "gold", "pro",
     "delivery", "fitness", "pilates", "yoga", "crossfit",
     "croche", "malhas", "tecidos", "confeccao", "costura",
+    # Tipos de estabelecimento alimentício
+    "cafe", "cafeteria", "bar", "restaurante", "cantina", "lanchonete",
+    "bistrô", "bistro", "choperia", "cervejaria", "pizzeria",
+    # Saúde e serviços médicos
+    "hospital", "clinica", "medicina", "medico", "medica",
+    "veterinaria", "farmaceutica",
+    # Construção e imóveis
+    "construtora", "imobiliaria", "incorporadora",
+    # Serviços financeiros
+    "financeira", "corretora", "seguradora", "administradora",
+    # Logística e distribuição
+    "distribuidora", "transportadora", "logistica",
+    # Outros tipos de negócio
+    "contabilidade", "contabil", "tecnologia", "sistemas", "software",
+    "saude", "energia", "construcao",
 })
 
 # ---------------------------------------------------------------------------
@@ -97,7 +112,7 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
 ELEMENTOS_DESGASTADOS: frozenset[str] = frozenset({
     # Intensificadores e superlativos
     "super", "max", "maxi", "mega", "ultra", "hiper", "hyper", "extra",
-    "multi", "mini", "micro", "macro", "big", "grande", "grande",
+    "multi", "mini", "micro", "macro", "big", "grande",
     # Qualidade/excelência
     "prime", "premium", "master", "gold", "silver", "platinum", "diamond",
     "top", "plus", "best", "good", "great", "first", "one", "numero",
@@ -135,6 +150,19 @@ ELEMENTOS_DESGASTADOS: frozenset[str] = frozenset({
     "power", "energy", "force", "forte", "vitoria", "sucesso",
     "clube", "club", "art", "studio", "store", "shop", "market",
     "nossa", "nosso", "meu", "minha",
+    # Setores / atividades econômicas — sem distintividade própria
+    "saude", "energia", "construcao", "logistica", "transporte",
+    "alimentar", "alimentacao", "educacao", "seguranca", "comunicacao",
+    "inovacao", "gestao", "qualidade", "credito", "financeiro", "capital",
+    "sistemas", "tecnologia", "software", "plataforma",
+    "dental", "odonto", "clinico", "clinica", "medico", "medica",
+    "imobiliario", "juridico", "contabil",
+    "banco", "seguros", "seguro",
+    # Bebidas/alimentos como setor
+    "cafe", "bebida", "alimento",
+    # Qualificadores comerciais genéricos
+    "empresarial", "profissional", "comercial", "industrial",
+    "servico", "produto", "solucao",
 })
 
 # ---------------------------------------------------------------------------

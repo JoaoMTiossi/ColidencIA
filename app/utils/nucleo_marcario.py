@@ -73,9 +73,27 @@ def is_marca_generica(nucleo: str) -> bool:
         return True
     if len(tokens) >= 3 and desg / len(tokens) >= 2 / 3:
         return True
-    if len(tokens) <= 2 and desg >= 1:
-        return True
     return False
+
+
+def extrair_nucleo_distintivo(nucleo: str) -> str:
+    """
+    Remove tokens desgastados das bordas do núcleo para revelar o elemento
+    verdadeiramente distintivo.
+
+    Exemplos:
+        "saude jaguara"   → "jaguara"
+        "cafe joao"       → "joao"
+        "saude forte"     → ""   (todos desgastados)
+        "jaguara saude"   → "jaguara"
+        "jaguara"         → "jaguara"
+    """
+    tokens = normalizar_base(nucleo).split()
+    while tokens and tokens[0] in ELEMENTOS_DESGASTADOS:
+        tokens.pop(0)
+    while tokens and tokens[-1] in ELEMENTOS_DESGASTADOS:
+        tokens.pop()
+    return " ".join(tokens)
 
 
 def is_desgastado(marca: str) -> bool:

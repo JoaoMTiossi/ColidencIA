@@ -8,6 +8,7 @@ from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import bigramas, normalizar_base
 from ..utils.nucleo_marcario import (
     extrair_nucleo,
+    extrair_nucleo_distintivo,
     is_desgastado,
     is_marca_generica,
     is_nome_proprio,
@@ -27,10 +28,12 @@ def preprocessar(marca: dict) -> dict:
     nome = marca.get("marca") or marca.get("nome_marca") or ""
     nome_norm = normalizar_base(nome)
     nucleo = extrair_nucleo(nome)
+    nucleo_distintivo = extrair_nucleo_distintivo(nucleo)
 
     resultado = dict(marca)
     resultado["nome_normalizado"] = nome_norm
     resultado["nucleo"] = nucleo
+    resultado["nucleo_distintivo"] = nucleo_distintivo
     resultado["codigo_fonetico"] = metaphone_ptbr(nome_norm)
     resultado["bigrams_set"] = bigramas(nome)
     resultado["is_sigla"] = is_sigla(nome)

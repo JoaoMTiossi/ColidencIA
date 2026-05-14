@@ -152,8 +152,8 @@ def _criar_candidato(
         "score_spec": 0.0,  # será calculado na camada 3
         "score_nucleo": round(
             jaro_winkler(
-                marca_base.get("nucleo", ""),
-                marca_rpi.get("nucleo", ""),
+                marca_base.get("nucleo_distintivo") or marca_base.get("nucleo", ""),
+                marca_rpi.get("nucleo_distintivo") or marca_rpi.get("nucleo", ""),
             ),
             4,
         ),
@@ -166,4 +166,6 @@ def _criar_candidato(
         "is_marca_generica": bool(marca_base.get("is_marca_generica") or marca_rpi.get("is_marca_generica")),
         "nucleo_base_generico": bool(marca_base.get("is_marca_generica")),
         "nucleo_rpi_generico": bool(marca_rpi.get("is_marca_generica")),
+        "nucleo_distintivo_base": marca_base.get("nucleo_distintivo", ""),
+        "nucleo_distintivo_rpi": marca_rpi.get("nucleo_distintivo", ""),
     }

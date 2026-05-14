@@ -51,22 +51,26 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
             ))
             rpi_processados.add(idx_rpi)
 
-        # Match por núcleo idêntico (apenas se não já detectado por nome)
+        # Match por núcleo idêntico (apenas se não já detectado por nome e
+        # o núcleo não for genérico — evita falsos positivos como "SAÚDE X" vs "SAÚDE Y")
         if idx_rpi not in rpi_processados and nucleo_hash_rpi:
-            matches_nucleo = carteira_por_nucleo.get(nucleo_hash_rpi, [])
-            for marca_base in matches_nucleo:
-                # Verificar classes para núcleo idêntico
-                colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
-                alertas.append(_criar_alerta(
-                    marca_base=marca_base,
-                    marca_rpi=marca_rpi,
-                    score_nome=0.85,
-                    score_nucleo=1.0,
-                    camada=1,
-                    motivo="nucleo_identico",
-                    classes_colidem=colidem,
-                ))
-                rpi_processados.add(idx_rpi)
+            if not marca_rpi.get("is_marca_generica"):
+                matches_nucleo = carteira_por_nucleo.get(nucleo_hash_rpi, [])
+                for marca_base in matches_nucleo:
+                    if marca_base.get("is_marca_generica"):
+                        continue
+                    # Verificar classes para núcleo idêntico
+                    colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
+                    alertas.append(_criar_alerta(
+                        marca_base=marca_base,
+                        marca_rpi=marca_rpi,
+                        score_nome=0.85,
+                        score_nucleo=1.0,
+                        camada=1,
+                        motivo="nucleo_identico",
+                        classes_colidem=colidem,
+                    ))
+                    rpi_processados.add(idx_rpi)
 
     rpi_restante = [m for i, m in enumerate(rpi) if i not in rpi_processados]
     return alertas, rpi_restante
@@ -111,4 +115,6 @@ def _criar_alerta(
         "is_marca_generica": bool(marca_base.get("is_marca_generica") or marca_rpi.get("is_marca_generica")),
         "nucleo_base_generico": bool(marca_base.get("is_marca_generica")),
         "nucleo_rpi_generico": bool(marca_rpi.get("is_marca_generica")),
+        "nucleo_distintivo_base": marca_base.get("nucleo_distintivo", ""),
+        "nucleo_distintivo_rpi": marca_rpi.get("nucleo_distintivo", ""),
     }

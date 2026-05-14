@@ -17,6 +17,7 @@ from ..config import (
     THRESHOLD_SCORE_FINAL,
 )
 from ..utils.normalizacao import normalizar_base
+from ..utils.similaridade import jaro_winkler
 
 
 def _fator_distintividade(nucleo: str) -> float:
@@ -108,6 +109,16 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         ambos_genericos = par.get("nucleo_base_generico") and par.get("nucleo_rpi_generico")
         if ambos_genericos:
             if s_nome < 0.92 and not (ncl_a == ncl_b and s_nucleo >= 0.95):
+                continue
+
+        # Gate: prefixo genérico compartilhado com partes distintivas muito diferentes.
+        # Ex: "CAFÉ JOAO" vs "CAFÉ MARIA" — "cafe" inflacionou score_nome, mas as
+        # partes distintivas "joao" e "maria" são completamente diferentes.
+        nd_base = par.get("nucleo_distintivo_base", "")
+        nd_rpi = par.get("nucleo_distintivo_rpi", "")
+        if nd_base and nd_rpi:
+            sim_distintos = jaro_winkler(nd_base, nd_rpi)
+            if sim_distintos < 0.65 and s_nome < 0.88:
                 continue
 
         # Penalidade cross-class: marcas frágeis em classes distintas
