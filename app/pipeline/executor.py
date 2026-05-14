@@ -4,7 +4,9 @@ Orquestrador do pipeline de colidência (Camadas 0–5).
 from __future__ import annotations
 
 import logging
+import re
 import time
+import unicodedata
 from typing import Callable
 
 from ..config import DESPACHOS_OPOSICAO, DESPACHOS_PAN
@@ -18,6 +20,43 @@ from .scoring import camada4
 from .especificacao import camada3
 
 logger = logging.getLogger(__name__)
+
+_RE_PARENTESES = re.compile(r'\([^)]*\)')
+_RE_SUFIXOS = re.compile(
+    r'\b(ltda|me|epp|eireli|s/?a|ss|mei|inc|llc|corp|sa|cia|'
+    r'sociedade anonima|industria|comercio|servicos|participacoes|'
+    r'holding|grupo)\b',
+    re.IGNORECASE,
+)
+_RE_NAO_ALFA = re.compile(r'[^a-z\s]')   # remove dígitos (CPF/CNPJ) e pontuação
+_RE_ESPACOS  = re.compile(r'\s{2,}')
+
+
+def _normalizar_titular(t: str) -> str:
+    """Normaliza nome do titular para comparação: sem parênteses, sem acento, sem sufixos jurídicos."""
+    t = _RE_PARENTESES.sub(' ', t)          # remove (BR/SP), (CPF), etc.
+    t = unicodedata.normalize('NFKD', t)
+    t = ''.join(c for c in t if not unicodedata.combining(c))
+    t = t.lower()
+    t = _RE_SUFIXOS.sub(' ', t)
+    t = _RE_NAO_ALFA.sub(' ', t)            # remove dígitos e pontuação restante
+    t = _RE_ESPACOS.sub(' ', t).strip()
+    return t
+
+
+def _mesmo_titular(t1: str, t2: str) -> bool:
+    """Retorna True se os dois titulares são essencialmente a mesma entidade."""
+    if not t1 or not t2:
+        return False
+    n1 = _normalizar_titular(t1)
+    n2 = _normalizar_titular(t2)
+    if not n1 or not n2:
+        return False
+    if n1 == n2:
+        return True
+    # Aceita variações menores (ex: "LTDA ME" vs "LTDA - ME")
+    from rapidfuzz import fuzz
+    return fuzz.ratio(n1, n2) >= 92
 
 
 def executar_pipeline(
@@ -122,6 +161,16 @@ def executar_pipeline(
 
     # Filtrar "NENHUMA" que podem ter vindo da IA
     todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
+
+    # Filtrar pares onde o titular da RPI é o mesmo da carteira (cliente já possui a marca)
+    antes = len(todos_resultados)
+    todos_resultados = [
+        r for r in todos_resultados
+        if not _mesmo_titular(r.get("titular_base", ""), r.get("titular_rpi", ""))
+    ]
+    removidos_titular = antes - len(todos_resultados)
+    if removidos_titular:
+        _progress(f"Pós-processamento: {removidos_titular} par(es) removido(s) — mesmo titular", 96)
 
     # Ordenar por score_final DESC
     todos_resultados.sort(key=lambda r: r.get("score_final", r.get("score_nome", 0)), reverse=True)
