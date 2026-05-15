@@ -237,8 +237,8 @@ async function executar() {
     const data = await resp.json();
     state.execucaoId = data.execucao_id;
 
-    state.logsCount = 0;
     resetLogPanel();
+    setLogStatus('running');
     show($('area-progresso'));
     hide($('area-resultados'));
     iniciarTimer();
@@ -270,10 +270,12 @@ async function verificarStatus() {
     if (data.status === 'concluido') {
       clearInterval(state.pollInterval);
       clearInterval(state.timerInterval);
+      setLogStatus('done');
       await carregarResultados();
     } else if (data.status === 'erro') {
       clearInterval(state.pollInterval);
       clearInterval(state.timerInterval);
+      setLogStatus('error');
       toast(`Erro no pipeline: ${data.erro_msg || 'desconhecido'}`, 'error', 8000);
       $('btn-executar').disabled = false;
       $('btn-executar').textContent = '▶ Executar Análise';
@@ -296,12 +298,35 @@ function atualizarProgresso(data) {
 }
 
 // ---------------------------------------------------------------------------
-// Log de execução
+// Log de execução — tela dedicada
 // ---------------------------------------------------------------------------
+
+let _logFilter = 'all';  // 'all' | 'error'
+
+function setLogStatus(status) {
+  // status: 'idle' | 'running' | 'done' | 'error'
+  const badge = $('log-status-badge');
+  if (!badge) return;
+  badge.className = 'log-status-badge';
+  const labels = { idle: '● AGUARDANDO', running: '● EXECUTANDO', done: '● CONCLUÍDO', error: '● ERRO' };
+  const classes = { running: 'running', done: 'done', error: 'error' };
+  badge.textContent = labels[status] || '● AGUARDANDO';
+  if (classes[status]) badge.classList.add(classes[status]);
+}
+
+function _updateLineCount() {
+  const el = $('log-line-count');
+  if (!el) return;
+  const n = state.logsCount;
+  el.textContent = `${n} ${n === 1 ? 'linha' : 'linhas'}`;
+}
 
 function resetLogPanel() {
   const body = $('log-body');
   if (body) body.innerHTML = '<div class="log-empty">Aguardando início da execução...</div>';
+  state.logsCount = 0;
+  _updateLineCount();
+  setLogStatus('idle');
 }
 
 function _logIcon(pct) {
@@ -322,12 +347,19 @@ function _appendLogEntry(entry) {
   const empty = body.querySelector('.log-empty');
   if (empty) empty.remove();
 
-  const div = document.createElement('div');
   const isError = entry.msg.startsWith('❌') || entry.pct < 0;
+  const isWarn  = entry.msg.startsWith('⚠');
   const isDone  = entry.pct >= 100;
-  div.className = 'log-entry' + (isError ? ' log-error' : isDone ? ' log-success' : '');
 
-  const pctStr = entry.pct < 0 ? 'ERR' : String(entry.pct).padStart(3) + '%';
+  const div = document.createElement('div');
+  let cls = 'log-entry';
+  if (isError) cls += ' log-error';
+  else if (isDone) cls += ' log-success';
+  else if (isWarn) cls += ' log-warn';
+  if (_logFilter === 'error' && !isError) cls += ' log-hidden';
+  div.className = cls;
+
+  const pctStr = entry.pct < 0 ? ' ERR' : String(entry.pct).padStart(3) + '%';
   div.innerHTML =
     `<span class="log-ts">[${esc(entry.ts)}]</span>` +
     `<span class="log-pct">${pctStr}</span>` +
@@ -337,15 +369,27 @@ function _appendLogEntry(entry) {
   body.appendChild(div);
 
   const autoScroll = $('log-autoscroll');
-  if (!autoScroll || autoScroll.checked) {
-    body.scrollTop = body.scrollHeight;
-  }
+  if (!autoScroll || autoScroll.checked) body.scrollTop = body.scrollHeight;
 }
 
 function atualizarLog(logs) {
   if (!logs || logs.length <= state.logsCount) return;
   logs.slice(state.logsCount).forEach(_appendLogEntry);
   state.logsCount = logs.length;
+  _updateLineCount();
+}
+
+function _applyLogFilter(filter) {
+  _logFilter = filter;
+  document.querySelectorAll('.log-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  document.querySelectorAll('#log-body .log-entry').forEach(el => {
+    const isError = el.classList.contains('log-error');
+    el.classList.toggle('log-hidden', filter === 'error' && !isError);
+  });
+  const body = $('log-body');
+  if (body && _logFilter !== 'error') body.scrollTop = body.scrollHeight;
 }
 
 // ---------------------------------------------------------------------------
@@ -586,6 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (filtroTipo) filtroTipo.addEventListener('change', aplicarFiltros);
   if (filtroClass) filtroClass.addEventListener('change', aplicarFiltros);
 
+  // Log — copiar
   const btnCopyLog = $('log-btn-copy');
   if (btnCopyLog) {
     btnCopyLog.addEventListener('click', () => {
@@ -597,6 +642,22 @@ document.addEventListener('DOMContentLoaded', () => {
       );
     });
   }
+
+  // Log — limpar
+  const btnClearLog = $('log-btn-clear');
+  if (btnClearLog) {
+    btnClearLog.addEventListener('click', () => {
+      const body = $('log-body');
+      if (body) body.innerHTML = '<div class="log-empty">Log limpo manualmente.</div>';
+      state.logsCount = 0;
+      _updateLineCount();
+    });
+  }
+
+  // Log — filtro por nível
+  document.querySelectorAll('.log-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => _applyLogFilter(btn.dataset.filter));
+  });
 
   carregarHistorico();
   hide($('config-card'));

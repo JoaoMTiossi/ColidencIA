@@ -112,22 +112,37 @@
           <span>Gerando relatório</span>
         </li>
       </ul>
+    </div>
 
-      <!-- Log de execução -->
-      <div class="log-panel" style="margin-top:20px">
-        <div class="log-header">
-          <span class="log-title">📋 Log de Execução</span>
-          <div class="log-actions">
-            <label class="log-autoscroll-label">
-              <input type="checkbox" id="log-autoscroll" checked>
-              auto-scroll
-            </label>
-            <button class="log-btn-copy" id="log-btn-copy" title="Copiar log completo">⎘ Copiar</button>
-          </div>
+    <!-- 3b. Log de Execução (sempre visível) -->
+    <div class="card log-card" id="area-log">
+      <div class="log-card-header">
+        <div class="log-card-title">
+          <span class="icon">🖥️</span> Log de Execução
         </div>
-        <div class="log-body" id="log-body">
-          <div class="log-empty">Aguardando início da execução...</div>
+        <div class="log-card-meta">
+          <span class="log-status-badge" id="log-status-badge">● AGUARDANDO</span>
+          <span class="log-line-count" id="log-line-count">0 linhas</span>
         </div>
+      </div>
+
+      <div class="log-toolbar">
+        <div class="log-filter-tabs">
+          <button class="log-filter-btn active" data-filter="all">Todos</button>
+          <button class="log-filter-btn" data-filter="error">Erros</button>
+        </div>
+        <div class="log-toolbar-actions">
+          <label class="log-autoscroll-label">
+            <input type="checkbox" id="log-autoscroll" checked>
+            auto-scroll
+          </label>
+          <button class="log-btn-copy" id="log-btn-copy" title="Copiar log completo">⎘ Copiar</button>
+          <button class="log-btn-clear" id="log-btn-clear" title="Limpar log">✕ Limpar</button>
+        </div>
+      </div>
+
+      <div class="log-body" id="log-body">
+        <div class="log-empty">Aguardando início da execução...</div>
       </div>
     </div>
 
