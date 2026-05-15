@@ -121,14 +121,15 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             if s_nome < 0.92 and not (ncl_a == ncl_b and s_nucleo >= 0.95):
                 continue
 
-        # Gate: prefixo genérico compartilhado com partes distintivas muito diferentes.
-        # Ex: "CAFÉ JOAO" vs "CAFÉ MARIA" — "cafe" inflacionou score_nome, mas as
-        # partes distintivas "joao" e "maria" são completamente diferentes.
+        # Gate: partes distintivas muito diferentes bloqueiam mesmo com s_nome alto.
+        # Necessário porque prefixo genérico compartilhado (ex: "Instituto", "Pizzaria",
+        # "Sorvetes") infla o Jaro-Winkler do nome completo sem refletir risco real.
+        # Threshold 0.95: só passa se os nomes forem quase idênticos no total.
         nd_base = par.get("nucleo_distintivo_base", "")
         nd_rpi = par.get("nucleo_distintivo_rpi", "")
         if nd_base and nd_rpi:
             sim_distintos = jaro_winkler(nd_base, nd_rpi)
-            if sim_distintos < 0.65 and s_nome < 0.88:
+            if sim_distintos < 0.65 and s_nome < 0.95:
                 continue
 
         # Penalidade cross-class: marcas frágeis em classes sem correlação

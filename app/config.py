@@ -89,6 +89,15 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "digital", "online", "express", "plus", "premium", "gold", "pro",
     "delivery", "fitness", "pilates", "yoga", "crossfit",
     "croche", "malhas", "tecidos", "confeccao", "costura",
+    # Produtos alimentícios usados como tipo de negócio
+    "sorvete", "sorvetes", "acai", "salgados", "doces", "bolos",
+    # Veículos, peças e serviços automotivos
+    "veiculos", "automoveis", "autopecas", "pneus", "motores",
+    # Outros setores descritivos frequentes
+    "embalagens", "pinturas", "grafica", "graficas",
+    "supermercado", "supermercados", "mercados",
+    "imoveis", "imobilio",
+    "igreja", "templo", "paroquia",
     # Tipos de estabelecimento alimentício
     "cafe", "cafeteria", "bar", "restaurante", "cantina", "lanchonete",
     "bistrô", "bistro", "choperia", "cervejaria", "pizzeria",

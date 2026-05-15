@@ -24,18 +24,33 @@ _RE_SIGLA = re.compile(r'^[A-Z]{2,4}\.?$')
 
 def extrair_nucleo(marca: str) -> str:
     """
-    Extrai o núcleo marcário (tokens antes do primeiro stopword/complemento).
+    Extrai o núcleo marcário (parte distintiva da marca).
+
+    Quando a marca começa com complemento descritivo (tipo de negócio),
+    pula-o para encontrar o elemento verdadeiramente distintivo.
 
     Exemplos:
-        "INSPIRE STUDIO DE PILATES" → "INSPIRE"
-        "CAVALINHO AZUL"            → "CAVALINHO AZUL"
-        "NOVA GERACAO"              → "NOVA GERACAO"
+        "INSPIRE STUDIO DE PILATES"         → "INSPIRE"
+        "INSTITUTO DA ACÚSTICA"             → "acustica"
+        "PIZZARIA DO VAQUEIRO 2022"         → "vaqueiro 2022"
+        "BARBEARIA STUDIO MATTOS"           → "mattos"
+        "RESTAURANTE CASA DO NORDESTINO"    → "nordestino"
+        "CAVALINHO AZUL"                    → "cavalinho azul"
     """
     norm = normalizar_base(marca)
     tokens = norm.split()
-    nucleo: list[str] = []
 
-    for tok in tokens:
+    # Pular complementos descritivos do início (ex: restaurante, instituto, barbearia)
+    # e stopwords sequenciais (de, do, da) antes da parte distintiva.
+    start = 0
+    if len(tokens) > 1:
+        while start < len(tokens) and tokens[start] in COMPLEMENTOS_DESCRITIVOS:
+            start += 1
+        while start < len(tokens) and tokens[start] in _STOPWORDS:
+            start += 1
+
+    nucleo: list[str] = []
+    for tok in tokens[start:]:
         if tok in _STOPWORDS and nucleo:
             break
         if tok in COMPLEMENTOS_DESCRITIVOS and nucleo:
@@ -43,7 +58,6 @@ def extrair_nucleo(marca: str) -> str:
         nucleo.append(tok)
 
     nucleo_str = " ".join(nucleo) if nucleo else norm
-    # Se o núcleo extraído é minúsculo (ex: artigo solto), usar o nome completo
     if len(nucleo_str.replace(" ", "")) < 3:
         return norm
     return nucleo_str
