@@ -1,12 +1,38 @@
 """
 Camada 2 — Filtro fonético com blocking.
 Usa blocking por código fonético + bigramas para reduzir comparações.
+Indexa a carteira por (ncl, prefixo_fonético) para comparar somente dentro
+das classes elegíveis de cada marca da RPI.
 """
 from __future__ import annotations
 
-from ..config import THRESHOLD_FONETICO, classes_colidem
+from collections import defaultdict
+
+from ..config import COLLISIONS, THRESHOLD_FONETICO, classes_colidem
 from ..utils.normalizacao import jaccard_bigramas
 from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
+
+
+# Threshold mínimo de afinidade para que duas classes sejam comparadas
+_AFINIDADE_MIN_CLASSE: float = 0.50
+
+
+def _classes_elegiveis(ncl: int) -> set[int]:
+    """Retorna o conjunto de classes NCL elegíveis para comparação com ncl.
+
+    Inclui a própria classe + todas com afinidade >= _AFINIDADE_MIN_CLASSE
+    na tabela de correlatas + as classes da matriz COLLISIONS como fallback
+    (afinidade implícita 0.60 > threshold 0.50).
+    """
+    from .especificacao import _carregar_correlatas
+    elegiveis: set[int] = {ncl}
+    correlatas = _carregar_correlatas()
+    for (a, b), af in correlatas.items():
+        if a == ncl and af >= _AFINIDADE_MIN_CLASSE:
+            elegiveis.add(b)
+    for cls in COLLISIONS.get(ncl, []):
+        elegiveis.add(cls)
+    return elegiveis
 
 
 def _levenshtein_1(a: str, b: str) -> bool:
@@ -15,11 +41,9 @@ def _levenshtein_1(a: str, b: str) -> bool:
         return False
     if a == b:
         return True
-    # Verificar se diferem em exatamente 1 char
     diffs = sum(x != y for x, y in zip(a, b))
     if len(a) == len(b):
         return diffs <= 1
-    # Uma é maior — verificar se uma contém a outra
     shorter, longer = (a, b) if len(a) < len(b) else (b, a)
     for i in range(len(longer)):
         if longer[:i] + longer[i + 1:] == shorter:
@@ -27,16 +51,20 @@ def _levenshtein_1(a: str, b: str) -> bool:
     return False
 
 
-def _buckets_vizinhos(codigo: str, index: dict[str, list[dict]]) -> list[dict]:
-    """Retorna marcas no bucket exato + buckets com edit distance 1 no prefixo fonético."""
+def _buckets_vizinhos(
+    codigo: str,
+    index: dict[tuple[int, str], list[dict]],
+    classes: set[int],
+) -> list[dict]:
+    """Retorna marcas no bucket exato + buckets com edit distance 1, filtrados por classes."""
     prefixo = codigo[:4]
-    candidatos: list[dict] = list(index.get(prefixo, []))
-
-    # Buckets vizinhos (primeiros 4 chars do código com 1 edição)
-    for chave in list(index.keys()):
-        if chave != prefixo and _levenshtein_1(prefixo, chave[:4] if len(chave) >= 4 else chave):
-            candidatos.extend(index[chave])
-
+    candidatos: list[dict] = []
+    for cls in classes:
+        chave_exata = (cls, prefixo)
+        candidatos.extend(index.get(chave_exata, []))
+        for (c, k) in list(index.keys()):
+            if c == cls and k != prefixo and _levenshtein_1(prefixo, k[:4] if len(k) >= 4 else k):
+                candidatos.extend(index[(c, k)])
     return candidatos
 
 
@@ -45,40 +73,53 @@ def camada2(
     rpi_restante: list[dict],
 ) -> tuple[list[dict], list[dict]]:
     """
-    Filtro fonético com blocking.
+    Filtro fonético com blocking por classe NCL elegível.
+
+    O índice fonético é keyed por (ncl, prefixo_fonético) — para cada marca
+    da RPI só são consultadas as entradas cujas classes são elegíveis
+    (mesma classe + correlatas >= 0.50 + COLLISIONS fallback).
 
     Retorna:
         (candidatos_para_camada3, rpi_descartado)
     """
-    # Construir índice fonético da carteira (chave: primeiros 4 chars do metaphone)
-    indice_fonetico: dict[str, list[dict]] = {}
+    # Construir índice fonético por (ncl, prefixo)
+    indice_fonetico: dict[tuple[int, str], list[dict]] = defaultdict(list)
+    # Índice por (ncl, bigrams_frozenset) não é viável — usar lista por ncl para bigramas
+    indice_bigrama: dict[int, list[dict]] = defaultdict(list)
     for marca in carteira:
+        ncl = marca.get("ncl", 0)
         cod = marca.get("codigo_fonetico", "")
         prefixo = cod[:4] if cod else ""
-        indice_fonetico.setdefault(prefixo, []).append(marca)
+        indice_fonetico[(ncl, prefixo)].append(marca)
+        if marca.get("bigrams_set"):
+            indice_bigrama[ncl].append(marca)
 
     candidatos: list[dict] = []
 
     for marca_rpi in rpi_restante:
+        ncl_rpi = marca_rpi.get("ncl", 0)
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
         bg_rpi = marca_rpi.get("bigrams_set", set())
 
-        # Obter candidatos via blocking fonético
-        cands_foneticos = _buckets_vizinhos(cod_rpi, indice_fonetico)
+        classes_ok = _classes_elegiveis(ncl_rpi)
 
-        # Também adicionar via blocking por bigramas (Jaccard ≥ 0.3)
+        # Blocking fonético filtrado por classes elegíveis
+        cands_foneticos = _buckets_vizinhos(cod_rpi, indice_fonetico, classes_ok)
+
+        # Blocking por bigramas, somente em classes elegíveis
         cands_por_bigrama: list[dict] = []
         if bg_rpi:
-            for marca in carteira:
-                bg_cart = marca.get("bigrams_set", set())
-                if bg_cart and bg_rpi:
-                    inter = len(bg_rpi & bg_cart)
-                    union = len(bg_rpi | bg_cart)
-                    if union > 0 and inter / union >= 0.3:
-                        cands_por_bigrama.append(marca)
+            for cls in classes_ok:
+                for marca in indice_bigrama.get(cls, []):
+                    bg_cart = marca.get("bigrams_set", set())
+                    if bg_cart:
+                        inter = len(bg_rpi & bg_cart)
+                        union = len(bg_rpi | bg_cart)
+                        if union > 0 and inter / union >= 0.3:
+                            cands_por_bigrama.append(marca)
 
         # Unir candidatos (sem duplicatas)
-        todos_ids = set()
+        todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
         for m in cands_foneticos + cands_por_bigrama:
             mid = id(m)
@@ -90,7 +131,7 @@ def camada2(
         for marca_base in todos_candidatos:
             score = _score_fonetico(marca_base, marca_rpi)
             if score >= THRESHOLD_FONETICO:
-                col = classes_colidem(marca_base.get("ncl", 0), marca_rpi.get("ncl", 0))
+                col = classes_colidem(marca_base.get("ncl", 0), ncl_rpi)
                 candidatos.append(_criar_candidato(marca_base, marca_rpi, score, col))
 
     return candidatos, []

@@ -66,9 +66,12 @@ def _afinidade_correlatas(ncl_a: int, ncl_b: int) -> float:
 
 def _afinidade_classes(ncl_a: int, ncl_b: int) -> float:
     if ncl_a == ncl_b:
-        return 0.8
+        return 0.95
+    af_tabela = _afinidade_correlatas(ncl_a, ncl_b)
+    if af_tabela > 0:
+        return af_tabela
     if ncl_b in COLLISIONS.get(ncl_a, []):
-        return 0.7
+        return 0.60
     return 0.0
 
 

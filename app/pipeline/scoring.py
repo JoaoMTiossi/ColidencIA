@@ -18,6 +18,7 @@ from ..config import (
 )
 from ..utils.normalizacao import normalizar_base
 from ..utils.similaridade import jaro_winkler
+from .especificacao import _afinidade_correlatas
 
 
 def _fator_distintividade(nucleo: str) -> float:
@@ -71,10 +72,14 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         s_fon = par.get("score_fonetico", 0.0)
         s_tipo = _score_tipo_marca(par)
 
-        # Bonus para classes na mesma NCL ou colidentes
+        # Bonus contínuo baseado na afinidade de classes
         ncl_a = par.get("ncl_base", 0)
         ncl_b = par.get("ncl_rpi", 0)
-        bonus = 0.8 if (ncl_a == ncl_b and ncl_a > 0) else (0.5 if par.get("classes_colidem_flag") else 0.0)
+        if ncl_a == ncl_b and ncl_a > 0:
+            af_classes = 1.0
+        else:
+            af_classes = _afinidade_correlatas(ncl_a, ncl_b)
+        bonus = 0.8 * af_classes
 
         # Ajustes por tipo de marca
         peso_nome = PESO_SIMILARIDADE_NOME
@@ -99,9 +104,10 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         )
         score = min(1.0, score)
 
-        # Gate: nome deve ter similaridade mínima (elimina pares onde só a
-        # classe ou o bônus sustenta o score mas os nomes são muito distintos)
-        if s_nome < 0.72 and s_nucleo < 0.82:
+        # Gate: nome deve ter similaridade mínima.
+        # Para classes pouco correlatas (af < 0.65) exigimos nome mais próximo.
+        nome_min = 0.90 if af_classes < 0.65 else 0.72
+        if s_nome < nome_min and s_nucleo < 0.82:
             continue
 
         # Gate: ambos núcleos triviais — só passa se quase idêntico ou
@@ -121,8 +127,8 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             if sim_distintos < 0.65 and s_nome < 0.88:
                 continue
 
-        # Penalidade cross-class: marcas frágeis em classes distintas
-        if not par.get("classes_colidem_flag") and ncl_a != ncl_b:
+        # Penalidade cross-class: marcas frágeis em classes sem correlação
+        if af_classes == 0.0 and ncl_a != ncl_b:
             fator = _fator_distintividade(par.get("nucleo_base", "")) * _fator_distintividade(par.get("nucleo_rpi", ""))
             score = score * fator
 
