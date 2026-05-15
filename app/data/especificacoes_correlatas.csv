@@ -1,109 +1,147 @@
 ncl_a,ncl_b,afinidade,descricao
-1,2,0.4644,Derivado NICE 13/2026 (cos=0.147)
-1,3,0.6625,Derivado NICE 13/2026 (cos=0.291)
-1,4,0.6584,Derivado NICE 13/2026 (cos=0.288)
-1,5,0.7241,Derivado NICE 13/2026 (cos=0.336)
-1,9,0.4164,Derivado NICE 13/2026 (cos=0.112)
-1,10,0.4869,Derivado NICE 13/2026 (cos=0.163)
-1,17,0.4054,Derivado NICE 13/2026 (cos=0.104)
-1,21,0.432,Derivado NICE 13/2026 (cos=0.123)
-1,29,0.4143,Derivado NICE 13/2026 (cos=0.110)
-1,30,0.4029,Derivado NICE 13/2026 (cos=0.102)
-2,4,0.4027,Derivado NICE 13/2026 (cos=0.102)
-3,4,0.4536,Derivado NICE 13/2026 (cos=0.139)
-3,5,0.6438,Derivado NICE 13/2026 (cos=0.277)
-3,10,0.4853,Derivado NICE 13/2026 (cos=0.162)
-3,21,0.5534,Derivado NICE 13/2026 (cos=0.212)
-4,5,0.4008,Derivado NICE 13/2026 (cos=0.101)
-4,29,0.4458,Derivado NICE 13/2026 (cos=0.133)
-5,10,0.95,Derivado NICE 13/2026 (cos=0.542)
-5,21,0.4331,Derivado NICE 13/2026 (cos=0.124)
-5,29,0.4188,Derivado NICE 13/2026 (cos=0.114)
-6,14,0.5728,Derivado NICE 13/2026 (cos=0.226)
-6,19,0.4571,Derivado NICE 13/2026 (cos=0.141)
-6,20,0.6149,Derivado NICE 13/2026 (cos=0.256)
-7,9,0.4751,Derivado NICE 13/2026 (cos=0.155)
-7,11,0.6339,Derivado NICE 13/2026 (cos=0.270)
-7,12,0.5188,Derivado NICE 13/2026 (cos=0.186)
-7,16,0.4532,Derivado NICE 13/2026 (cos=0.139)
-7,21,0.444,Derivado NICE 13/2026 (cos=0.132)
-7,37,0.4161,Derivado NICE 13/2026 (cos=0.112)
-8,21,0.4224,Derivado NICE 13/2026 (cos=0.116)
-9,10,0.7343,Derivado NICE 13/2026 (cos=0.343)
-9,11,0.7663,Derivado NICE 13/2026 (cos=0.366)
-9,12,0.4157,Derivado NICE 13/2026 (cos=0.111)
-9,15,0.4591,Derivado NICE 13/2026 (cos=0.143)
-9,16,0.407,Derivado NICE 13/2026 (cos=0.105)
-9,21,0.5008,Derivado NICE 13/2026 (cos=0.173)
-9,28,0.4393,Derivado NICE 13/2026 (cos=0.129)
-9,37,0.4072,Derivado NICE 13/2026 (cos=0.105)
-9,38,0.4663,Derivado NICE 13/2026 (cos=0.148)
-9,42,0.5221,Derivado NICE 13/2026 (cos=0.189)
-10,11,0.6303,Derivado NICE 13/2026 (cos=0.268)
-10,21,0.4756,Derivado NICE 13/2026 (cos=0.155)
-11,12,0.4193,Derivado NICE 13/2026 (cos=0.114)
-11,21,0.5416,Derivado NICE 13/2026 (cos=0.203)
-11,40,0.4067,Derivado NICE 13/2026 (cos=0.105)
-12,37,0.4143,Derivado NICE 13/2026 (cos=0.110)
-12,39,0.438,Derivado NICE 13/2026 (cos=0.128)
-14,26,0.575,Derivado NICE 13/2026 (cos=0.227)
-16,17,0.4335,Derivado NICE 13/2026 (cos=0.124)
-16,21,0.5148,Derivado NICE 13/2026 (cos=0.183)
-16,22,0.4175,Derivado NICE 13/2026 (cos=0.113)
-16,24,0.4044,Derivado NICE 13/2026 (cos=0.103)
-17,19,0.4787,Derivado NICE 13/2026 (cos=0.157)
-17,20,0.4799,Derivado NICE 13/2026 (cos=0.158)
-17,21,0.4384,Derivado NICE 13/2026 (cos=0.128)
-17,22,0.6222,Derivado NICE 13/2026 (cos=0.262)
-17,23,0.5309,Derivado NICE 13/2026 (cos=0.195)
-19,20,0.95,Derivado NICE 13/2026 (cos=0.628)
-19,22,0.5514,Derivado NICE 13/2026 (cos=0.210)
-20,21,0.4227,Derivado NICE 13/2026 (cos=0.117)
-20,22,0.5753,Derivado NICE 13/2026 (cos=0.228)
-20,24,0.4263,Derivado NICE 13/2026 (cos=0.119)
-21,24,0.4304,Derivado NICE 13/2026 (cos=0.122)
-21,30,0.4073,Derivado NICE 13/2026 (cos=0.105)
-22,23,0.6258,Derivado NICE 13/2026 (cos=0.264)
-22,24,0.5053,Derivado NICE 13/2026 (cos=0.177)
-24,40,0.471,Derivado NICE 13/2026 (cos=0.152)
-25,26,0.6933,Derivado NICE 13/2026 (cos=0.313)
-29,30,0.8228,Derivado NICE 13/2026 (cos=0.407)
-29,31,0.6652,Derivado NICE 13/2026 (cos=0.293)
-29,32,0.5339,Derivado NICE 13/2026 (cos=0.197)
-30,31,0.56,Derivado NICE 13/2026 (cos=0.216)
-30,32,0.5574,Derivado NICE 13/2026 (cos=0.214)
-30,33,0.4611,Derivado NICE 13/2026 (cos=0.144)
-32,33,0.95,Derivado NICE 13/2026 (cos=0.699)
-35,36,0.5888,Derivado NICE 13/2026 (cos=0.386)
-35,38,0.5437,Derivado NICE 13/2026 (cos=0.365)
-35,41,0.7865,Derivado NICE 13/2026 (cos=0.476)
-35,42,0.4821,Derivado NICE 13/2026 (cos=0.337)
-35,43,0.6618,Derivado NICE 13/2026 (cos=0.419)
-35,44,0.6829,Derivado NICE 13/2026 (cos=0.429)
-35,45,0.7729,Derivado NICE 13/2026 (cos=0.469)
-36,41,0.528,Derivado NICE 13/2026 (cos=0.358)
-36,43,0.6904,Derivado NICE 13/2026 (cos=0.432)
-36,44,0.7276,Derivado NICE 13/2026 (cos=0.449)
-36,45,0.7428,Derivado NICE 13/2026 (cos=0.456)
-38,41,0.7256,Derivado NICE 13/2026 (cos=0.448)
-38,42,0.4227,Derivado NICE 13/2026 (cos=0.310)
-38,43,0.8112,Derivado NICE 13/2026 (cos=0.487)
-38,44,0.6609,Derivado NICE 13/2026 (cos=0.419)
-38,45,0.6281,Derivado NICE 13/2026 (cos=0.404)
-39,41,0.4735,Derivado NICE 13/2026 (cos=0.333)
-39,43,0.6642,Derivado NICE 13/2026 (cos=0.420)
-39,44,0.4059,Derivado NICE 13/2026 (cos=0.303)
-39,45,0.4669,Derivado NICE 13/2026 (cos=0.330)
-40,41,0.4031,Derivado NICE 13/2026 (cos=0.301)
-40,43,0.6167,Derivado NICE 13/2026 (cos=0.399)
-40,44,0.6339,Derivado NICE 13/2026 (cos=0.406)
-40,45,0.5245,Derivado NICE 13/2026 (cos=0.357)
-41,43,0.95,Derivado NICE 13/2026 (cos=0.577)
-41,44,0.9155,Derivado NICE 13/2026 (cos=0.534)
-41,45,0.8913,Derivado NICE 13/2026 (cos=0.523)
-42,43,0.4037,Derivado NICE 13/2026 (cos=0.302)
-42,44,0.4675,Derivado NICE 13/2026 (cos=0.331)
-42,45,0.5679,Derivado NICE 13/2026 (cos=0.376)
-43,44,0.95,Derivado NICE 13/2026 (cos=0.654)
-43,45,0.95,Derivado NICE 13/2026 (cos=0.620)
-44,45,0.95,Derivado NICE 13/2026 (cos=0.677)
+1,2,0.82,Químicos industriais e tintas/vernizes — insumos químicos do mesmo setor industrial
+1,3,0.68,Químicos industriais e cosméticos — matérias-primas químicas usadas em formulações cosméticas
+1,5,0.65,"Químicos industriais e farmacêuticos — mesma base científica química, overlap em matérias-primas"
+1,17,0.68,"Químicos e materiais de isolamento — polímeros, borrachas e matérias-primas sintéticas"
+1,19,0.62,"Químicos industriais e construção — adesivos, cimentos e produtos químicos para construção"
+1,40,0.72,Químicos industriais e tratamento de materiais — processos químicos industriais integrados
+1,42,0.7,Químicos industriais e serviços de pesquisa química — P&D e produtos do mesmo setor
+2,3,0.72,Tintas/corantes e cosméticos — overlap em tinturas capilares e coloração estética
+2,19,0.78,Tintas/vernizes e materiais de construção — vendidos juntos em lojas de construção
+2,25,0.55,"Tintas/corantes e roupas — tingimento têxtil, impressão em tecidos"
+2,37,0.82,Tintas e serviços de pintura/construção — produto e serviço do mesmo setor
+2,40,0.75,Tintas/vernizes e tratamento de superfícies — revestimento e proteção de materiais
+3,5,0.9,Cosméticos medicinais e farmacêuticos — fronteira difusa entre produto de beleza e medicamento
+3,10,0.6,Cosméticos e aparelhos de beleza/saúde — overlap em dispositivos estéticos e de higiene
+3,21,0.72,"Cosméticos e utensílios domésticos — pincéis, escovas e acessórios de beleza"
+3,44,0.92,Marcas de cosméticos frequentemente exploram salões de beleza e clínicas estéticas
+4,7,0.72,Combustíveis/lubrificantes e máquinas — insumo e equipamento do mesmo setor industrial
+4,12,0.68,"Combustíveis e veículos — mesmo mercado automotivo, marcas de postos e fabricantes"
+4,37,0.72,Combustíveis/lubrificantes e reparo de veículos — mesmo canal automotivo
+4,40,0.6,Combustíveis e tratamento industrial — insumos de processos industriais
+5,10,0.88,Produtos farmacêuticos e instrumentos médicos — mesmo canal hospitalar e farmácias
+5,29,0.65,"Farmacêuticos e alimentos — overlap em suplementos, alimentos funcionais e nutracêuticos"
+5,30,0.6,Farmacêuticos e alimentos industrializados — suplementos e alimentos funcionais
+5,31,0.6,Farmacêuticos e produtos agrícolas/animais — medicamentos veterinários e antiparasitários
+5,32,0.58,"Farmacêuticos e bebidas — bebidas funcionais, energéticos e produtos de saúde"
+5,43,0.48,"Farmacêuticos e restaurantes — overlap em restaurantes de saúde, produtos dietéticos"
+5,44,0.92,Medicamentos e serviços médicos — mesmos profissionais de saúde e consumidores
+6,8,0.68,"Metais e ferramentas — fabricantes de ferramentas metálicas, mesmo canal industrial"
+6,19,0.82,Metais e materiais de construção — insumos complementares da construção civil
+6,20,0.7,"Metais e mobiliário — móveis metálicos, ferragens e acessórios de decoração"
+6,37,0.72,Metais e serviços de construção/instalação — materiais e serviços no mesmo mercado de obra
+6,40,0.72,Metais e tratamento/transformação de materiais — overlap em metalurgia e beneficiamento
+7,8,0.8,"Máquinas e ferramentas manuais — mesmo setor industrial, fabricantes cobrem ambas"
+7,9,0.72,Máquinas e equipamentos eletrônicos — automação industrial e eletromecânica
+7,12,0.85,Máquinas/motores e veículos — fabricantes de motores frequentemente abrangem ambos
+7,37,0.78,Máquinas e serviços de reparo/manutenção — marcas de equipamentos que oferecem assistência técnica
+8,19,0.65,"Ferramentas e materiais de construção — mesma loja de construção, mesmo comprador"
+8,21,0.72,Ferramentas manuais e utensílios domésticos — overlap em cutelaria e utensílios de cozinha
+9,11,0.78,Eletrônica e aparelhos domésticos — eletrodomésticos e eletrônicos no mesmo varejo
+9,12,0.78,"Eletrônica e veículos — tecnologia embarcada, GPS, sistemas automotivos eletrônicos"
+9,13,0.58,"Eletrônica e armas — miras eletrônicas, sistemas de visão noturna e acessórios"
+9,16,0.58,Eletrônica e mídia — marcas de tech expandem para conteúdo digital e publicações
+9,28,0.8,"Eletrônica e games/brinquedos — consoles, periféricos e videogames no mesmo canal"
+9,38,0.88,Equipamentos eletrônicos e telecomunicações — hardware e serviços de telecom integrados
+9,41,0.75,"Eletrônica e entretenimento — marcas de games, streaming e dispositivos se sobrepõem"
+9,42,0.9,Equipamentos eletrônicos e serviços de software/TI — mesma indústria de tecnologia
+10,42,0.72,"Equipamentos médicos e P&D em saúde — healthtech, dispositivos e pesquisa médica"
+10,44,0.9,Equipamentos médicos e serviços de saúde — distribuídos e usados nos mesmos estabelecimentos
+11,19,0.72,Aparelhos de iluminação e construção — especificados juntos em projetos de obra
+11,20,0.72,"Aparelhos domésticos e mobiliário — mesmo ambiente residencial, venda em conjunto"
+11,21,0.75,Iluminação/eletrodomésticos e utensílios — mesmo canal de distribuição casa e decoração
+11,37,0.72,Aparelhos domésticos e serviços de reparo/instalação — marcas que cobrem produto e assistência
+12,17,0.72,"Veículos e materiais elastoméricos — pneus, vedações e componentes de borracha automotivos"
+12,37,0.88,Veículos e serviços de manutenção/reparo — fabricantes cobrem assistência técnica e peças
+12,39,0.8,Veículos e serviços de transporte — marcas de veículos expandem para serviços de mobilidade
+13,28,0.52,"Armas e jogos — overlap em simuladores, réplicas airsoft e jogos de tiro"
+14,18,0.85,"Joias e acessórios de couro — mesmo canal de moda de luxo, consumidor idêntico"
+14,25,0.82,Joias e roupas — marcas de moda e luxo frequentemente abrangem ambas as classes
+14,26,0.65,"Joias e adereços — overlap em bijuterias, ornamentos e acessórios de vestuário"
+15,28,0.65,Instrumentos musicais e jogos — overlap em instrumentos-brinquedo e jogos musicais
+15,41,0.88,Instrumentos musicais e entretenimento/shows — mesmo mercado de música e educação artística
+16,28,0.62,"Publicações e brinquedos/jogos — overlap em jogos de tabuleiro, livros infantis"
+16,29,0.55,Papel/embalagens e alimentos — marcas de embalagens em produtos alimentícios
+16,35,0.7,"Papel/publicações e publicidade — gráficas e agências, mesmo mercado de comunicação"
+16,40,0.68,Papel e tratamento/processamento — indústria gráfica e acabamento de impressos
+16,41,0.8,Publicações e entretenimento/educação — editoras que oferecem cursos e conteúdo
+17,19,0.8,Materiais de isolamento e construção — insumos complementares na construção civil
+17,20,0.6,Materiais plásticos e mobiliário — overlap em móveis de plástico e componentes
+18,25,0.92,"Couro/bolsas e roupas/calçados — mesmo universo de moda, marcas de luxo cobrem ambos"
+18,28,0.65,"Couro/bolsas e artigos esportivos — itens de couro esportivos, bolas, luvas"
+19,20,0.72,Materiais de construção e mobiliário — overlap em lojas de acabamento e decoração
+19,22,0.55,"Cordas e materiais de construção — usados em obras, mesmo canal industrial"
+19,27,0.75,Pisos/revestimentos de construção e tapetes — sobreposição em revestimento de piso
+19,37,0.88,"Materiais de construção e serviços de construção — mesmo setor, marcas cobrem produto e serviço"
+19,40,0.65,Materiais de construção e tratamento — acabamento e processamento de materiais construtivos
+19,42,0.75,Materiais de construção e serviços de arquitetura/projetos — mesmo setor de obra
+20,21,0.82,Mobiliário e utensílios domésticos — mesmo canal de varejo de casa e decoração
+20,24,0.72,"Mobiliário e tecidos — estofados, decoração têxtil e revestimentos de móveis"
+20,27,0.8,Mobiliário e tapetes/revestimentos — mesmo setor de decoração de interiores
+20,42,0.65,Mobiliário e design de interiores — marcas de móveis que oferecem serviço de decoração
+21,29,0.55,Utensílios de cozinha e alimentos — overlap em kits gourmet e marcas de culinária
+21,30,0.52,Utensílios domésticos e alimentos — marcas culinárias que cobrem utensílios e temperos
+21,43,0.6,Utensílios de cozinha e restaurantes — equipamentos e louças para serviços de alimentação
+22,23,0.65,"Cordas/fibras e fios — insumos têxteis relacionados, mesmo setor de fibras"
+22,28,0.58,Cordas/redes e esportes/brinquedos — equipamentos esportivos e de lazer ao ar livre
+23,24,0.88,"Fios e tecidos — matéria-prima e produto acabado têxtil, mesmo canal industrial"
+23,25,0.72,"Fios e vestuário — cadeia têxtil verticalizada, marcas de fio expandem para moda"
+23,26,0.68,Fios e aviamentos — insumos complementares para costura e artesanato têxtil
+23,40,0.62,Fios têxteis e tratamento de materiais — beneficiamento de fibras e tecidos
+24,25,0.88,Tecidos e roupas — insumo e produto final do mesmo setor têxtil
+24,26,0.72,Tecidos e aviamentos — vendidos nos mesmos estabelecimentos de tecidos e costura
+24,27,0.72,"Tecidos e tapetes — ambos são produtos têxteis para ambientes, mesmo setor"
+24,40,0.68,"Tecidos e tratamento de materiais — tingimento, acabamento e beneficiamento têxtil"
+25,26,0.8,Roupas e aviamentos/acessórios de vestuário — complementares no mesmo setor têxtil
+25,27,0.52,"Roupas e tapetes — overlap em produtos têxteis, marcas de moda-casa podem colidir"
+25,28,0.55,"Roupas e brinquedos — overlap em fantasias, artigos de carnaval e bonecas"
+25,40,0.62,Roupas e tratamento/confecção — overlap em serviços de confecção e beneficiamento têxtil
+25,41,0.72,"Roupas e entretenimento — licenciamento de personagens em vestuário, moda-show"
+25,45,0.68,Roupas e serviços pessoais/aluguel de trajes — marcas de vestuário que alugam trajes
+26,28,0.58,"Aviamentos e brinquedos — overlap em fantasias, adereços e artigos de carnaval"
+27,37,0.68,Tapetes/revestimentos e serviços de instalação — produto e instalação do mesmo setor
+28,31,0.52,"Brinquedos e animais — brinquedos para pets, alimentos e acessórios para animais"
+28,41,0.85,"Brinquedos/jogos e entretenimento — mesmo mercado lúdico, marcas de games e brinquedos"
+29,30,0.88,Alimentos processados e de mercearia — mesmo ponto de venda e consumidor idêntico
+29,31,0.72,Alimentos processados derivados de produtos agrícolas — cadeia produtiva integrada
+29,32,0.8,Alimentos e bebidas não alcoólicas — marcas de alimentos frequentemente cobrem bebidas
+29,33,0.68,Alimentos e bebidas alcoólicas — mesmo canal de distribuição em supermercados
+29,43,0.85,Alimentos e restaurantes — marcas de alimentos expandem para serviços gastronômicos
+30,31,0.7,Cereais e produtos agrícolas frescos — fronteira tênue entre processado e in natura
+30,32,0.78,Alimentos industrializados e bebidas — mesmo canal e marcas frequentemente coexistem
+30,33,0.65,"Alimentos e bebidas alcoólicas — mesmo canal supermercadista, marcas podem colidir"
+30,34,0.42,"Alimentos e tabaco — overlap em cigarros de ervas, produtos de nicotina alimentar"
+30,43,0.85,Alimentos industrializados e serviços de alimentação — extensão natural de marca gastronômica
+31,32,0.65,Frutas e sucos/bebidas — overlap em produtos derivados de frutas não alcoólicos
+31,43,0.6,"Produtos agrícolas frescos e restaurantes — cadeia farm-to-table, mesmo público"
+31,44,0.72,Produtos agrícolas/animais e serviços veterinários/jardinagem — mesmo setor agro
+32,33,0.88,"Bebidas alcoólicas e não alcoólicas — mesmo canal, mesmo consumidor, risco alto de confusão"
+32,43,0.8,Bebidas e serviços de bar/restaurante — marcas de bebidas frequentemente abrem bares
+33,34,0.62,Bebidas alcoólicas e tabaco — mesmo canal duty-free e serviços de entretenimento adulto
+33,43,0.82,"Bebidas alcoólicas e bares/restaurantes — extensão natural, mesmos estabelecimentos"
+34,43,0.58,"Tabaco e bares/restaurantes — consumo no mesmo local, marcas de lifestyle adulto"
+35,36,0.68,Gestão de negócios e serviços financeiros — consultorias integradas de negócios e finanças
+35,38,0.6,Publicidade/marketing e telecomunicações — agências digitais e provedores de mídia
+35,39,0.65,Gestão de negócios e transporte — operadores logísticos e gestão da cadeia de suprimentos
+35,41,0.65,Publicidade e entretenimento — agências de marketing de conteúdo e produtoras
+35,42,0.68,Gestão de negócios e serviços de TI — consultorias que integram gestão e tecnologia
+35,43,0.65,Gestão de negócios e restaurantes — franquias e gestão de redes de alimentação
+36,37,0.65,Serviços financeiros/imobiliários e construção — mercado imobiliário integrado
+36,39,0.55,"Serviços financeiros e transporte — seguros de veículos, logística financeira"
+36,42,0.72,"Serviços financeiros e TI — fintechs, bancos digitais, software financeiro"
+36,43,0.55,"Serviços financeiros e hospedagem — seguro viagem, serviços de turismo financeiro"
+36,45,0.72,"Serviços financeiros e jurídicos — escritórios de advocacia financeira, compliance"
+37,40,0.65,Serviços de construção/reparo e tratamento de materiais — serviços industriais complementares
+37,42,0.8,Serviços de construção e arquitetura/engenharia — serviços complementares na construção
+38,39,0.55,"Telecomunicações e transporte — rastreamento, logística conectada, mesma infraestrutura"
+38,41,0.72,"Telecomunicações e entretenimento — streaming, rádio e TV via internet, mesmo player"
+38,42,0.88,"Telecomunicações e serviços de TI — convergência digital, mesmo mercado tech"
+39,41,0.65,Transporte/turismo e entretenimento — operadoras de turismo com entretenimento integrado
+39,42,0.68,"Transporte e TI — plataformas de mobilidade, apps de transporte, logtech"
+39,43,0.78,"Transporte e hospedagem — serviços de turismo integrado, mesmo consumidor"
+41,42,0.75,"Entretenimento/educação e serviços de TI/pesquisa — edtech, plataformas de ensino online"
+41,43,0.75,"Entretenimento e restaurantes — bares temáticos, parques com alimentação, mesmo público"
+41,45,0.48,Entretenimento/educação e serviços jurídicos — overlap em mediação e arbitragem de conflitos
+42,44,0.65,"Serviços de TI e saúde — telemedicina, healthtech, prontuário eletrônico"
+42,45,0.6,TI e serviços jurídicos/segurança — cybersegurança e privacidade de dados
+44,45,0.65,"Serviços de saúde e serviços pessoais — bem-estar, SPAs, serviços de cuidados pessoais"
