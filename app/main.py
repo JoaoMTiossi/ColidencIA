@@ -68,6 +68,20 @@ async def startup() -> None:
     if removidas:
         logger.info("%d execuções antigas removidas", removidas)
 
+    # Pré-carrega o modelo de embeddings em background para evitar
+    # latência na primeira execução do pipeline.
+    import asyncio
+
+    def _warmup_embeddings() -> None:
+        try:
+            from .utils.embeddings import embeddings_disponivel
+            if embeddings_disponivel():
+                logger.info("Modelo de embeddings pré-carregado")
+        except Exception as e:
+            logger.warning("Pré-carga de embeddings falhou: %s", e)
+
+    asyncio.get_event_loop().run_in_executor(None, _warmup_embeddings)
+
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
