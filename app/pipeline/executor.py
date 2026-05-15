@@ -44,21 +44,6 @@ def _normalizar_titular(t: str) -> str:
     return t
 
 
-def _mesmo_titular(t1: str, t2: str) -> bool:
-    """Retorna True se os dois titulares são essencialmente a mesma entidade."""
-    if not t1 or not t2:
-        return False
-    n1 = _normalizar_titular(t1)
-    n2 = _normalizar_titular(t2)
-    if not n1 or not n2:
-        return False
-    if n1 == n2:
-        return True
-    # Aceita variações menores (ex: "LTDA ME" vs "LTDA - ME")
-    from rapidfuzz import fuzz
-    return fuzz.ratio(n1, n2) >= 92
-
-
 def executar_pipeline(
     path_carteira: str,
     path_rpi: str,
@@ -94,10 +79,38 @@ def executar_pipeline(
     carteira_raw = parse_excel(path_carteira)
     _progress(f"Carteira carregada: {len(carteira_raw)} registros", 10)
 
+    # Índices da carteira para filtros "RPI é cliente"
+    processos_carteira: set[str] = {
+        str(m.get("processo", "")).strip()
+        for m in carteira_raw
+        if str(m.get("processo", "")).strip()
+    }
+    titulares_carteira_norm: set[str] = {
+        _normalizar_titular(m.get("titular", ""))
+        for m in carteira_raw
+        if _normalizar_titular(m.get("titular", ""))
+    }
+    titulares_carteira_lista: list[str] = list(titulares_carteira_norm)
+
     carteira = preprocessar_lote(carteira_raw)
 
     _progress("Carregando RPI...", 15)
     rpi_raw, rpi_numero, rpi_data = parse_rpi_xml(path_rpi)
+
+    # Pré-corte: remover da RPI marcas cujo processo já está na carteira
+    # (publicações/republicações da própria marca do cliente — sem colidência possível).
+    total_rpi_bruto = len(rpi_raw)
+    rpi_raw = [
+        r for r in rpi_raw
+        if str(r.get("processo", "")).strip() not in processos_carteira
+    ]
+    removidos_processo = total_rpi_bruto - len(rpi_raw)
+    if removidos_processo:
+        _progress(
+            f"Pré-filtro: {removidos_processo} marca(s) da RPI removida(s) "
+            f"— processo já consta na carteira",
+            17,
+        )
 
     # Filtrar por despachos selecionados
     if despachos_selecionados:
@@ -162,15 +175,40 @@ def executar_pipeline(
     # Filtrar "NENHUMA" que podem ter vindo da IA
     todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
 
-    # Filtrar pares onde o titular da RPI é o mesmo da carteira (cliente já possui a marca)
+    # Filtrar pares onde o titular da RPI bate com QUALQUER cliente da carteira.
+    # Cobre o caso "cliente A da carteira × marca nova do cliente A na RPI"
+    # que o filtro de processo não pegou (processo ainda não está na carteira).
+    from rapidfuzz import process as _rf_process, fuzz as _rf_fuzz
+
+    def _titular_rpi_eh_cliente(titular_rpi: str) -> bool:
+        if not titular_rpi:
+            return False
+        norm = _normalizar_titular(titular_rpi)
+        if not norm:
+            return False
+        if norm in titulares_carteira_norm:
+            return True
+        if titulares_carteira_lista:
+            match = _rf_process.extractOne(
+                norm, titulares_carteira_lista,
+                scorer=_rf_fuzz.ratio, score_cutoff=92,
+            )
+            if match is not None:
+                return True
+        return False
+
     antes = len(todos_resultados)
     todos_resultados = [
         r for r in todos_resultados
-        if not _mesmo_titular(r.get("titular_base", ""), r.get("titular_rpi", ""))
+        if not _titular_rpi_eh_cliente(r.get("titular_rpi", ""))
     ]
     removidos_titular = antes - len(todos_resultados)
     if removidos_titular:
-        _progress(f"Pós-processamento: {removidos_titular} par(es) removido(s) — mesmo titular", 96)
+        _progress(
+            f"Pós-processamento: {removidos_titular} par(es) removido(s) "
+            f"— titular da RPI é cliente",
+            96,
+        )
 
     # Ordenar por score_final DESC
     todos_resultados.sort(key=lambda r: r.get("score_final", r.get("score_nome", 0)), reverse=True)
