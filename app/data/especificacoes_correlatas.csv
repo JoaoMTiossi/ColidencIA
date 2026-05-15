@@ -1,109 +1,263 @@
 ncl_a,ncl_b,afinidade,descricao
-1,2,0.8,Quimicos para industria e limpeza
-1,3,0.7,Quimicos e cosmeticos
-1,5,0.85,Quimicos farmaceuticos e medicinais
-1,17,0.75,Quimicos e materiais de vedacao
-1,19,0.7,Quimicos e materiais de construcao
-1,40,0.7,Quimicos e tratamento de materiais
-1,42,0.75,Quimicos e servicos cientificos
-2,3,0.7,Tintas e cosmeticos coloridos
-2,16,0.75,Tintas e materiais impressos
-2,40,0.8,Tintas e servicos de tratamento de materiais
-3,5,0.8,Cosmeticos e farmaceuticos
-3,21,0.7,Cosmeticos e utensilios domesticos
-3,44,0.85,Cosmeticos e servicos de saude e beleza
-5,10,0.9,Farmaceuticos e instrumentos medicos
-5,29,0.75,Farmaceuticos e alimentos
-5,31,0.7,Farmaceuticos e alimentos naturais
-5,44,0.9,Farmaceuticos e servicos medicos
-9,16,0.75,Eletronicos e materiais impressos
-9,35,0.7,Eletronicos e publicidade
-9,38,0.85,Eletronicos e telecomunicacoes
-9,41,0.8,Eletronicos e entretenimento
-9,42,0.85,Eletronicos e software/TI
-10,5,0.9,Medicos e farmaceuticos
-10,44,0.9,Instrumentos medicos e servicos de saude
-14,18,0.8,Joias e acessorios de couro
-14,25,0.85,Joias e roupas
-14,26,0.75,Joias e aviamentos
-16,35,0.75,Materiais impressos e publicidade
-16,41,0.8,Materiais impressos e educacao
-16,42,0.7,Materiais impressos e TI
-18,14,0.8,Couro e joias
-18,24,0.75,Couro e tecidos
+1,2,0.75,Quimicos e tintas
+1,3,0.65,Quimicos e cosmeticos
+1,4,0.55,Quimicos e combustiveis
+1,5,0.70,Quimicos e farmaceuticos
+1,17,0.65,Quimicos e vedacao/plasticos
+1,19,0.55,Quimicos e construcao
+1,40,0.80,Quimicos e tratamento de materiais
+1,42,0.65,Quimicos e servicos cientificos
+2,3,0.55,Tintas e cosmeticos (pigmentos)
+2,16,0.65,Tintas e impressao
+2,17,0.55,Tintas e materiais de vedacao
+2,19,0.65,Tintas e construcao
+2,37,0.65,Tintas e servicos de pintura
+2,40,0.80,Tintas e tratamento de materiais
+3,5,0.85,Cosmeticos e farmaceuticos
+3,10,0.65,Cosmeticos e aparelhos esteticos
+3,21,0.55,Cosmeticos e utensilios de toucador
+3,35,0.55,Cosmeticos e varejo
+3,44,0.90,Cosmeticos e servicos de beleza
+4,7,0.55,Combustiveis e maquinas
+4,12,0.65,Combustiveis e veiculos
+4,37,0.55,Combustiveis e manutencao
+4,40,0.55,Combustiveis e tratamento
+5,3,0.85,Farmaceuticos e cosmeticos
+5,10,0.95,Farmaceuticos e instrumentos medicos
+5,29,0.50,Farmaceuticos e suplementos alimentares
+5,31,0.55,Farmaceuticos e fitoterapicos
+5,32,0.55,Farmaceuticos e bebidas funcionais
+5,35,0.55,Farmaceuticos e varejo farmacia
+5,44,0.95,Farmaceuticos e servicos medicos
+6,7,0.70,Metais e maquinas
+6,8,0.65,Metais e ferramentas
+6,17,0.55,Metais e vedacao
+6,19,0.65,Metais e construcao
+6,20,0.55,Metais e moveis
+6,37,0.55,Metais e construcao/instalacao
+7,4,0.55,Maquinas e combustiveis
+7,8,0.80,Maquinas e ferramentas
+7,11,0.55,Maquinas e equipamentos termicos
+7,12,0.65,Maquinas e veiculos
+7,37,0.55,Maquinas e instalacao
+7,40,0.55,Maquinas e tratamento de materiais
+8,7,0.80,Ferramentas e maquinas
+8,6,0.65,Ferramentas e metais
+8,21,0.55,Ferramentas e utensilios
+8,37,0.55,Ferramentas e servicos de construcao
+9,11,0.55,Eletronicos e iluminacao/eletrodomesticos
+9,15,0.55,Eletronicos e instrumentos musicais
+9,16,0.55,Eletronicos e materiais impressos
+9,28,0.55,Eletronicos e jogos eletronicos
+9,35,0.65,Eletronicos e varejo
+9,38,0.90,Eletronicos e telecomunicacoes
+9,41,0.70,Eletronicos e entretenimento
+9,42,0.90,Eletronicos e software/TI
+10,3,0.65,Instrumentos medicos e cosmeticos
+10,5,0.95,Instrumentos medicos e farmaceuticos
+10,9,0.65,Instrumentos medicos e eletronicos
+10,11,0.55,Instrumentos medicos e equipamentos
+10,44,0.90,Instrumentos medicos e servicos de saude
+11,7,0.55,Iluminacao/eletrodomesticos e maquinas
+11,9,0.55,Eletrodomesticos e eletronicos
+11,10,0.55,Equipamentos termicos e medicos
+11,19,0.55,Iluminacao e construcao
+11,20,0.55,Eletrodomesticos e moveis
+11,21,0.55,Eletrodomesticos e utensilios
+12,4,0.65,Veiculos e combustiveis
+12,7,0.65,Veiculos e maquinas
+12,37,0.65,Veiculos e oficinas
+12,39,0.85,Veiculos e transporte
+14,18,0.65,Joias e couro
+14,24,0.55,Joias e tecidos
+14,25,0.80,Joias e roupas
+14,26,0.70,Joias e aviamentos
+14,35,0.55,Joias e varejo
+15,9,0.55,Instrumentos musicais e eletronicos
+15,16,0.55,Instrumentos musicais e partituras
+15,28,0.70,Instrumentos musicais e brinquedos
+15,41,0.80,Instrumentos musicais e entretenimento
+16,2,0.65,Materiais impressos e tintas
+16,9,0.55,Impressos e eletronicos
+16,15,0.55,Impressos e instrumentos musicais
+16,28,0.55,Impressos e jogos
+16,35,0.65,Impressos e publicidade
+16,41,0.80,Impressos e educacao
+16,42,0.65,Impressos e TI
+17,1,0.65,Borracha/plasticos e quimicos
+17,2,0.55,Borracha e tintas
+17,19,0.65,Borracha e construcao
+17,40,0.65,Plasticos e tratamento de materiais
+18,14,0.65,Couro e joias
+18,22,0.55,Couro e cordas/sacaria
+18,24,0.70,Couro e tecidos
 18,25,0.85,Couro e roupas
-18,26,0.7,Couro e aviamentos
-21,29,0.75,Utensilios e alimentos
-21,30,0.75,Utensilios e alimentos
-25,14,0.85,Roupas e joias
-25,18,0.85,Roupas e couro
-25,26,0.8,Roupas e aviamentos
-25,35,0.7,Roupas e varejo
-28,15,0.8,Jogos e instrumentos musicais
-28,41,0.85,Jogos e entretenimento
-29,30,0.9,Alimentos processados e nao processados
-29,30,0.9,Carnes e produtos de padaria
-29,32,0.75,Alimentos e bebidas
-29,43,0.8,Alimentos e servicos de restaurante
-30,29,0.9,Cereais e alimentos
-30,32,0.75,Farinhas e bebidas
-30,43,0.8,Padaria e restaurante
-31,5,0.7,Horticola e farmaceutico natural
-31,29,0.8,Frutas e alimentos processados
-31,44,0.7,Horticola e saude
-32,29,0.75,Bebidas e alimentos
-32,30,0.75,Bebidas e alimentos
-32,33,0.8,Bebidas nao alcoolicas e alcoolicas
-32,43,0.75,Bebidas e restaurante
-33,32,0.8,Alcoolicas e nao alcoolicas
-33,43,0.75,Bebidas e restaurante
-35,25,0.7,Varejo e roupas
-35,29,0.75,Varejo e alimentos
-35,30,0.75,Varejo e alimentos
-35,36,0.7,Comercio e financas
-35,38,0.7,Publicidade e telecomunicacoes
-35,39,0.7,Varejo e logistica
-35,41,0.75,Publicidade e educacao
-35,42,0.8,Comercio e TI
-35,43,0.75,Varejo e restaurante
-35,44,0.7,Publicidade e saude
-35,45,0.7,Comercio e juridico
-36,35,0.7,Financas e comercio
-36,39,0.8,Financas e logistica
-36,45,0.75,Financas e juridico
-38,9,0.85,Telecomunicacoes e eletronicos
-38,41,0.8,Telecomunicacoes e entretenimento
-38,42,0.8,Telecomunicacoes e TI
+18,26,0.70,Couro e aviamentos
+19,1,0.55,Construcao e quimicos
+19,2,0.65,Construcao e tintas
+19,6,0.65,Construcao e metais
+19,11,0.55,Construcao e iluminacao
+19,17,0.65,Construcao e vedacao
+19,20,0.65,Construcao e moveis
+19,21,0.55,Construcao e utensilios
+19,27,0.55,Construcao e revestimentos
+19,37,0.85,Construcao e servicos de construcao
+19,40,0.65,Construcao e tratamento
+20,6,0.55,Moveis e metais
+20,11,0.55,Moveis e eletrodomesticos
+20,19,0.65,Moveis e construcao
+20,21,0.70,Moveis e utensilios domesticos
+20,24,0.55,Moveis e tecidos (estofamento)
+20,27,0.70,Moveis e tapetes/revestimentos
+20,37,0.55,Moveis e instalacao
+21,3,0.55,Utensilios e cosmeticos
+21,8,0.55,Utensilios e ferramentas
+21,11,0.55,Utensilios e eletrodomesticos
+21,19,0.55,Utensilios e construcao
+21,20,0.70,Utensilios e moveis
+21,27,0.65,Utensilios e tapetes
+21,29,0.55,Utensilios e alimentos
+21,30,0.55,Utensilios e alimentos secos
+22,18,0.55,Cordas e couro
+22,23,0.70,Cordas e fios texteis
+22,24,0.65,Sacaria e tecidos
+22,39,0.55,Sacaria e embalagem
+23,22,0.70,Fios texteis e cordas
+23,24,0.85,Fios texteis e tecidos
+23,25,0.65,Fios texteis e roupas
+23,26,0.75,Fios texteis e aviamentos
+24,14,0.55,Tecidos e joias
+24,18,0.70,Tecidos e couro
+24,20,0.55,Tecidos e moveis (estofamento)
+24,22,0.65,Tecidos e sacaria
+24,23,0.85,Tecidos e fios texteis
+24,25,0.85,Tecidos e roupas
+24,26,0.85,Tecidos e aviamentos
+24,27,0.65,Tecidos e tapetes
+25,14,0.80,Roupas e joias
+25,18,0.85,Roupas e couro/bolsas
+25,23,0.65,Roupas e fios texteis
+25,24,0.85,Roupas e tecidos
+25,26,0.85,Roupas e aviamentos
+25,28,0.55,Roupas e artigos esportivos
+25,35,0.65,Roupas e varejo
+26,14,0.70,Aviamentos e joias
+26,18,0.70,Aviamentos e couro
+26,23,0.75,Aviamentos e fios texteis
+26,24,0.85,Aviamentos e tecidos
+26,25,0.85,Aviamentos e roupas
+27,19,0.55,Tapetes e construcao
+27,20,0.70,Tapetes e moveis
+27,21,0.65,Tapetes e utensilios
+27,24,0.65,Tapetes e tecidos
+28,9,0.55,Jogos e eletronicos
+28,15,0.70,Jogos e instrumentos musicais
+28,16,0.55,Jogos e impressos
+28,25,0.55,Esportes e vestuario
+28,41,0.90,Jogos e entretenimento
+29,30,0.90,Alimentos processados e cereais/paes
+29,31,0.85,Alimentos processados e in natura
+29,32,0.70,Alimentos e bebidas nao alcoolicas
+29,33,0.55,Alimentos e bebidas alcoolicas
+29,35,0.55,Alimentos e varejo
+29,43,0.85,Alimentos e restaurante
+30,29,0.90,Cereais/paes e alimentos processados
+30,31,0.75,Cereais e produtos agricolas
+30,32,0.65,Cafe/cha e bebidas
+30,35,0.55,Alimentos secos e varejo
+30,43,0.85,Cereais/paes e restaurante
+31,5,0.55,Agricolas e farmaceuticos
+31,29,0.85,Agricolas e alimentos processados
+31,30,0.75,Agricolas e cereais
+31,32,0.55,Frutas e bebidas/sucos
+31,43,0.70,Agricolas e restaurante
+31,44,0.55,Agricolas in natura e saude
+32,5,0.55,Bebidas funcionais e farmaceuticos
+32,29,0.70,Bebidas e alimentos
+32,30,0.65,Bebidas e cafe/cha
+32,31,0.55,Bebidas e frutas (sucos)
+32,33,0.90,Bebidas nao alcoolicas e alcoolicas
+32,43,0.85,Bebidas e restaurante
+33,29,0.55,Bebidas alcoolicas e alimentos
+33,32,0.90,Bebidas alcoolicas e nao alcoolicas
+33,43,0.85,Bebidas alcoolicas e restaurante
+34,35,0.55,Tabaco e varejo
+35,3,0.55,Varejo e cosmeticos
+35,9,0.65,Publicidade e eletronicos
+35,14,0.55,Varejo e joias
+35,16,0.65,Publicidade e impressos
+35,25,0.65,Varejo e vestuario
+35,29,0.55,Varejo e alimentos
+35,30,0.55,Varejo e alimentos secos
+35,34,0.55,Varejo e tabaco
+35,36,0.65,Gestao de negocios e financeiro
+35,38,0.55,Publicidade e telecomunicacoes
+35,39,0.55,Varejo e logistica
+35,41,0.65,Publicidade e entretenimento
+35,42,0.75,Comercio eletronico e TI
+35,43,0.65,Varejo e restaurante
+35,44,0.55,Publicidade e saude
+35,45,0.55,Gestao e juridico
+36,35,0.65,Financeiro e gestao
+36,39,0.65,Financeiro e logistica/seguros
+36,42,0.55,Financeiro e TI/fintech
+36,45,0.75,Financeiro e juridico
+37,2,0.65,Construcao/servicos e tintas
+37,4,0.55,Manutencao e combustiveis
+37,6,0.55,Construcao e metais
+37,7,0.55,Instalacao e maquinas
+37,8,0.55,Construcao e ferramentas
+37,12,0.65,Oficinas e veiculos
+37,19,0.85,Servicos de construcao e materiais
+37,20,0.55,Instalacao e moveis
+37,40,0.70,Construcao e tratamento de materiais
+38,9,0.90,Telecom e eletronicos
+38,35,0.55,Telecom e publicidade
+38,41,0.75,Telecom e entretenimento (streaming)
+38,42,0.85,Telecom e TI/software
 39,12,0.85,Transporte e veiculos
-39,35,0.7,Logistica e comercio
-39,36,0.8,Transporte e financas/seguros
-40,1,0.7,Tratamento de materiais e quimicos
-40,37,0.75,Tratamento e construcao/manutencao
-41,9,0.8,Entretenimento e eletronicos
-41,15,0.8,Entretenimento e musica
-41,35,0.75,Educacao e publicidade
-41,38,0.8,Entretenimento e telecomunicacoes
-41,42,0.8,Educacao e TI
-41,43,0.75,Entretenimento e restaurante
-41,44,0.75,Educacao e saude
-42,1,0.75,TI e quimicos/ciencia
-42,9,0.85,TI e eletronicos
-42,16,0.7,TI e materiais impressos
-42,35,0.8,TI e comercio
-42,38,0.8,TI e telecomunicacoes
-42,41,0.8,TI e educacao
-43,29,0.8,Restaurante e alimentos
-43,30,0.8,Restaurante e alimentos
-43,32,0.75,Restaurante e bebidas
-43,33,0.75,Restaurante e bebidas alcoolicas
-43,41,0.75,Restaurante e entretenimento
-44,3,0.85,Saude e cosmeticos
-44,5,0.9,Saude e farmaceuticos
-44,10,0.9,Saude e instrumentos medicos
-44,31,0.7,Saude e alimentos naturais
-44,41,0.75,Saude e educacao
-44,45,0.7,Saude e juridico
-45,35,0.7,Juridico e comercio
-45,36,0.75,Juridico e financas
-45,42,0.7,Juridico e TI
-45,44,0.7,Juridico e saude
+39,22,0.55,Transporte/embalagem e sacaria
+39,35,0.55,Logistica e comercio
+39,36,0.65,Transporte e seguros
+40,1,0.80,Tratamento e quimicos
+40,2,0.80,Tratamento e tintas
+40,4,0.55,Tratamento e combustiveis
+40,7,0.55,Tratamento e maquinas
+40,17,0.65,Tratamento e plasticos
+40,19,0.65,Tratamento e construcao
+40,37,0.70,Tratamento e construcao/instalacao
+41,9,0.70,Entretenimento e eletronicos
+41,15,0.80,Entretenimento e instrumentos musicais
+41,16,0.80,Educacao e livros/impressos
+41,28,0.90,Entretenimento e jogos
+41,35,0.65,Entretenimento e publicidade
+41,38,0.75,Entretenimento e telecom (streaming)
+41,42,0.75,Educacao e TI/EAD
+41,43,0.65,Entretenimento e restaurante/hotel
+41,44,0.55,Educacao e saude
+42,1,0.65,TI e quimicos/ciencia
+42,9,0.90,TI/software e eletronicos
+42,16,0.65,TI e impressos
+42,35,0.75,TI e comercio eletronico
+42,36,0.55,TI e fintech
+42,38,0.85,TI e telecom
+42,41,0.75,TI e educacao/EAD
+42,45,0.55,TI e juridico (legaltech)
+43,29,0.85,Restaurante e alimentos processados
+43,30,0.85,Restaurante e cereais/paes
+43,31,0.70,Restaurante e produtos agricolas
+43,32,0.85,Restaurante e bebidas nao alcoolicas
+43,33,0.85,Restaurante e bebidas alcoolicas
+43,35,0.65,Restaurante e varejo
+43,41,0.65,Restaurante/hotel e entretenimento
+44,3,0.90,Servicos de saude/beleza e cosmeticos
+44,5,0.95,Servicos medicos e farmaceuticos
+44,10,0.90,Servicos medicos e instrumentos
+44,31,0.55,Saude e alimentos in natura
+44,35,0.55,Saude e publicidade
+44,41,0.55,Saude e educacao
+44,45,0.55,Saude e juridico
+45,35,0.55,Juridico e gestao
+45,36,0.75,Juridico e financeiro
+45,42,0.55,Juridico e TI
+45,44,0.55,Juridico e saude

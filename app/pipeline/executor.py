@@ -126,8 +126,26 @@ def executar_pipeline(
     # Camada 1 — Nome idêntico
     # -----------------------------------------------------------------------
     _progress("Camada 1: Verificando nomes idênticos...", 30)
-    alertas_c1, rpi_restante = camada1(carteira, rpi)
-    _progress(f"Camada 1: {len(alertas_c1)} colidências automáticas encontradas", 35)
+    alertas_c1_raw, rpi_restante = camada1(carteira, rpi)
+    _progress(f"Camada 1: {len(alertas_c1_raw)} marcas idênticas detectadas", 32)
+
+    # Filtro de afinidade NCL/especificação: marcas idênticas só viram
+    # alerta se a NCL/spec forem concorrentes. "MISTER X" classe 25 contra
+    # "MISTER X" classe 7 (máquinas) não deve gerar colidência.
+    if alertas_c1_raw:
+        alertas_c1 = camada3(alertas_c1_raw)
+        for a in alertas_c1:
+            a["camada_deteccao"] = 1  # camada3 sobrescreve; restaurar origem
+        removidos_c1 = len(alertas_c1_raw) - len(alertas_c1)
+        if removidos_c1:
+            _progress(
+                f"Camada 1: {removidos_c1} marca(s) idêntica(s) removida(s) "
+                f"— NCL/especificação não concorrente",
+                34,
+            )
+    else:
+        alertas_c1 = alertas_c1_raw
+    _progress(f"Camada 1: {len(alertas_c1)} colidências confirmadas", 35)
 
     # -----------------------------------------------------------------------
     # Camada 2 — Filtro fonético
