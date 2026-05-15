@@ -81,6 +81,10 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             af_classes = _afinidade_correlatas(ncl_a, ncl_b)
         bonus = 0.8 * af_classes
 
+        # Gate: termo desgastado em classes sem relação — descarta sem score
+        if par.get("is_desgastado") and af_classes == 0.0 and ncl_a != ncl_b:
+            continue
+
         # Ajustes por tipo de marca
         peso_nome = PESO_SIMILARIDADE_NOME
         peso_spec = PESO_AFINIDADE_SPEC
