@@ -1,263 +1,109 @@
 ncl_a,ncl_b,afinidade,descricao
-1,2,0.75,Quimicos e tintas
-1,3,0.65,Quimicos e cosmeticos
-1,4,0.55,Quimicos e combustiveis
-1,5,0.70,Quimicos e farmaceuticos
-1,17,0.65,Quimicos e vedacao/plasticos
-1,19,0.55,Quimicos e construcao
-1,40,0.80,Quimicos e tratamento de materiais
-1,42,0.65,Quimicos e servicos cientificos
-2,3,0.55,Tintas e cosmeticos (pigmentos)
-2,16,0.65,Tintas e impressao
-2,17,0.55,Tintas e materiais de vedacao
-2,19,0.65,Tintas e construcao
-2,37,0.65,Tintas e servicos de pintura
-2,40,0.80,Tintas e tratamento de materiais
-3,5,0.85,Cosmeticos e farmaceuticos
-3,10,0.65,Cosmeticos e aparelhos esteticos
-3,21,0.55,Cosmeticos e utensilios de toucador
-3,35,0.55,Cosmeticos e varejo
-3,44,0.90,Cosmeticos e servicos de beleza
-4,7,0.55,Combustiveis e maquinas
-4,12,0.65,Combustiveis e veiculos
-4,37,0.55,Combustiveis e manutencao
-4,40,0.55,Combustiveis e tratamento
-5,3,0.85,Farmaceuticos e cosmeticos
-5,10,0.95,Farmaceuticos e instrumentos medicos
-5,29,0.50,Farmaceuticos e suplementos alimentares
-5,31,0.55,Farmaceuticos e fitoterapicos
-5,32,0.55,Farmaceuticos e bebidas funcionais
-5,35,0.55,Farmaceuticos e varejo farmacia
-5,44,0.95,Farmaceuticos e servicos medicos
-6,7,0.70,Metais e maquinas
-6,8,0.65,Metais e ferramentas
-6,17,0.55,Metais e vedacao
-6,19,0.65,Metais e construcao
-6,20,0.55,Metais e moveis
-6,37,0.55,Metais e construcao/instalacao
-7,4,0.55,Maquinas e combustiveis
-7,8,0.80,Maquinas e ferramentas
-7,11,0.55,Maquinas e equipamentos termicos
-7,12,0.65,Maquinas e veiculos
-7,37,0.55,Maquinas e instalacao
-7,40,0.55,Maquinas e tratamento de materiais
-8,7,0.80,Ferramentas e maquinas
-8,6,0.65,Ferramentas e metais
-8,21,0.55,Ferramentas e utensilios
-8,37,0.55,Ferramentas e servicos de construcao
-9,11,0.55,Eletronicos e iluminacao/eletrodomesticos
-9,15,0.55,Eletronicos e instrumentos musicais
-9,16,0.55,Eletronicos e materiais impressos
-9,28,0.55,Eletronicos e jogos eletronicos
-9,35,0.65,Eletronicos e varejo
-9,38,0.90,Eletronicos e telecomunicacoes
-9,41,0.70,Eletronicos e entretenimento
-9,42,0.90,Eletronicos e software/TI
-10,3,0.65,Instrumentos medicos e cosmeticos
-10,5,0.95,Instrumentos medicos e farmaceuticos
-10,9,0.65,Instrumentos medicos e eletronicos
-10,11,0.55,Instrumentos medicos e equipamentos
-10,44,0.90,Instrumentos medicos e servicos de saude
-11,7,0.55,Iluminacao/eletrodomesticos e maquinas
-11,9,0.55,Eletrodomesticos e eletronicos
-11,10,0.55,Equipamentos termicos e medicos
-11,19,0.55,Iluminacao e construcao
-11,20,0.55,Eletrodomesticos e moveis
-11,21,0.55,Eletrodomesticos e utensilios
-12,4,0.65,Veiculos e combustiveis
-12,7,0.65,Veiculos e maquinas
-12,37,0.65,Veiculos e oficinas
-12,39,0.85,Veiculos e transporte
-14,18,0.65,Joias e couro
-14,24,0.55,Joias e tecidos
-14,25,0.80,Joias e roupas
-14,26,0.70,Joias e aviamentos
-14,35,0.55,Joias e varejo
-15,9,0.55,Instrumentos musicais e eletronicos
-15,16,0.55,Instrumentos musicais e partituras
-15,28,0.70,Instrumentos musicais e brinquedos
-15,41,0.80,Instrumentos musicais e entretenimento
-16,2,0.65,Materiais impressos e tintas
-16,9,0.55,Impressos e eletronicos
-16,15,0.55,Impressos e instrumentos musicais
-16,28,0.55,Impressos e jogos
-16,35,0.65,Impressos e publicidade
-16,41,0.80,Impressos e educacao
-16,42,0.65,Impressos e TI
-17,1,0.65,Borracha/plasticos e quimicos
-17,2,0.55,Borracha e tintas
-17,19,0.65,Borracha e construcao
-17,40,0.65,Plasticos e tratamento de materiais
-18,14,0.65,Couro e joias
-18,22,0.55,Couro e cordas/sacaria
-18,24,0.70,Couro e tecidos
-18,25,0.85,Couro e roupas
-18,26,0.70,Couro e aviamentos
-19,1,0.55,Construcao e quimicos
-19,2,0.65,Construcao e tintas
-19,6,0.65,Construcao e metais
-19,11,0.55,Construcao e iluminacao
-19,17,0.65,Construcao e vedacao
-19,20,0.65,Construcao e moveis
-19,21,0.55,Construcao e utensilios
-19,27,0.55,Construcao e revestimentos
-19,37,0.85,Construcao e servicos de construcao
-19,40,0.65,Construcao e tratamento
-20,6,0.55,Moveis e metais
-20,11,0.55,Moveis e eletrodomesticos
-20,19,0.65,Moveis e construcao
-20,21,0.70,Moveis e utensilios domesticos
-20,24,0.55,Moveis e tecidos (estofamento)
-20,27,0.70,Moveis e tapetes/revestimentos
-20,37,0.55,Moveis e instalacao
-21,3,0.55,Utensilios e cosmeticos
-21,8,0.55,Utensilios e ferramentas
-21,11,0.55,Utensilios e eletrodomesticos
-21,19,0.55,Utensilios e construcao
-21,20,0.70,Utensilios e moveis
-21,27,0.65,Utensilios e tapetes
-21,29,0.55,Utensilios e alimentos
-21,30,0.55,Utensilios e alimentos secos
-22,18,0.55,Cordas e couro
-22,23,0.70,Cordas e fios texteis
-22,24,0.65,Sacaria e tecidos
-22,39,0.55,Sacaria e embalagem
-23,22,0.70,Fios texteis e cordas
-23,24,0.85,Fios texteis e tecidos
-23,25,0.65,Fios texteis e roupas
-23,26,0.75,Fios texteis e aviamentos
-24,14,0.55,Tecidos e joias
-24,18,0.70,Tecidos e couro
-24,20,0.55,Tecidos e moveis (estofamento)
-24,22,0.65,Tecidos e sacaria
-24,23,0.85,Tecidos e fios texteis
-24,25,0.85,Tecidos e roupas
-24,26,0.85,Tecidos e aviamentos
-24,27,0.65,Tecidos e tapetes
-25,14,0.80,Roupas e joias
-25,18,0.85,Roupas e couro/bolsas
-25,23,0.65,Roupas e fios texteis
-25,24,0.85,Roupas e tecidos
-25,26,0.85,Roupas e aviamentos
-25,28,0.55,Roupas e artigos esportivos
-25,35,0.65,Roupas e varejo
-26,14,0.70,Aviamentos e joias
-26,18,0.70,Aviamentos e couro
-26,23,0.75,Aviamentos e fios texteis
-26,24,0.85,Aviamentos e tecidos
-26,25,0.85,Aviamentos e roupas
-27,19,0.55,Tapetes e construcao
-27,20,0.70,Tapetes e moveis
-27,21,0.65,Tapetes e utensilios
-27,24,0.65,Tapetes e tecidos
-28,9,0.55,Jogos e eletronicos
-28,15,0.70,Jogos e instrumentos musicais
-28,16,0.55,Jogos e impressos
-28,25,0.55,Esportes e vestuario
-28,41,0.90,Jogos e entretenimento
-29,30,0.90,Alimentos processados e cereais/paes
-29,31,0.85,Alimentos processados e in natura
-29,32,0.70,Alimentos e bebidas nao alcoolicas
-29,33,0.55,Alimentos e bebidas alcoolicas
-29,35,0.55,Alimentos e varejo
-29,43,0.85,Alimentos e restaurante
-30,29,0.90,Cereais/paes e alimentos processados
-30,31,0.75,Cereais e produtos agricolas
-30,32,0.65,Cafe/cha e bebidas
-30,35,0.55,Alimentos secos e varejo
-30,43,0.85,Cereais/paes e restaurante
-31,5,0.55,Agricolas e farmaceuticos
-31,29,0.85,Agricolas e alimentos processados
-31,30,0.75,Agricolas e cereais
-31,32,0.55,Frutas e bebidas/sucos
-31,43,0.70,Agricolas e restaurante
-31,44,0.55,Agricolas in natura e saude
-32,5,0.55,Bebidas funcionais e farmaceuticos
-32,29,0.70,Bebidas e alimentos
-32,30,0.65,Bebidas e cafe/cha
-32,31,0.55,Bebidas e frutas (sucos)
-32,33,0.90,Bebidas nao alcoolicas e alcoolicas
-32,43,0.85,Bebidas e restaurante
-33,29,0.55,Bebidas alcoolicas e alimentos
-33,32,0.90,Bebidas alcoolicas e nao alcoolicas
-33,43,0.85,Bebidas alcoolicas e restaurante
-34,35,0.55,Tabaco e varejo
-35,3,0.55,Varejo e cosmeticos
-35,9,0.65,Publicidade e eletronicos
-35,14,0.55,Varejo e joias
-35,16,0.65,Publicidade e impressos
-35,25,0.65,Varejo e vestuario
-35,29,0.55,Varejo e alimentos
-35,30,0.55,Varejo e alimentos secos
-35,34,0.55,Varejo e tabaco
-35,36,0.65,Gestao de negocios e financeiro
-35,38,0.55,Publicidade e telecomunicacoes
-35,39,0.55,Varejo e logistica
-35,41,0.65,Publicidade e entretenimento
-35,42,0.75,Comercio eletronico e TI
-35,43,0.65,Varejo e restaurante
-35,44,0.55,Publicidade e saude
-35,45,0.55,Gestao e juridico
-36,35,0.65,Financeiro e gestao
-36,39,0.65,Financeiro e logistica/seguros
-36,42,0.55,Financeiro e TI/fintech
-36,45,0.75,Financeiro e juridico
-37,2,0.65,Construcao/servicos e tintas
-37,4,0.55,Manutencao e combustiveis
-37,6,0.55,Construcao e metais
-37,7,0.55,Instalacao e maquinas
-37,8,0.55,Construcao e ferramentas
-37,12,0.65,Oficinas e veiculos
-37,19,0.85,Servicos de construcao e materiais
-37,20,0.55,Instalacao e moveis
-37,40,0.70,Construcao e tratamento de materiais
-38,9,0.90,Telecom e eletronicos
-38,35,0.55,Telecom e publicidade
-38,41,0.75,Telecom e entretenimento (streaming)
-38,42,0.85,Telecom e TI/software
-39,12,0.85,Transporte e veiculos
-39,22,0.55,Transporte/embalagem e sacaria
-39,35,0.55,Logistica e comercio
-39,36,0.65,Transporte e seguros
-40,1,0.80,Tratamento e quimicos
-40,2,0.80,Tratamento e tintas
-40,4,0.55,Tratamento e combustiveis
-40,7,0.55,Tratamento e maquinas
-40,17,0.65,Tratamento e plasticos
-40,19,0.65,Tratamento e construcao
-40,37,0.70,Tratamento e construcao/instalacao
-41,9,0.70,Entretenimento e eletronicos
-41,15,0.80,Entretenimento e instrumentos musicais
-41,16,0.80,Educacao e livros/impressos
-41,28,0.90,Entretenimento e jogos
-41,35,0.65,Entretenimento e publicidade
-41,38,0.75,Entretenimento e telecom (streaming)
-41,42,0.75,Educacao e TI/EAD
-41,43,0.65,Entretenimento e restaurante/hotel
-41,44,0.55,Educacao e saude
-42,1,0.65,TI e quimicos/ciencia
-42,9,0.90,TI/software e eletronicos
-42,16,0.65,TI e impressos
-42,35,0.75,TI e comercio eletronico
-42,36,0.55,TI e fintech
-42,38,0.85,TI e telecom
-42,41,0.75,TI e educacao/EAD
-42,45,0.55,TI e juridico (legaltech)
-43,29,0.85,Restaurante e alimentos processados
-43,30,0.85,Restaurante e cereais/paes
-43,31,0.70,Restaurante e produtos agricolas
-43,32,0.85,Restaurante e bebidas nao alcoolicas
-43,33,0.85,Restaurante e bebidas alcoolicas
-43,35,0.65,Restaurante e varejo
-43,41,0.65,Restaurante/hotel e entretenimento
-44,3,0.90,Servicos de saude/beleza e cosmeticos
-44,5,0.95,Servicos medicos e farmaceuticos
-44,10,0.90,Servicos medicos e instrumentos
-44,31,0.55,Saude e alimentos in natura
-44,35,0.55,Saude e publicidade
-44,41,0.55,Saude e educacao
-44,45,0.55,Saude e juridico
-45,35,0.55,Juridico e gestao
-45,36,0.75,Juridico e financeiro
-45,42,0.55,Juridico e TI
-45,44,0.55,Juridico e saude
+1,2,0.4644,Derivado NICE 13/2026 (cos=0.147)
+1,3,0.6625,Derivado NICE 13/2026 (cos=0.291)
+1,4,0.6584,Derivado NICE 13/2026 (cos=0.288)
+1,5,0.7241,Derivado NICE 13/2026 (cos=0.336)
+1,9,0.4164,Derivado NICE 13/2026 (cos=0.112)
+1,10,0.4869,Derivado NICE 13/2026 (cos=0.163)
+1,17,0.4054,Derivado NICE 13/2026 (cos=0.104)
+1,21,0.432,Derivado NICE 13/2026 (cos=0.123)
+1,29,0.4143,Derivado NICE 13/2026 (cos=0.110)
+1,30,0.4029,Derivado NICE 13/2026 (cos=0.102)
+2,4,0.4027,Derivado NICE 13/2026 (cos=0.102)
+3,4,0.4536,Derivado NICE 13/2026 (cos=0.139)
+3,5,0.6438,Derivado NICE 13/2026 (cos=0.277)
+3,10,0.4853,Derivado NICE 13/2026 (cos=0.162)
+3,21,0.5534,Derivado NICE 13/2026 (cos=0.212)
+4,5,0.4008,Derivado NICE 13/2026 (cos=0.101)
+4,29,0.4458,Derivado NICE 13/2026 (cos=0.133)
+5,10,0.95,Derivado NICE 13/2026 (cos=0.542)
+5,21,0.4331,Derivado NICE 13/2026 (cos=0.124)
+5,29,0.4188,Derivado NICE 13/2026 (cos=0.114)
+6,14,0.5728,Derivado NICE 13/2026 (cos=0.226)
+6,19,0.4571,Derivado NICE 13/2026 (cos=0.141)
+6,20,0.6149,Derivado NICE 13/2026 (cos=0.256)
+7,9,0.4751,Derivado NICE 13/2026 (cos=0.155)
+7,11,0.6339,Derivado NICE 13/2026 (cos=0.270)
+7,12,0.5188,Derivado NICE 13/2026 (cos=0.186)
+7,16,0.4532,Derivado NICE 13/2026 (cos=0.139)
+7,21,0.444,Derivado NICE 13/2026 (cos=0.132)
+7,37,0.4161,Derivado NICE 13/2026 (cos=0.112)
+8,21,0.4224,Derivado NICE 13/2026 (cos=0.116)
+9,10,0.7343,Derivado NICE 13/2026 (cos=0.343)
+9,11,0.7663,Derivado NICE 13/2026 (cos=0.366)
+9,12,0.4157,Derivado NICE 13/2026 (cos=0.111)
+9,15,0.4591,Derivado NICE 13/2026 (cos=0.143)
+9,16,0.407,Derivado NICE 13/2026 (cos=0.105)
+9,21,0.5008,Derivado NICE 13/2026 (cos=0.173)
+9,28,0.4393,Derivado NICE 13/2026 (cos=0.129)
+9,37,0.4072,Derivado NICE 13/2026 (cos=0.105)
+9,38,0.4663,Derivado NICE 13/2026 (cos=0.148)
+9,42,0.5221,Derivado NICE 13/2026 (cos=0.189)
+10,11,0.6303,Derivado NICE 13/2026 (cos=0.268)
+10,21,0.4756,Derivado NICE 13/2026 (cos=0.155)
+11,12,0.4193,Derivado NICE 13/2026 (cos=0.114)
+11,21,0.5416,Derivado NICE 13/2026 (cos=0.203)
+11,40,0.4067,Derivado NICE 13/2026 (cos=0.105)
+12,37,0.4143,Derivado NICE 13/2026 (cos=0.110)
+12,39,0.438,Derivado NICE 13/2026 (cos=0.128)
+14,26,0.575,Derivado NICE 13/2026 (cos=0.227)
+16,17,0.4335,Derivado NICE 13/2026 (cos=0.124)
+16,21,0.5148,Derivado NICE 13/2026 (cos=0.183)
+16,22,0.4175,Derivado NICE 13/2026 (cos=0.113)
+16,24,0.4044,Derivado NICE 13/2026 (cos=0.103)
+17,19,0.4787,Derivado NICE 13/2026 (cos=0.157)
+17,20,0.4799,Derivado NICE 13/2026 (cos=0.158)
+17,21,0.4384,Derivado NICE 13/2026 (cos=0.128)
+17,22,0.6222,Derivado NICE 13/2026 (cos=0.262)
+17,23,0.5309,Derivado NICE 13/2026 (cos=0.195)
+19,20,0.95,Derivado NICE 13/2026 (cos=0.628)
+19,22,0.5514,Derivado NICE 13/2026 (cos=0.210)
+20,21,0.4227,Derivado NICE 13/2026 (cos=0.117)
+20,22,0.5753,Derivado NICE 13/2026 (cos=0.228)
+20,24,0.4263,Derivado NICE 13/2026 (cos=0.119)
+21,24,0.4304,Derivado NICE 13/2026 (cos=0.122)
+21,30,0.4073,Derivado NICE 13/2026 (cos=0.105)
+22,23,0.6258,Derivado NICE 13/2026 (cos=0.264)
+22,24,0.5053,Derivado NICE 13/2026 (cos=0.177)
+24,40,0.471,Derivado NICE 13/2026 (cos=0.152)
+25,26,0.6933,Derivado NICE 13/2026 (cos=0.313)
+29,30,0.8228,Derivado NICE 13/2026 (cos=0.407)
+29,31,0.6652,Derivado NICE 13/2026 (cos=0.293)
+29,32,0.5339,Derivado NICE 13/2026 (cos=0.197)
+30,31,0.56,Derivado NICE 13/2026 (cos=0.216)
+30,32,0.5574,Derivado NICE 13/2026 (cos=0.214)
+30,33,0.4611,Derivado NICE 13/2026 (cos=0.144)
+32,33,0.95,Derivado NICE 13/2026 (cos=0.699)
+35,36,0.5888,Derivado NICE 13/2026 (cos=0.386)
+35,38,0.5437,Derivado NICE 13/2026 (cos=0.365)
+35,41,0.7865,Derivado NICE 13/2026 (cos=0.476)
+35,42,0.4821,Derivado NICE 13/2026 (cos=0.337)
+35,43,0.6618,Derivado NICE 13/2026 (cos=0.419)
+35,44,0.6829,Derivado NICE 13/2026 (cos=0.429)
+35,45,0.7729,Derivado NICE 13/2026 (cos=0.469)
+36,41,0.528,Derivado NICE 13/2026 (cos=0.358)
+36,43,0.6904,Derivado NICE 13/2026 (cos=0.432)
+36,44,0.7276,Derivado NICE 13/2026 (cos=0.449)
+36,45,0.7428,Derivado NICE 13/2026 (cos=0.456)
+38,41,0.7256,Derivado NICE 13/2026 (cos=0.448)
+38,42,0.4227,Derivado NICE 13/2026 (cos=0.310)
+38,43,0.8112,Derivado NICE 13/2026 (cos=0.487)
+38,44,0.6609,Derivado NICE 13/2026 (cos=0.419)
+38,45,0.6281,Derivado NICE 13/2026 (cos=0.404)
+39,41,0.4735,Derivado NICE 13/2026 (cos=0.333)
+39,43,0.6642,Derivado NICE 13/2026 (cos=0.420)
+39,44,0.4059,Derivado NICE 13/2026 (cos=0.303)
+39,45,0.4669,Derivado NICE 13/2026 (cos=0.330)
+40,41,0.4031,Derivado NICE 13/2026 (cos=0.301)
+40,43,0.6167,Derivado NICE 13/2026 (cos=0.399)
+40,44,0.6339,Derivado NICE 13/2026 (cos=0.406)
+40,45,0.5245,Derivado NICE 13/2026 (cos=0.357)
+41,43,0.95,Derivado NICE 13/2026 (cos=0.577)
+41,44,0.9155,Derivado NICE 13/2026 (cos=0.534)
+41,45,0.8913,Derivado NICE 13/2026 (cos=0.523)
+42,43,0.4037,Derivado NICE 13/2026 (cos=0.302)
+42,44,0.4675,Derivado NICE 13/2026 (cos=0.331)
+42,45,0.5679,Derivado NICE 13/2026 (cos=0.376)
+43,44,0.95,Derivado NICE 13/2026 (cos=0.654)
+43,45,0.95,Derivado NICE 13/2026 (cos=0.620)
+44,45,0.95,Derivado NICE 13/2026 (cos=0.677)
