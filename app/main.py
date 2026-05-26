@@ -17,6 +17,7 @@ from .routers import upload as upload_module
 from .routers.pipeline_router import router as pipeline_router
 from .routers.resultados import limpar_execucoes_antigas, router as resultados_router
 from .routers.upload import router as upload_router
+from .utils.alertas import alerta_shutdown, alerta_startup, enviar_alerta_async
 
 logging.basicConfig(
     level=logging.INFO,
@@ -82,6 +83,14 @@ async def startup() -> None:
 
     asyncio.get_event_loop().run_in_executor(None, _warmup_embeddings)
 
+    await enviar_alerta_async(alerta_startup())
+
+
+@app.on_event("shutdown")
+async def shutdown() -> None:
+    """Notifica quando o serviço é encerrado (graceful shutdown)."""
+    await enviar_alerta_async(alerta_shutdown())
+
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -95,7 +104,13 @@ async def index(request: Request) -> HTMLResponse:
 
 @app.get("/health")
 async def health() -> dict:
-    return {"status": "ok", "service": "colidencia"}
+    import time
+    from .config import ALERT_SERVICE_NAME
+    return {
+        "status": "ok",
+        "service": ALERT_SERVICE_NAME,
+        "timestamp": int(time.time()),
+    }
 
 
 if __name__ == "__main__":

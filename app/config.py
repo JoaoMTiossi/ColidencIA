@@ -72,6 +72,15 @@ HOST: str = os.getenv("HOST", "0.0.0.0")
 PORT: int = int(os.getenv("PORT", "8000"))
 
 # ---------------------------------------------------------------------------
+# Alertas de disponibilidade
+# ---------------------------------------------------------------------------
+# URL de webhook para notificações de startup/shutdown.
+# Suporta Discord (https://discord.com/api/webhooks/...) e qualquer webhook
+# genérico que aceite POST com JSON {"content": "..."} ou {"text": "..."}.
+ALERT_WEBHOOK_URL: str = os.getenv("ALERT_WEBHOOK_URL", "")
+ALERT_SERVICE_NAME: str = os.getenv("ALERT_SERVICE_NAME", "ColidencIA")
+
+# ---------------------------------------------------------------------------
 # Complementos descritivos (removidos do núcleo marcário)
 # ---------------------------------------------------------------------------
 COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
