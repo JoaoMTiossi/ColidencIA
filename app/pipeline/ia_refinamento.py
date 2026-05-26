@@ -40,14 +40,28 @@ Responda APENAS com JSON válido, sem markdown:
 
 
 def _montar_prompt_par(par: dict) -> str:
+    from ..utils.distintividade import match_distintivo, tokens_distintivos
+
+    dist_base = tokens_distintivos(par.get("marca_base", "")) or ["(nenhum — marca descritiva)"]
+    dist_rpi = tokens_distintivos(par.get("marca_rpi", "")) or ["(nenhum — marca descritiva)"]
+    md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""))
+    md_txt = f"{md:.2f}" if md is not None else "N/A (marca sem elemento distintivo próprio)"
+
     return (
         f"Marca BASE: \"{par['marca_base']}\" (NCL {par['ncl_base']}) "
         f"Núcleo: \"{par['nucleo_base']}\"\n"
+        f"Elementos DISTINTIVOS BASE (sem termos descritivos): {dist_base}\n"
         f"Especificação BASE: {par.get('spec_base', '')[:200]}\n\n"
         f"Marca RPI: \"{par['marca_rpi']}\" (NCL {par['ncl_rpi']}) "
         f"Núcleo: \"{par['nucleo_rpi']}\"\n"
+        f"Elementos DISTINTIVOS RPI (sem termos descritivos): {dist_rpi}\n"
         f"Especificação RPI: {par.get('spec_rpi', '')[:200]}\n\n"
-        f"Scores pré-calculados — nome: {par.get('score_nome', 0):.2f}, "
+        f"ATENÇÃO: os scores de nome/fonética abaixo são do nome COMPLETO e podem "
+        f"estar inflados por palavras descritivas compartilhadas (ex: 'BARBEARIA', "
+        f"'VEÍCULOS', 'ODONTOLOGIA'). Baseie o julgamento na semelhança dos "
+        f"ELEMENTOS DISTINTIVOS acima.\n"
+        f"Similaridade dos elementos distintivos: {md_txt}\n"
+        f"Scores do nome completo — nome: {par.get('score_nome', 0):.2f}, "
         f"fonético: {par.get('score_fonetico', 0):.2f}, "
         f"spec: {par.get('score_spec', 0):.2f}, "
         f"núcleo: {par.get('score_nucleo', 0):.2f}"

@@ -16,8 +16,8 @@ from ..config import (
     PESO_TIPO_MARCA,
     THRESHOLD_SCORE_FINAL,
 )
+from ..utils.distintividade import match_distintivo
 from ..utils.normalizacao import normalizar_base
-from ..utils.similaridade import jaro_winkler
 from .especificacao import _afinidade_correlatas
 
 
@@ -121,16 +121,22 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             if s_nome < 0.92 and not (ncl_a == ncl_b and s_nucleo >= 0.95):
                 continue
 
-        # Gate: partes distintivas muito diferentes bloqueiam mesmo com s_nome alto.
-        # Necessário porque prefixo genérico compartilhado (ex: "Instituto", "Pizzaria",
-        # "Sorvetes") infla o Jaro-Winkler do nome completo sem refletir risco real.
-        # Threshold 0.95: só passa se os nomes forem quase idênticos no total.
-        nd_base = par.get("nucleo_distintivo_base", "")
-        nd_rpi = par.get("nucleo_distintivo_rpi", "")
-        if nd_base and nd_rpi:
-            sim_distintos = jaro_winkler(nd_base, nd_rpi)
-            if sim_distintos < 0.65 and s_nome < 0.95:
+        # Gate de distintividade: a colidência exige que o ELEMENTO DISTINTIVO
+        # das marcas seja semelhante. Palavras descritivas/setoriais comuns
+        # ("BARBEARIA", "IGREJA", "ODONTOLOGIA", "VEÍCULOS") inflam a similaridade
+        # do nome completo sem refletir risco real. Comparamos apenas os tokens
+        # distintivos (orto OU fonética); se eles divergem e o nome completo não
+        # é quase idêntico, descarta antes da IA.
+        md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""))
+        if md is None:
+            # Alguma das marcas é puramente descritiva — sem sinal próprio.
+            if s_nome < 0.90:
                 continue
+        elif md < 0.70 and s_nome < 0.90:
+            continue
+        elif md < 0.85:
+            # Distintivo apenas parcialmente semelhante — penaliza o score.
+            score *= 0.85
 
         # Penalidade cross-class: marcas frágeis em classes sem correlação
         if af_classes == 0.0 and ncl_a != ncl_b:
