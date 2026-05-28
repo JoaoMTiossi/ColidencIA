@@ -1,6 +1,11 @@
 """
 Camada 4 — Scoring composto.
 Calcula o score final ponderado e aplica overrides.
+
+Modelo de decisão multicriterio: blend de SAW (Simple Additive Weighting)
+com superfície 2D (similaridade × afinidade) que implementa explicitamente
+a Regra Inversa do INPI: menor semelhança entre sinais exige maior afinidade
+mercadológica para configurar colidência (LPI art. 124, XIX).
 """
 from __future__ import annotations
 
@@ -12,6 +17,7 @@ from ..config import (
     PESO_BONUS,
     PESO_FONETICA,
     PESO_NUCLEO_MARCARIO,
+    PESO_REGRA_INVERSA,
     PESO_SIMILARIDADE_NOME,
     PESO_TIPO_MARCA,
     THRESHOLD_SCORE_FINAL,
@@ -50,18 +56,58 @@ def _score_tipo_marca(par: dict) -> float:
     return 0.7  # padrão
 
 
+def _af_minima(s_sim: float) -> float:
+    """
+    Afinidade mercadológica mínima requerida para colidência, dado o nível
+    de similaridade entre os sinais.
+
+    Implementa a Regra Inversa do INPI: quanto menor a semelhança, maior
+    deve ser a afinidade para configurar risco de confusão.
+
+    Retorna 1.01 quando nenhuma afinidade pode compensar a baixíssima
+    semelhança (s_sim < 0.55) — funcionando como gate de descarte.
+    """
+    if s_sim >= 0.92:
+        return 0.20   # Quase idênticos: afinidade mínima basta
+    if s_sim >= 0.85:
+        return 0.30   # Alta similaridade
+    if s_sim >= 0.75:
+        return 0.50   # Similaridade média-alta
+    if s_sim >= 0.65:
+        return 0.68   # Similaridade média-baixa
+    if s_sim >= 0.55:
+        return 0.85   # Baixa similaridade: precisa de afinidade muito alta
+    return 1.01        # Impossível — descarta
+
+
+def _score_superficie_2d(s_sim: float, s_af: float) -> float:
+    """
+    Score 0-1 que mede a posição do par na superfície de decisão
+    (similaridade × afinidade mercadológica).
+
+    Captura a Regra Inversa de forma contínua: pares que estão bem acima
+    do limiar de afinidade requerido recebem score mais alto.
+    """
+    af_req = _af_minima(s_sim)
+    if s_af < af_req:
+        return 0.0
+    # Excesso de afinidade acima do mínimo requerido, normalizado para [0, 1]
+    excesso = (s_af - af_req) / max(1.0 - af_req, 0.01)
+    return min(1.0, 0.40 + 0.35 * s_sim + 0.25 * excesso)
+
+
 def camada4(candidatos: list[dict]) -> list[dict]:
     """
     Aplica scoring composto e filtra por THRESHOLD_SCORE_FINAL.
 
-    Score = (
-        score_nome       * PESO_SIMILARIDADE_NOME +
-        score_spec       * PESO_AFINIDADE_SPEC +
-        score_nucleo     * PESO_NUCLEO_MARCARIO +
-        score_fonetico   * PESO_FONETICA +
-        tipo_marca       * PESO_TIPO_MARCA +
-        bonus_classe     * PESO_BONUS
-    )
+    Score final = blend de:
+      - SAW (pesos lineares sobre dimensões de similaridade e afinidade)
+      - Superfície 2D (Regra Inversa LPI): score baseado na posição do par
+        no plano (similaridade_sinal × afinidade_mercadologica)
+
+    O gate da Regra Inversa filtra pares onde a afinidade disponível é
+    insuficiente para o nível de similaridade observado — prevenindo a
+    compensação indevida que o SAW puro permitia.
     """
     aprovados: list[dict] = []
 
@@ -98,21 +144,27 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             s_fon_adj = s_fon
             peso_nome_adj = peso_nome
 
+        # ── Gate: Regra Inversa LPI ────────────────────────────────────────
+        # Melhor evidência de similaridade entre os sinais
+        s_sim = max(s_nome, s_nucleo, s_fon_adj)
+        # Melhor evidência de afinidade mercadológica
+        s_af = max(s_spec, af_classes)
+
+        # Se a afinidade disponível não alcança o mínimo para este nível de
+        # similaridade, o par não configura risco de colidência.
+        if s_af < _af_minima(s_sim):
+            continue
+        # ──────────────────────────────────────────────────────────────────
+
         score = (
-            s_nome   * peso_nome_adj +
-            s_spec   * peso_spec +
-            s_nucleo * PESO_NUCLEO_MARCARIO +
+            s_nome    * peso_nome_adj +
+            s_spec    * peso_spec +
+            s_nucleo  * PESO_NUCLEO_MARCARIO +
             s_fon_adj * PESO_FONETICA +
-            s_tipo   * PESO_TIPO_MARCA +
-            bonus    * PESO_BONUS
+            s_tipo    * PESO_TIPO_MARCA +
+            bonus     * PESO_BONUS
         )
         score = min(1.0, score)
-
-        # Gate: nome deve ter similaridade mínima.
-        # Para classes pouco correlatas (af < 0.65) exigimos nome mais próximo.
-        nome_min = 0.90 if af_classes < 0.65 else 0.72
-        if s_nome < nome_min and s_nucleo < 0.82:
-            continue
 
         # Gate: ambos núcleos triviais — só passa se quase idêntico ou
         # mesma classe com núcleo quase igual
@@ -138,6 +190,14 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             # Distintivo apenas parcialmente semelhante — penaliza o score.
             score *= 0.85
 
+        # ── Superfície 2D — score da Regra Inversa ────────────────────────
+        # Blend: (1 - w) * SAW + w * score_2D
+        # O score_2D corrige a compensação indevida do SAW puro (ex.: alta
+        # afinidade não deve resgatar marcas com sinais muito diferentes).
+        score_ri = _score_superficie_2d(s_sim, s_af)
+        score = (1.0 - PESO_REGRA_INVERSA) * score + PESO_REGRA_INVERSA * score_ri
+        # ──────────────────────────────────────────────────────────────────
+
         # Penalidade cross-class: marcas frágeis em classes sem correlação
         if af_classes == 0.0 and ncl_a != ncl_b:
             fator = _fator_distintividade(par.get("nucleo_base", "")) * _fator_distintividade(par.get("nucleo_rpi", ""))
@@ -159,6 +219,8 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         if score >= threshold:
             updated = dict(par)
             updated["score_final"] = round(score, 4)
+            updated["score_ri"] = round(score_ri, 4)
+            updated["af_classes"] = round(af_classes, 4)
             updated["classificacao"] = _classificar(score)
             updated["camada_deteccao"] = par.get("camada_deteccao", 4)
             aprovados.append(updated)

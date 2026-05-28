@@ -141,7 +141,11 @@ def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
     vocab_ncl = _vocab_corpus().get(ncl, frozenset()) if ncl is not None else frozenset()
     return [
         t for t in normalizar_base(nome).split()
-        if len(t) >= 3 and t not in vocab and t not in vocab_ncl and t not in _STOP
+        if len(t) >= 3
+        and not t.isdigit()          # Remove tokens puramente numéricos ("2022", "123")
+        and t not in vocab
+        and t not in vocab_ncl
+        and t not in _STOP
     ]
 
 

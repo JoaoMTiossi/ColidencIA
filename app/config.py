@@ -39,6 +39,10 @@ PESO_FONETICA: float = 0.10
 PESO_TIPO_MARCA: float = 0.10
 PESO_BONUS: float = 0.05
 
+# Peso do score da superfície 2D (Regra Inversa) no blend final.
+# 0.30 = 30% superfície 2D + 70% SAW.
+PESO_REGRA_INVERSA: float = float(os.getenv("PESO_REGRA_INVERSA", "0.30"))
+
 # Classes que requerem cautela extra (saúde)
 CLASSES_CAUTELA_ALTA: frozenset[int] = frozenset({5, 10, 44})
 FATOR_CAUTELA: float = 0.85
