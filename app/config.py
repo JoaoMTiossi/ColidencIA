@@ -30,14 +30,20 @@ THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.55"))
 THRESHOLD_NUCLEO: float = 0.80
 
 # ---------------------------------------------------------------------------
-# Pesos do score composto (Camada 4)
+# Pesos do score composto (Camada 4) — derivados via AHP
 # ---------------------------------------------------------------------------
-PESO_SIMILARIDADE_NOME: float = 0.35
-PESO_AFINIDADE_SPEC: float = 0.25
-PESO_NUCLEO_MARCARIO: float = 0.15
-PESO_FONETICA: float = 0.10
-PESO_TIPO_MARCA: float = 0.10
-PESO_BONUS: float = 0.05
+# Pesos obtidos pelo método AHP (Analytic Hierarchy Process) a partir das
+# comparações par-a-par do especialista. Reproduza com:
+#   python -m app.tests.ahp_pesos
+# CR (razão de consistência) < 0.10 em todos os níveis. Soma = 1.0.
+# Prioridade resultante: spec (0.357) > núcleo (0.282) > tipo (0.143) >
+# fonética (0.079) > bônus classe (0.071) > nome completo (0.067).
+PESO_SIMILARIDADE_NOME: float = float(os.getenv("PESO_SIMILARIDADE_NOME", "0.0669"))
+PESO_AFINIDADE_SPEC: float = float(os.getenv("PESO_AFINIDADE_SPEC", "0.3571"))
+PESO_NUCLEO_MARCARIO: float = float(os.getenv("PESO_NUCLEO_MARCARIO", "0.2823"))
+PESO_FONETICA: float = float(os.getenv("PESO_FONETICA", "0.0794"))
+PESO_TIPO_MARCA: float = float(os.getenv("PESO_TIPO_MARCA", "0.1429"))
+PESO_BONUS: float = float(os.getenv("PESO_BONUS", "0.0714"))
 
 # Peso do score da superfície 2D (Regra Inversa) no blend final.
 # 0.30 = 30% superfície 2D + 70% SAW.
