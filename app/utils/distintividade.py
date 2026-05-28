@@ -14,6 +14,7 @@ descritivo) e mede a similaridade apenas entre eles.
 from __future__ import annotations
 
 import csv
+import json
 import os
 from collections import Counter
 from functools import lru_cache
@@ -32,17 +33,44 @@ _STOP: frozenset[str] = frozenset({
 # Palavras descritivas/setoriais frequentes que NÃO constam na lista NICE
 # (estrangeirismos e termos de atividade detectados em auditoria de RPIs).
 _CURADAS: frozenset[str] = frozenset({
-    "odontologia", "odonto", "dental", "tattoo", "tatuagem",
-    "beauty", "care", "hair", "nails", "barber", "makeup", "make",
-    "skin", "body", "wear", "fashion", "fit", "fitness",
+    # Odontologia / saúde bucal
+    "odontologia", "odonto", "dental", "ortodontia", "implante", "implantes",
+    "protese", "proteses", "clareamento", "ortodontico",
+    # Estética e beleza
+    "tattoo", "tatuagem", "beauty", "care", "hair", "nails", "barber",
+    "makeup", "make", "skin", "body", "wear", "fashion", "fit", "fitness",
+    "estetica", "estetico", "beleza", "cabelo", "cabelos", "corte",
+    "unhas", "depilacao", "massagem", "spa",
+    # Termos evocativos genéricos em nomes de marcas de saúde/beleza
+    "sorriso", "sorrisos", "saude", "bem", "vita", "viva", "viver",
+    "belo", "bela", "bella", "feliz", "felicidade", "alegria",
+    "lindo", "linda", "bonito", "bonita", "perfeito", "perfeita",
+    # Alimentos e bebidas
     "burger", "grill", "sushi", "lounge", "coffee", "drinks",
+    # Negócios e serviços genéricos
     "group", "parts", "nutrition", "solutions", "consulting",
-    "automotive", "motors", "engenharia", "transportes", "transporte",
-    "estetica", "espaco", "studio", "space", "lab", "home", "house",
-    "kids", "baby", "pet", "shopping", "loja", "store", "shop",
+    # Automotivo
+    "automotive", "motors", "funilaria", "serralheria", "borracharia",
+    "mecanica", "funileiro",
+    # Setores de serviço
+    "engenharia", "transportes", "transporte",
+    "otica", "oticas", "joalheria", "relojoaria", "floricultura",
+    "lavanderia", "tinturaria", "chaveiro", "marcenaria",
+    "pintura", "eletrica", "hidraulica",
+    # Estabelecimento e espaço
+    "espaco", "studio", "space", "lab", "home", "house",
+    # Público-alvo descritivo
+    "kids", "baby", "pet",
+    # Comércio
+    "shopping", "loja", "store", "shop",
+    # Imóveis e veículos
     "imoveis", "veiculos", "automoveis", "rastreamento", "veicular",
+    # Comunicação / papelaria
     "personalizada", "personalizados", "criativa", "papelaria",
+    # Design e interiores
     "arquitetura", "interiores", "cosmeticos", "cosmetics",
+    # Saúde e bem-estar
+    "nutricao", "dieta", "bemestar",
 })
 
 
@@ -62,26 +90,67 @@ def _vocab_nice() -> frozenset[str]:
 
 
 @lru_cache(maxsize=1)
+def _vocab_inpi_servicos() -> frozenset[str]:
+    """Tokens que aparecem em >= 2 descrições de serviços INPI → são descritivos."""
+    path = os.path.join(DATA_DIR, "inpi_servicos.csv")
+    if not os.path.exists(path):
+        return frozenset()
+    freq: Counter[str] = Counter()
+    with open(path, newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            for tok in set(normalizar_base(row.get("descricao", "")).split()):
+                if len(tok) >= 3:
+                    freq[tok] += 1
+    return frozenset(t for t, c in freq.items() if c >= 2)
+
+
+@lru_cache(maxsize=1)
 def _vocab_descritivo() -> frozenset[str]:
-    """Vocabulário descritivo combinado (NICE + listas curadas + complementos)."""
+    """Vocabulário descritivo combinado (NICE + INPI serviços + listas curadas + complementos)."""
     return (
         _vocab_nice()
+        | _vocab_inpi_servicos()
         | _CURADAS
         | frozenset(COMPLEMENTOS_DESCRITIVOS)
         | frozenset(ELEMENTOS_DESGASTADOS)
     )
 
 
-def tokens_distintivos(nome: str) -> list[str]:
-    """Tokens com >= 3 chars que não são descritivos nem stopwords."""
+@lru_cache(maxsize=1)
+def _vocab_corpus() -> dict[int, frozenset[str]]:
+    """Vocabulário descritivo por classe, minerado do corpus acumulado de marcas.
+    Ausência do arquivo é tratada silenciosamente (dict vazio = sem efeito)."""
+    path = os.path.join(DATA_DIR, "vocab_descritivo_corpus.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return {int(k): frozenset(v) for k, v in data.items()}
+    except Exception:
+        return {}
+
+
+def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
+    """Tokens com >= 3 chars que não são descritivos nem stopwords.
+
+    Quando `ncl` é informado, remove também os termos identificados como
+    descritivos para aquela classe específica pelo corpus acumulado.
+    """
     vocab = _vocab_descritivo()
+    vocab_ncl = _vocab_corpus().get(ncl, frozenset()) if ncl is not None else frozenset()
     return [
         t for t in normalizar_base(nome).split()
-        if len(t) >= 3 and t not in vocab and t not in _STOP
+        if len(t) >= 3 and t not in vocab and t not in vocab_ncl and t not in _STOP
     ]
 
 
-def match_distintivo(nome_a: str, nome_b: str) -> float | None:
+def match_distintivo(
+    nome_a: str,
+    nome_b: str,
+    ncl_a: int | None = None,
+    ncl_b: int | None = None,
+) -> float | None:
     """
     Melhor similaridade (ortográfica OU fonética) entre os elementos
     distintivos das duas marcas.
@@ -89,9 +158,12 @@ def match_distintivo(nome_a: str, nome_b: str) -> float | None:
     Retorna None quando ao menos uma das marcas não possui elemento distintivo
     próprio (é composta apenas por termos descritivos) — nesse caso só há
     colidência se os nomes completos forem praticamente idênticos.
+
+    Quando `ncl_a`/`ncl_b` são informados, aplica também o vocabulário
+    descritivo específico da classe (minerado do corpus acumulado).
     """
-    da = tokens_distintivos(nome_a)
-    db = tokens_distintivos(nome_b)
+    da = tokens_distintivos(nome_a, ncl_a)
+    db = tokens_distintivos(nome_b, ncl_b)
     if not da or not db:
         return None
     return max(

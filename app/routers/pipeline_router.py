@@ -15,9 +15,12 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..config import DESPACHOS_RELEVANTES, OUTPUT_DIR
+from ..config import (
+    CORPUS_LIMIAR_ABS, CORPUS_LIMIAR_FREQ, CORPUS_MIN_AMOSTRA_CLASSE,
+    DATA_DIR, DESPACHOS_RELEVANTES, OUTPUT_DIR,
+)
 from ..database import get_db
-from ..models import Execucao, Resultado
+from ..models import ClasseCorpusStat, Execucao, Resultado, TermoClasseFreq
 from ..pipeline.executor import executar_pipeline
 from ..pipeline.relatorio import gerar_xlsx
 from .upload import get_upload_path
@@ -194,10 +197,106 @@ async def _executar_async(
 
         await db.commit()
 
+    # Atualizar corpus de vocabulário por classe e recompilar artefato
+    corpus_update = output.get("corpus_update")
+    if corpus_update:
+        try:
+            async with AsyncSessionLocal() as db:
+                await _atualizar_corpus(db, corpus_update)
+            await _recompilar_vocab_corpus()
+            logger.info("Corpus de vocabulário atualizado e recompilado")
+        except Exception as exc:
+            logger.warning("Falha ao atualizar corpus (não crítico): %s", exc)
+
     prog = _progresso.get(execucao_id, {})
     prog.update({"mensagem": "Concluído", "percentual": 100})
     _progresso[execucao_id] = prog
     logger.info("Pipeline execucao_id=%d concluído: %d alertas", execucao_id, len(resultados))
+
+
+async def _atualizar_corpus(db: AsyncSession, corpus_update: dict) -> None:
+    """Upsert acumulado de TermoClasseFreq e ClasseCorpusStat."""
+    from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+
+    termos = corpus_update.get("termos", {})   # "ncl:tok" → count
+    classes = corpus_update.get("classes", {})  # "ncl" → count
+
+    # Upsert de estatísticas de classe (total de marcas por NCL)
+    for ncl_str, cnt in classes.items():
+        ncl = int(ncl_str)
+        stmt = (
+            sqlite_insert(ClasseCorpusStat)
+            .values(ncl=ncl, total_marcas=cnt)
+            .on_conflict_do_update(
+                index_elements=["ncl"],
+                set_={"total_marcas": ClasseCorpusStat.total_marcas + cnt},
+            )
+        )
+        await db.execute(stmt)
+
+    # Upsert de frequência por termo+classe (em lotes para não abrir transação gigante)
+    BATCH = 500
+    items = list(termos.items())
+    for start in range(0, len(items), BATCH):
+        for key, cnt in items[start:start + BATCH]:
+            ncl_str, tok = key.split(":", 1)
+            ncl = int(ncl_str)
+            stmt = (
+                sqlite_insert(TermoClasseFreq)
+                .values(ncl=ncl, termo=tok, num_marcas=cnt)
+                .on_conflict_do_update(
+                    index_elements=["ncl", "termo"],
+                    set_={"num_marcas": TermoClasseFreq.num_marcas + cnt},
+                )
+            )
+            await db.execute(stmt)
+
+    await db.commit()
+
+
+async def _recompilar_vocab_corpus() -> None:
+    """Recompila vocab_descritivo_corpus.json a partir do banco e invalida caches."""
+    import json as _json
+    from sqlalchemy import text as _text
+    from ..database import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as db:
+        # Buscar classes com amostra suficiente
+        result = await db.execute(
+            _text("SELECT ncl, total_marcas FROM classe_corpus_stat WHERE total_marcas >= :min_amostra"),
+            {"min_amostra": CORPUS_MIN_AMOSTRA_CLASSE},
+        )
+        classes_ok = {row.ncl: row.total_marcas for row in result}
+
+        if not classes_ok:
+            return
+
+        vocab: dict[str, list[str]] = {}
+        for ncl, total in classes_ok.items():
+            min_abs = max(CORPUS_LIMIAR_ABS, int(total * CORPUS_LIMIAR_FREQ))
+            result = await db.execute(
+                _text(
+                    "SELECT termo FROM termo_classe_freq "
+                    "WHERE ncl = :ncl AND num_marcas >= :min_abs "
+                    "ORDER BY num_marcas DESC"
+                ),
+                {"ncl": ncl, "min_abs": min_abs},
+            )
+            termos = [row.termo for row in result]
+            if termos:
+                vocab[str(ncl)] = termos
+
+    path = os.path.join(DATA_DIR, "vocab_descritivo_corpus.json")
+    with open(path, "w", encoding="utf-8") as f:
+        _json.dump(vocab, f, ensure_ascii=False, indent=2)
+
+    # Invalidar caches para que a próxima execução use o vocab atualizado
+    try:
+        from ..utils.distintividade import _vocab_corpus, _vocab_descritivo
+        _vocab_corpus.cache_clear()
+        _vocab_descritivo.cache_clear()
+    except Exception:
+        pass
 
 
 @router.get("/status/{execucao_id}")

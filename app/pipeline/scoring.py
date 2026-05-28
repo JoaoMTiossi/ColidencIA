@@ -127,7 +127,7 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # do nome completo sem refletir risco real. Comparamos apenas os tokens
         # distintivos (orto OU fonética); se eles divergem e o nome completo não
         # é quase idêntico, descarta antes da IA.
-        md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""))
+        md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
         if md is None:
             # Alguma das marcas é puramente descritiva — sem sinal próprio.
             if s_nome < 0.90:

@@ -7,7 +7,7 @@ from datetime import datetime
 
 from sqlalchemy import (
     Boolean, DateTime, Float, ForeignKey, Index, Integer, String, Text,
-    func,
+    UniqueConstraint, func,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -97,3 +97,29 @@ class Resultado(Base):
         Index("idx_resultados_classificacao", "execucao_id", "classificacao"),
         Index("idx_resultados_tipo_acao", "execucao_id", "tipo_acao"),
     )
+
+
+class TermoClasseFreq(Base):
+    """Frequência acumulada de tokens de nomes de marca por classe NCL.
+    Alimentado a cada execução do pipeline para descoberta automática de vocab descritivo."""
+    __tablename__ = "termo_classe_freq"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    ncl: Mapped[int] = mapped_column(Integer, index=True)
+    termo: Mapped[str] = mapped_column(String(64), index=True)
+    num_marcas: Mapped[int] = mapped_column(Integer, default=0)
+    atualizado_em: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        UniqueConstraint("ncl", "termo", name="uq_termo_classe"),
+        Index("idx_termo_classe_ncl", "ncl"),
+    )
+
+
+class ClasseCorpusStat(Base):
+    """Total de marcas únicas processadas por classe NCL."""
+    __tablename__ = "classe_corpus_stat"
+
+    ncl: Mapped[int] = mapped_column(Integer, primary_key=True)
+    total_marcas: Mapped[int] = mapped_column(Integer, default=0)
+    atualizado_em: Mapped[datetime] = mapped_column(DateTime, default=func.now(), onupdate=func.now())

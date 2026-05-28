@@ -123,6 +123,22 @@ def executar_pipeline(
     rpi = preprocessar_lote(rpi_raw)
 
     # -----------------------------------------------------------------------
+    # Corpus de vocabulário — coleta frequência de tokens por classe NCL
+    # Usa TODAS as marcas (não só colidências) para estatística não-enviesada.
+    # -----------------------------------------------------------------------
+    from collections import Counter as _Counter
+    _corpus_termos: _Counter[tuple[int, str]] = _Counter()
+    _corpus_classes: _Counter[int] = _Counter()
+    for _m in carteira + rpi:
+        _ncl = _m.get("ncl", 0)
+        if _ncl <= 0:
+            continue
+        _toks = set(t for t in (_m.get("nome_normalizado", "") or "").split() if len(t) >= 3)
+        for _tok in _toks:
+            _corpus_termos[(_ncl, _tok)] += 1
+        _corpus_classes[_ncl] += 1
+
+    # -----------------------------------------------------------------------
     # Camada 1 — Nome idêntico
     # -----------------------------------------------------------------------
     _progress("Camada 1: Verificando nomes idênticos...", 30)
@@ -273,4 +289,8 @@ def executar_pipeline(
         "stats": stats,
         "custo_ia_usd": custo_ia,
         "tempo_seg": tempo,
+        "corpus_update": {
+            "termos": {f"{ncl}:{tok}": cnt for (ncl, tok), cnt in _corpus_termos.items()},
+            "classes": {str(ncl): cnt for ncl, cnt in _corpus_classes.items()},
+        },
     }

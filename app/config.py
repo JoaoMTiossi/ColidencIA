@@ -81,6 +81,17 @@ ALERT_WEBHOOK_URL: str = os.getenv("ALERT_WEBHOOK_URL", "")
 ALERT_SERVICE_NAME: str = os.getenv("ALERT_SERVICE_NAME", "ColidencIA")
 
 # ---------------------------------------------------------------------------
+# Corpus de vocabulário descritivo por classe (Fase 2)
+# ---------------------------------------------------------------------------
+# Mínimo de marcas distintas processadas para uma classe ser considerada
+# com amostra suficiente para gerar vocab automático.
+CORPUS_MIN_AMOSTRA_CLASSE: int = int(os.getenv("CORPUS_MIN_AMOSTRA", "300"))
+# Frequência relativa mínima: termo descritivo se aparece em >= X% das marcas da classe.
+CORPUS_LIMIAR_FREQ: float = float(os.getenv("CORPUS_LIMIAR_FREQ", "0.01"))
+# Frequência absoluta mínima: ignorar limiares de freq se o termo aparece em < N marcas.
+CORPUS_LIMIAR_ABS: int = int(os.getenv("CORPUS_LIMIAR_ABS", "15"))
+
+# ---------------------------------------------------------------------------
 # Complementos descritivos (removidos do núcleo marcário)
 # ---------------------------------------------------------------------------
 COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
@@ -122,6 +133,18 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     # Outros tipos de negócio
     "contabilidade", "contabil", "tecnologia", "sistemas", "software",
     "saude", "energia", "construcao",
+    # Serviços automotivos e especializados
+    "funilaria", "serralheria", "borracharia", "mecanica", "chaveiro",
+    "marcenaria", "pintura", "eletrica", "hidraulica",
+    # Varejo especializado
+    "joalheria", "relojoaria", "otica", "oticas", "floricultura",
+    "lavanderia", "tinturaria",
+    # Saúde bucal e estética
+    "odontologia", "odonto", "ortodontia", "estetica",
+    # Alimentação especializada
+    "acougue", "peixaria", "hortifruti", "mercearia", "quitanda",
+    # Serviços pessoais
+    "depilacao", "massagem", "spa",
 })
 
 # ---------------------------------------------------------------------------

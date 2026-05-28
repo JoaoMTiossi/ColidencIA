@@ -42,9 +42,11 @@ Responda APENAS com JSON válido, sem markdown:
 def _montar_prompt_par(par: dict) -> str:
     from ..utils.distintividade import match_distintivo, tokens_distintivos
 
-    dist_base = tokens_distintivos(par.get("marca_base", "")) or ["(nenhum — marca descritiva)"]
-    dist_rpi = tokens_distintivos(par.get("marca_rpi", "")) or ["(nenhum — marca descritiva)"]
-    md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""))
+    ncl_base = par.get("ncl_base")
+    ncl_rpi = par.get("ncl_rpi")
+    dist_base = tokens_distintivos(par.get("marca_base", ""), ncl_base) or ["(nenhum — marca descritiva)"]
+    dist_rpi = tokens_distintivos(par.get("marca_rpi", ""), ncl_rpi) or ["(nenhum — marca descritiva)"]
+    md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_base, ncl_rpi)
     md_txt = f"{md:.2f}" if md is not None else "N/A (marca sem elemento distintivo próprio)"
 
     return (
