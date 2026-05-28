@@ -35,6 +35,10 @@ def preprocessar(marca: dict) -> dict:
     resultado["nucleo"] = nucleo
     resultado["nucleo_distintivo"] = nucleo_distintivo
     resultado["codigo_fonetico"] = metaphone_ptbr(nome_norm)
+    # Código fonético do núcleo distintivo — usado no blocking para capturar
+    # marcas "núcleo + palavras descritivas" (ex.: "NEXO" vs "NEXORA TRADE TECH"),
+    # cujo código do nome completo diverge mas o do núcleo é próximo.
+    resultado["codigo_fonetico_nucleo"] = metaphone_ptbr(nucleo_distintivo or nucleo)
     resultado["bigrams_set"] = bigramas(nome)
     resultado["is_sigla"] = is_sigla(nome)
     resultado["is_nome_proprio"] = is_nome_proprio(nome)

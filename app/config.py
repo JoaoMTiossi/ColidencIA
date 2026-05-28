@@ -53,6 +53,16 @@ PESO_REGRA_INVERSA: float = float(os.getenv("PESO_REGRA_INVERSA", "0.30"))
 CLASSES_CAUTELA_ALTA: frozenset[int] = frozenset({5, 10, 44})
 FATOR_CAUTELA: float = 0.85
 
+# Classes transversais: cobrem comércio/serviços de quase todos os produtos
+# (35 = publicidade/gestão de negócios/comércio). Uma marca de varejo/serviço
+# da classe 35 pode colidir com a marca do produto correspondente em qualquer
+# classe de bens. São tratadas como elegíveis contra todas as classes.
+CLASSES_TRANSVERSAIS: frozenset[int] = frozenset({35})
+# Afinidade-base atribuída a um par que envolve classe transversal em classes
+# distintas (acima do THRESHOLD_ESPECIFICACAO para não ser descartado, mas
+# abaixo de "mesma classe"; a similaridade semântica de spec refina depois).
+AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.55"))
+
 # ---------------------------------------------------------------------------
 # IA (OpenAI)
 # ---------------------------------------------------------------------------

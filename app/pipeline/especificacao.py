@@ -11,7 +11,13 @@ import logging
 import os
 from functools import lru_cache
 
-from ..config import COLLISIONS, THRESHOLD_ESPECIFICACAO, DATA_DIR
+from ..config import (
+    AFINIDADE_TRANSVERSAL,
+    CLASSES_TRANSVERSAIS,
+    COLLISIONS,
+    DATA_DIR,
+    THRESHOLD_ESPECIFICACAO,
+)
 from ..utils.embeddings import cosseno, embeddings_disponivel, encode_textos
 
 logger = logging.getLogger(__name__)
@@ -72,6 +78,10 @@ def _afinidade_classes(ncl_a: int, ncl_b: int) -> float:
         return af_tabela
     if ncl_b in COLLISIONS.get(ncl_a, []):
         return 0.60
+    # Classe transversal (35) contra qualquer outra: afinidade-base.
+    # A similaridade semântica de spec (sc_3c) refina depois.
+    if ncl_a in CLASSES_TRANSVERSAIS or ncl_b in CLASSES_TRANSVERSAIS:
+        return AFINIDADE_TRANSVERSAL
     return 0.0
 
 
