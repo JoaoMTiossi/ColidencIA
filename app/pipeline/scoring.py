@@ -24,7 +24,7 @@ from ..config import (
 )
 from ..utils.distintividade import match_distintivo
 from ..utils.normalizacao import normalizar_base
-from .especificacao import _afinidade_correlatas
+from .especificacao import _afinidade_classes, _afinidade_correlatas
 
 
 def _fator_distintividade(nucleo: str) -> float:
@@ -121,10 +121,10 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # Bonus contínuo baseado na afinidade de classes
         ncl_a = par.get("ncl_base", 0)
         ncl_b = par.get("ncl_rpi", 0)
-        if ncl_a == ncl_b and ncl_a > 0:
-            af_classes = 1.0
-        else:
-            af_classes = _afinidade_correlatas(ncl_a, ncl_b)
+        # Usa _afinidade_classes (inclui COLLISIONS) para consistência com C3.
+        # _afinidade_correlatas sozinha retorna 0 para pares em COLLISIONS mas
+        # fora do CSV de correlatas, causando penalidade cross-class indevida.
+        af_classes = _afinidade_classes(ncl_a, ncl_b)
         bonus = 0.8 * af_classes
 
         # Gate: termo desgastado em classes sem relação — descarta sem score

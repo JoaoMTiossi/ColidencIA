@@ -26,17 +26,18 @@ def _classes_elegiveis(ncl: int) -> set[int]:
     """
     from .especificacao import _carregar_correlatas
     elegiveis: set[int] = {ncl}
-    # Classe transversal: elegível contra todas (1..45)
-    if ncl in CLASSES_TRANSVERSAIS:
-        return set(range(1, 46))
+    # Classe transversal ou não-classificada (NCL=0): elegível contra todas (0..45)
+    if ncl in CLASSES_TRANSVERSAIS or ncl == 0:
+        return set(range(0, 46))
     correlatas = _carregar_correlatas()
     for (a, b), af in correlatas.items():
         if a == ncl and af >= _AFINIDADE_MIN_CLASSE:
             elegiveis.add(b)
     for cls in COLLISIONS.get(ncl, []):
         elegiveis.add(cls)
-    # Qualquer classe é elegível contra as transversais
+    # Qualquer classe é elegível contra as transversais e contra NCL=0
     elegiveis |= CLASSES_TRANSVERSAIS
+    elegiveis.add(0)
     return elegiveis
 
 

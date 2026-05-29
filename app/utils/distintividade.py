@@ -42,7 +42,9 @@ _CURADAS: frozenset[str] = frozenset({
     "estetica", "estetico", "beleza", "cabelo", "cabelos", "corte",
     "unhas", "depilacao", "massagem", "spa",
     # Termos evocativos genéricos em nomes de marcas de saúde/beleza
-    "sorriso", "sorrisos", "saude", "bem", "vita", "viva", "viver",
+    # Nota: "viva" e "vita" removidos — são elementos primários de marca
+    # em muitos casos (ex.: "VIVA+", "VITA CARE") e não devem ser eliminados.
+    "sorriso", "sorrisos", "saude", "bem",
     "belo", "bela", "bella", "feliz", "felicidade", "alegria",
     "lindo", "linda", "bonito", "bonita", "perfeito", "perfeita",
     # Alimentos e bebidas
@@ -132,7 +134,12 @@ def _vocab_corpus() -> dict[int, frozenset[str]]:
 
 
 def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
-    """Tokens com >= 3 chars que não são descritivos nem stopwords.
+    """Tokens com >= 2 chars que não são descritivos nem stopwords.
+
+    O mínimo de 2 permite capturar siglas e marcas curtas genuínas ("OK",
+    "RM", "BK") que são filtradas de forma errada com limite 3.
+    Os 2-char connectors do português ("de", "do", "da", "os", "as"…)
+    já estão cobertos por _STOP, então o limite 2 é seguro.
 
     Quando `ncl` é informado, remove também os termos identificados como
     descritivos para aquela classe específica pelo corpus acumulado.
@@ -141,7 +148,7 @@ def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
     vocab_ncl = _vocab_corpus().get(ncl, frozenset()) if ncl is not None else frozenset()
     return [
         t for t in normalizar_base(nome).split()
-        if len(t) >= 3
+        if len(t) >= 2
         and not t.isdigit()          # Remove tokens puramente numéricos ("2022", "123")
         and t not in vocab
         and t not in vocab_ncl
