@@ -209,6 +209,20 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
     nome_b = marca_rpi.get("nome_normalizado", "")
     nucleo_a = marca_base.get("nucleo", "")
     nucleo_b = marca_rpi.get("nucleo", "")
+    ncl_a = marca_base.get("ncl", 0)
+    ncl_b = marca_rpi.get("ncl", 0)
+
+    # Quando o primeiro token distintivo de ambas coincide, ele É o elemento
+    # primário da marca (ex: "MS" em "MS MARCOS SOUZA" e "INSTITUTO MS",
+    # "LK" em "LK IMPORT.CG" e "LK STREET URBAN").
+    # O score do par de tokens lidera — nome completo divergente não penaliza.
+    toks_a = tokens_distintivos(nome_a, ncl_a)
+    toks_b = tokens_distintivos(nome_b, ncl_b)
+    score_primeiro_tok = 0.0
+    if toks_a and toks_b:
+        sim_primeiro = jaro_winkler(toks_a[0], toks_b[0])
+        if sim_primeiro >= 0.92:
+            score_primeiro_tok = sim_primeiro
 
     # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
@@ -216,13 +230,13 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
         from rapidfuzz import fuzz
         ratio = fuzz.ratio(nome_a, nome_b) / 100.0
         jw = jaro_winkler(nome_a, nome_b)
-        return max(ratio, jw)
+        return min(1.0, max(ratio, jw, score_primeiro_tok))
 
     jw_nome = jaro_winkler(nome_a, nome_b)
     jw_nucleo = jaro_winkler(nucleo_a, nucleo_b) * 1.1
     jac = jaccard_bigramas(nome_a, nome_b)
 
-    return min(1.0, max(jw_nome, jw_nucleo, jac))
+    return min(1.0, max(jw_nome, jw_nucleo, jac, score_primeiro_tok))
 
 
 def _criar_candidato(

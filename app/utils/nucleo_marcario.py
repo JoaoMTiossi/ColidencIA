@@ -58,7 +58,8 @@ def extrair_nucleo(marca: str) -> str:
         nucleo.append(tok)
 
     nucleo_str = " ".join(nucleo) if nucleo else norm
-    if len(nucleo_str.replace(" ", "")) < 3:
+    # Permite siglas de 2 chars (LL, MS, LK); só rejeita núcleo de 1 char
+    if len(nucleo_str.replace(" ", "")) < 2:
         return norm
     return nucleo_str
 

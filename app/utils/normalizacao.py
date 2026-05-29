@@ -27,6 +27,8 @@ def normalizar_base(text: str) -> str:
     t = remover_acentos(t)
     # Hífen entre palavras → espaço
     t = re.sub(r"(?<=\w)-(?=\w)", " ", t)
+    # & entre letras → concatena sem espaço (L&L → LL, M&M → MM, S&P → SP)
+    t = re.sub(r"(?<=\w)&(?=\w)", "", t)
     # Remover demais pontuações
     t = re.sub(r"[^\w\s]", " ", t)
     t = re.sub(r"\s+", " ", t).strip()

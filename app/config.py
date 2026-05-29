@@ -171,6 +171,22 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "injetados", "moldados", "usinados", "laminados",
     # Qualificadores genéricos em inglês usados como sufixo descritivo
     "fit", "life", "care", "well", "hub", "lab",
+    # Tipos de estabelecimento comercial/alimentício adicionais
+    "emporio",       # ex: EMPÓRIO SOUZA → nucleo=souza
+    "mercearia",
+    # Serviços técnicos especializados — descrevem a ATIVIDADE, não o nome
+    # (permitem que o núcleo sigla/nome próprio seja comparado isolado)
+    "rebobinagem",   # ex: LL REBOBINAGEM → nucleo=ll
+    "hidromecanica", # ex: L&L HIDROMECÂNICA → nucleo=ll
+    "eletromecânica", "eletromecanica",
+    "caldeiraria",
+    "usinagem",
+    "soldagem",
+    "galvanizacao", "galvanoplastia",
+    "retifica", "retificadora",
+    "vulcanizadora", "vulcanizacao",
+    "locacoes", "locacao",  # ex: MG LOCAÇÕES → nucleo=mg
+    "guindastes",
 })
 
 # ---------------------------------------------------------------------------
