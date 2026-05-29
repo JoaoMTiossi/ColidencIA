@@ -1,19 +1,23 @@
 """
 Camada 2 — Filtro fonético com blocking por token distintivo.
 
-Estratégia de indexação (em ordem de prioridade):
+Estratégia de indexação:
   1. Código fonético de cada TOKEN DISTINTIVO da marca — resolve o problema
      de marcas onde o elemento relevante está no meio ou fim do nome:
-     "INTER TOTAL" indexada sob "total" → encontra "TOTAL";
-     "CRED MEGA EC" indexada sob "mega" → encontra "MEGA".
+     "INTER TOTAL" indexada sob "total" → encontra "TOTAL".
   2. Código fonético de cada TOKEN DESGASTADO (ELEMENTOS_DESGASTADOS) —
-     muitas marcas têm o elemento desgastado como ÚNICO token identificador
-     (ex.: "TOP", "MAX", "VIP", "MEGA"). Sem indexação própria, esses pares
-     são invisíveis ao blocking fonético.
-  3. Código fonético do nome completo — fallback para nomes curtos/siglas e
-     variações ortográficas (Levenshtein-1).
+     marcas cujo único identificador é um termo fraco (TOP, MAX, VIP, MEGA).
+  3. Código fonético do nome completo — fallback para siglas e variações
+     ortográficas (Levenshtein-1).
+  4. Código fonético do primeiro token do NÚCLEO MARCÁRIO — garante blocking
+     position-independent quando o núcleo aparece em posições diferentes:
+     "HOF locação de guindastes" e "Locação de guindastes HOF" → ambos
+     indexados sob metaphone("hof") → encontram-se.
 
-A busca usa match exato para tokens e Levenshtein-1 para o nome completo.
+Normalização pré-indexação (normalizacao.py):
+  - "M G" / "H.O.F" / "M. G." → colapso de siglas antes do blocking.
+
+A busca usa match exato para tokens/núcleo e Levenshtein-1 para nome completo.
 """
 from __future__ import annotations
 
@@ -142,6 +146,17 @@ def camada2(
         if cod_full:
             _indexar(ncl, cod_full, marca)
 
+        # 4. Indexar pelo código do núcleo marcário (position-independent).
+        #    Garante que "HOF x" encontra "x HOF" mesmo quando o núcleo
+        #    aparece em posições diferentes nos dois nomes.
+        nucleo = marca.get("nucleo", "")
+        if nucleo:
+            first_tok = nucleo.split()[0]
+            if len(first_tok) >= 2:
+                cod_nuc = metaphone_ptbr(first_tok)
+                if cod_nuc:
+                    _indexar(ncl, cod_nuc, marca)
+
         if marca.get("bigrams_set"):
             indice_bigrama[ncl].append(marca)
 
@@ -168,6 +183,16 @@ def camada2(
                 if cod:
                     cands_desgastados.extend(_busca_exata(cod, indice_fonetico, classes_ok))
 
+        # 2b. Busca pelo núcleo da marca RPI (position-independent)
+        cands_nucleo: list[dict] = []
+        nucleo_rpi_str = marca_rpi.get("nucleo", "")
+        if nucleo_rpi_str:
+            first_tok_rpi = nucleo_rpi_str.split()[0]
+            if len(first_tok_rpi) >= 2:
+                cod = metaphone_ptbr(first_tok_rpi)
+                if cod:
+                    cands_nucleo.extend(_busca_exata(cod, indice_fonetico, classes_ok))
+
         # 3. Busca pelo código do nome completo (com Levenshtein-1)
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
         cands_full = _busca_com_vizinhos(cod_rpi, indice_fonetico, classes_ok) if cod_rpi else []
@@ -187,7 +212,7 @@ def camada2(
         # Unir candidatos sem duplicatas
         todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
-        for m in cands_tokens + cands_desgastados + cands_full + cands_bigrama:
+        for m in cands_tokens + cands_desgastados + cands_nucleo + cands_full + cands_bigrama:
             mid = id(m)
             if mid not in todos_ids:
                 todos_ids.add(mid)

@@ -23,8 +23,24 @@ def normalizar_base(text: str) -> str:
     """
     if not text:
         return ""
-    t = text.lower()
+    t = text
+    # Siglas com espaço ou ponto entre letras maiúsculas (opera ANTES do lowercase
+    # para não tocar em artigos/preposições minúsculos como "a", "o", "e").
+    # Exemplos: "M G" → "MG", "H.O.F" → "HOF", "M. G." → "MG", "J C B" → "JCB"
+    # Requer sequência de 2+ letras maiúsculas separadas só por espaços/pontos.
+    t = re.sub(
+        r"(?<![A-Za-z\d])([A-Z])(?:[. ]+[A-Z])+[. ]*(?![A-Za-z\d])",
+        lambda m: re.sub(r"[. ]", "", m.group(0)),
+        t,
+    )
+    t = t.lower()
     t = remover_acentos(t)
+    # Pontos em siglas minúsculas remanescentes (h.o.f → hof) — cobre fontes já em caixa baixa
+    t = re.sub(
+        r"(?<![a-z\d])([a-z])(?:\.[a-z])+\.?(?![a-z\d])",
+        lambda m: m.group(0).replace(".", ""),
+        t,
+    )
     # Hífen entre palavras → espaço
     t = re.sub(r"(?<=\w)-(?=\w)", " ", t)
     # & entre letras → concatena sem espaço (L&L → LL, M&M → MM, S&P → SP)
