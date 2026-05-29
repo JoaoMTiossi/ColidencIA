@@ -74,15 +74,16 @@ def _afinidade_classes(ncl_a: int, ncl_b: int) -> float:
     if ncl_a == ncl_b:
         return 0.95
     af_tabela = _afinidade_correlatas(ncl_a, ncl_b)
+    # Transversal (35) e não-classificada (0): o CSV pode refinar para cima, mas
+    # nunca abaixo de AFINIDADE_TRANSVERSAL — é o piso mínimo destas classes.
+    if ncl_a in CLASSES_TRANSVERSAIS or ncl_b in CLASSES_TRANSVERSAIS:
+        return max(af_tabela, AFINIDADE_TRANSVERSAL)
+    if ncl_a == 0 or ncl_b == 0:
+        return max(af_tabela, AFINIDADE_TRANSVERSAL)
     if af_tabela > 0:
         return af_tabela
     if ncl_b in COLLISIONS.get(ncl_a, []) or ncl_a in COLLISIONS.get(ncl_b, []):
         return 0.60
-    # Classe transversal (35) ou não-classificada (0) contra qualquer outra.
-    if ncl_a in CLASSES_TRANSVERSAIS or ncl_b in CLASSES_TRANSVERSAIS:
-        return AFINIDADE_TRANSVERSAL
-    if ncl_a == 0 or ncl_b == 0:
-        return AFINIDADE_TRANSVERSAL
     return 0.0
 
 

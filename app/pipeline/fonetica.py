@@ -22,7 +22,7 @@ from ..utils.normalizacao import jaccard_bigramas
 from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
 
 
-_AFINIDADE_MIN_CLASSE: float = 0.50
+_AFINIDADE_MIN_CLASSE: float = 0.60
 
 
 def _classes_elegiveis(ncl: int) -> set[int]:

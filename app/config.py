@@ -61,7 +61,7 @@ CLASSES_TRANSVERSAIS: frozenset[int] = frozenset({35})
 # Afinidade-base atribuída a um par que envolve classe transversal em classes
 # distintas (acima do THRESHOLD_ESPECIFICACAO para não ser descartado, mas
 # abaixo de "mesma classe"; a similaridade semântica de spec refina depois).
-AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.55"))
+AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.70"))
 
 # ---------------------------------------------------------------------------
 # IA (OpenAI)

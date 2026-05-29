@@ -182,10 +182,14 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
         if md is None:
             # Alguma das marcas é puramente descritiva — sem sinal próprio.
-            if s_nome < 0.90:
+            # Descarta apenas quando AMBAS as métricas de similaridade são baixas;
+            # alta fonética indica que os sinais soam o mesmo no mercado.
+            if s_nome < 0.80 and s_fon < 0.85:
                 continue
         elif md < 0.70 and s_nome < 0.90:
-            continue
+            # Distintivo diverge — manter se a fonética é muito alta (nomes soam iguais)
+            if s_fon < 0.85:
+                continue
         elif md < 0.85:
             # Distintivo apenas parcialmente semelhante — penaliza o score.
             score *= 0.85
