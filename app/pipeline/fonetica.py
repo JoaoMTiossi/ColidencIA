@@ -6,7 +6,11 @@ Estratégia de indexação (em ordem de prioridade):
      de marcas onde o elemento relevante está no meio ou fim do nome:
      "INTER TOTAL" indexada sob "total" → encontra "TOTAL";
      "CRED MEGA EC" indexada sob "mega" → encontra "MEGA".
-  2. Código fonético do nome completo — fallback para nomes curtos/siglas e
+  2. Código fonético de cada TOKEN DESGASTADO (ELEMENTOS_DESGASTADOS) —
+     muitas marcas têm o elemento desgastado como ÚNICO token identificador
+     (ex.: "TOP", "MAX", "VIP", "MEGA"). Sem indexação própria, esses pares
+     são invisíveis ao blocking fonético.
+  3. Código fonético do nome completo — fallback para nomes curtos/siglas e
      variações ortográficas (Levenshtein-1).
 
 A busca usa match exato para tokens e Levenshtein-1 para o nome completo.
@@ -15,10 +19,10 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, THRESHOLD_FONETICO, classes_colidem
+from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, ELEMENTOS_DESGASTADOS, THRESHOLD_FONETICO, classes_colidem
 from ..utils.distintividade import tokens_distintivos
 from ..utils.metaphone_ptbr import metaphone_ptbr
-from ..utils.normalizacao import jaccard_bigramas
+from ..utils.normalizacao import jaccard_bigramas, normalizar_base
 from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
 
 
@@ -90,16 +94,17 @@ def camada2(
     rpi_restante: list[dict],
 ) -> tuple[list[dict], list[dict]]:
     """
-    Filtro fonético com blocking por token distintivo + nome completo.
+    Filtro fonético com blocking por token distintivo + desgastado + nome completo.
 
     Indexação da carteira:
       - Por cada token distintivo (código fonético completo, sem truncagem).
-        Permite encontrar "TOTAL" dentro de "INTER TOTAL", "MEGA" dentro de
-        "CRED MEGA EC MICROCRÉDITO", "RM" dentro de "RM GOULART BARBER SHOP".
+      - Por cada token desgastado (ELEMENTOS_DESGASTADOS) — cobre marcas cujo
+        único identificador é um termo fraco: "TOP", "MAX", "VIP", "MEGA".
       - Por código fonético do nome completo (fallback, com Levenshtein-1).
 
     Busca para cada marca da RPI:
-      - Tokens distintivos da marca RPI → busca exata no índice.
+      - Tokens distintivos → busca exata no índice.
+      - Tokens desgastados → busca exata no índice.
       - Código fonético do nome completo → busca com Levenshtein-1.
     """
     indice_fonetico: dict[tuple[int, str], list[dict]] = defaultdict(list)
@@ -124,7 +129,15 @@ def camada2(
             if cod_tok:
                 _indexar(ncl, cod_tok, marca)
 
-        # 2. Indexar pelo código do nome completo (fallback / siglas curtas)
+        # 2. Indexar por tokens desgastados — para marcas cujo único elemento
+        #    de identidade é um termo desgastado ("TOP", "MAX", "VIP", "MEGA").
+        for tok in normalizar_base(nome).split():
+            if len(tok) >= 2 and tok in ELEMENTOS_DESGASTADOS:
+                cod_tok = metaphone_ptbr(tok)
+                if cod_tok:
+                    _indexar(ncl, cod_tok, marca)
+
+        # 3. Indexar pelo código do nome completo (fallback / siglas curtas)
         cod_full = marca.get("codigo_fonetico", "")
         if cod_full:
             _indexar(ncl, cod_full, marca)
@@ -147,11 +160,19 @@ def camada2(
             if cod:
                 cands_tokens.extend(_busca_exata(cod, indice_fonetico, classes_ok))
 
-        # 2. Busca pelo código do nome completo (com Levenshtein-1)
+        # 2. Busca por tokens desgastados da marca RPI (exata)
+        cands_desgastados: list[dict] = []
+        for tok in normalizar_base(nome_rpi).split():
+            if len(tok) >= 2 and tok in ELEMENTOS_DESGASTADOS:
+                cod = metaphone_ptbr(tok)
+                if cod:
+                    cands_desgastados.extend(_busca_exata(cod, indice_fonetico, classes_ok))
+
+        # 3. Busca pelo código do nome completo (com Levenshtein-1)
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
         cands_full = _busca_com_vizinhos(cod_rpi, indice_fonetico, classes_ok) if cod_rpi else []
 
-        # 3. Blocking por bigramas (cobertura adicional para variações)
+        # 4. Blocking por bigramas (cobertura adicional para variações)
         cands_bigrama: list[dict] = []
         if bg_rpi:
             for cls in classes_ok:
@@ -166,7 +187,7 @@ def camada2(
         # Unir candidatos sem duplicatas
         todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
-        for m in cands_tokens + cands_full + cands_bigrama:
+        for m in cands_tokens + cands_desgastados + cands_full + cands_bigrama:
             mid = id(m)
             if mid not in todos_ids:
                 todos_ids.add(mid)
