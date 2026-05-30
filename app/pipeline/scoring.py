@@ -49,6 +49,49 @@ def _classificar(score: float) -> str:
     return "NENHUMA"
 
 
+def _nivel_severidade(
+    md: float | None,
+    s_nome: float,
+    s_fon: float,
+    mesma_classe: bool,
+    af_classes: float,
+    s_spec: float,
+) -> str:
+    """
+    Nível de severidade no modelo de VIGILÂNCIA DE MARCA (trademark watch).
+
+    Diferente da classificação por score (que mede confiança no alerta), o
+    nível responde "quão urgente é revisar este caso" sob a ótica do cliente
+    que monitora a própria marca:
+
+    - ALTA   : risco direto de confusão. Mesma classe com núcleo forte, OU
+               cross-class com núcleo idêntico E afinidade mercadológica.
+    - MEDIA  : núcleo idêntico/quase em classes distintas (diluição, prazo de
+               oposição) OU mesma classe com sinal moderado.
+    - VIGIAR : sinal mais fraco — vale acompanhar, baixa prioridade.
+
+    A lógica reflete o gold-set do especialista: marcas com elemento distintivo
+    idêntico são sinalizadas MESMO em classes diferentes (proteção marcária),
+    o que o gate de afinidade puro descartava.
+    """
+    md_v = md if md is not None else 0.0
+    sinal = max(md_v, s_nome)
+    afinidade = af_classes >= 0.65 or s_spec >= 0.80
+
+    if mesma_classe:
+        if md_v >= 0.85 or s_nome >= 0.90:
+            return "ALTA"
+        if md_v >= 0.70 or s_fon >= 0.88 or s_nome >= 0.80:
+            return "MEDIA"
+        return "VIGIAR"
+    # Cross-class
+    if sinal >= 0.92:
+        return "ALTA" if afinidade else "MEDIA"
+    if sinal >= 0.85:
+        return "MEDIA" if afinidade else "VIGIAR"
+    return "VIGIAR"
+
+
 def _score_tipo_marca(par: dict) -> float:
     """Ajuste pelo tipo de marca (apresentação)."""
     if par.get("is_sigla"):
@@ -144,6 +187,16 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             s_fon_adj = s_fon
             peso_nome_adj = peso_nome
 
+        # Similaridade do elemento DISTINTIVO (computada cedo: governa tanto os
+        # gates quanto o nível de severidade). Núcleo idêntico/quase entre as
+        # marcas é o sinal mais forte de vigilância marcária.
+        md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
+        mesma_classe = (ncl_a == ncl_b)
+        # "Núcleo forte" = elemento distintivo idêntico ou quase. Sob a ótica de
+        # vigilância de marca, esses pares NÃO devem ser descartados mesmo sem
+        # afinidade mercadológica (risco de diluição / prazo de oposição).
+        nucleo_forte = max(md if md is not None else 0.0, s_nome) >= 0.92
+
         # ── Gate: Regra Inversa LPI ────────────────────────────────────────
         # Melhor evidência de similaridade entre os sinais
         s_sim = max(s_nome, s_nucleo, s_fon_adj)
@@ -151,8 +204,9 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         s_af = max(s_spec, af_classes)
 
         # Se a afinidade disponível não alcança o mínimo para este nível de
-        # similaridade, o par não configura risco de colidência.
-        if s_af < _af_minima(s_sim):
+        # similaridade, o par não configura risco — EXCETO quando o núcleo é
+        # idêntico/quase (vigilância marcária supera a Regra Inversa).
+        if s_af < _af_minima(s_sim) and not nucleo_forte:
             continue
         # ──────────────────────────────────────────────────────────────────
 
@@ -179,13 +233,17 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # do nome completo sem refletir risco real. Comparamos apenas os tokens
         # distintivos (orto OU fonética); se eles divergem e o nome completo não
         # é quase idêntico, descarta antes da IA.
-        md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
+        #
+        # MODELO DE VIGILÂNCIA: núcleo idêntico/quase (nucleo_forte) nunca é
+        # descartado — recebe apenas nível de severidade menor quando falta
+        # afinidade mercadológica. Isso recupera os pares cross-class que o
+        # especialista marca (proteção marcária) sem reintroduzir ruído.
         if md is None:
             # Marca puramente descritiva — sem sinal próprio. Só passa se o
             # nome completo for quase idêntico (variação ortográfica evidente).
             if s_nome < 0.92:
                 continue
-        elif ncl_a == ncl_b:
+        elif mesma_classe:
             # Mesma classe: exige sinal distintivo sólido.
             if md < 0.80 and s_nome < 0.90:
                 if s_fon < 0.85:
@@ -193,24 +251,17 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             if md < 0.90:
                 score *= 0.85
         else:
-            # Cross-class: o sinal distintivo precisa ser forte E é necessária
-            # evidência de afinidade mercadológica. Escalonado por força do sinal:
-            # - Sinal muito forte (≥0.92): aceita afinidade de colisão (≥0.65) —
-            #   "CAPRICHO" × "CAPRICCHE" ou "ACHEI" × "AcheiAutoMotors"
-            # - Sinal forte (≥0.90): exige af≥0.75 ou spec_semantico≥0.20
-            # - Abaixo: exige af≥0.85 ou spec_semantico≥0.25
+            # Cross-class. Núcleo forte sempre passa (severidade decide o tier).
+            # Sinal intermediário (0.85–0.92) exige afinidade. Sinal fraco cai.
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
             s_sig_cross = max(md if md is not None else 0, s_nome)
-            if s_sig_cross < 0.90 and s_nome < 0.92:
-                continue
-            if s_sig_cross >= 0.92:
-                afinidade_ok = af_classes >= 0.65 or s_sem >= 0.15
-            elif s_sig_cross >= 0.90:
-                afinidade_ok = af_classes >= 0.75 or s_sem >= 0.20
-            else:
-                afinidade_ok = af_classes >= 0.85 or s_sem >= 0.25
-            if not afinidade_ok:
-                continue
+            if not nucleo_forte:
+                if s_sig_cross < 0.85:
+                    continue
+                # 0.85–0.92: precisa de alguma evidência de afinidade
+                afinidade_ok = af_classes >= 0.75 or s_sem >= 0.20 or s_spec >= 0.80
+                if not afinidade_ok:
+                    continue
             if md is not None and md < 0.95:
                 score *= 0.85
 
@@ -240,12 +291,21 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         if ncl_a in CLASSES_CAUTELA_ALTA or ncl_b in CLASSES_CAUTELA_ALTA:
             threshold = threshold * FATOR_CAUTELA
 
+        # Vigilância marcária: núcleo idêntico/quase não pode ser descartado
+        # pelo threshold de score — recebe piso para sobreviver. O nível de
+        # severidade (atribuído abaixo) é quem comunica a prioridade real.
+        if nucleo_forte:
+            score = max(score, threshold)
+
         if score >= threshold:
             updated = dict(par)
             updated["score_final"] = round(score, 4)
             updated["score_ri"] = round(score_ri, 4)
             updated["af_classes"] = round(af_classes, 4)
             updated["classificacao"] = _classificar(score)
+            updated["nivel"] = _nivel_severidade(
+                md, s_nome, s_fon, mesma_classe, af_classes, s_spec
+            )
             updated["camada_deteccao"] = par.get("camada_deteccao", 4)
             aprovados.append(updated)
 

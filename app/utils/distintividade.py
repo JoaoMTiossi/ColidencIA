@@ -146,14 +146,20 @@ def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
     """
     vocab = _vocab_descritivo()
     vocab_ncl = _vocab_corpus().get(ncl, frozenset()) if ncl is not None else frozenset()
-    return [
+    # Tokens base: sem stopwords, sem numéricos puros, len>=2
+    base = [
         t for t in normalizar_base(nome).split()
-        if len(t) >= 2
-        and not t.isdigit()          # Remove tokens puramente numéricos ("2022", "123")
-        and t not in vocab
-        and t not in vocab_ncl
-        and t not in _STOP
+        if len(t) >= 2 and not t.isdigit() and t not in _STOP
     ]
+    dist = [t for t in base if t not in vocab and t not in vocab_ncl]
+    # Proteção de marca curta: se a remoção descritiva esvazia a lista MAS o
+    # nome tinha um único token significativo, esse token É a marca (não pode
+    # ser "descritivo de si mesmo"). Recupera marcas como BRASA, SUN, CACAU,
+    # EGO que o corpus mineraria como termo setorial. Marcas multi-palavra
+    # (ex: "ODONTOLOGIA SORRISO PERFEITO") continuam zeradas — corretamente.
+    if not dist and len(base) == 1:
+        return base
+    return dist
 
 
 def _token_dominante(tokens: list[str]) -> str:
