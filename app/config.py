@@ -64,12 +64,14 @@ CLASSES_TRANSVERSAIS: frozenset[int] = frozenset({35})
 AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.70"))
 
 # ---------------------------------------------------------------------------
-# IA (OpenAI)
+# IA (Anthropic Claude — preferido; OpenAI como fallback)
 # ---------------------------------------------------------------------------
+ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+ANTHROPIC_MODEL: str = os.getenv("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
 OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-BATCH_SIZE_IA: int = 50
-MAX_PARES_IA: int = 15000
+BATCH_SIZE_IA: int = int(os.getenv("BATCH_SIZE_IA", "20"))
+MAX_PARES_IA: int = int(os.getenv("MAX_PARES_IA", "15000"))
 BUDGET_SEMANAL_USD: float = float(os.getenv("BUDGET_SEMANAL_USD", "18.0"))
 
 # ---------------------------------------------------------------------------

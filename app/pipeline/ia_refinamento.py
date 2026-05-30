@@ -1,6 +1,9 @@
 """
-Camada 5 — Refinamento IA (GPT-4o-mini).
-Envia batches de pares para a API OpenAI e atualiza classificação/justificativa.
+Camada 5 — Refinamento IA (Claude / GPT-4o-mini fallback).
+Envia batches de pares para a API e atualiza classificação/justificativa.
+
+Provider preferido: Anthropic Claude (claude-haiku-4-5).
+Fallback: OpenAI GPT-4o-mini (se ANTHROPIC_API_KEY não configurado).
 """
 from __future__ import annotations
 
@@ -10,6 +13,8 @@ import logging
 from typing import Callable
 
 from ..config import (
+    ANTHROPIC_API_KEY,
+    ANTHROPIC_MODEL,
     BATCH_SIZE_IA,
     BUDGET_SEMANAL_USD,
     MAX_PARES_IA,
@@ -70,35 +75,96 @@ def _montar_prompt_par(par: dict) -> str:
     )
 
 
-async def _processar_batch(
+# ──────────────────────────────────────────────────────────────────────────────
+# Anthropic (Claude)
+# ──────────────────────────────────────────────────────────────────────────────
+
+async def _chamar_claude(client, prompt: str, idx: int) -> tuple[int, dict | None, dict]:
+    """Chama a API Anthropic e retorna (idx, parsed_json, tokens)."""
+    try:
+        response = await client.messages.create(
+            model=ANTHROPIC_MODEL,
+            max_tokens=300,
+            system=_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        content = response.content[0].text if response.content else "{}"
+        # Remove markdown code fences se presentes
+        content = content.strip()
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        parsed = json.loads(content.strip())
+        tokens = {
+            "prompt": response.usage.input_tokens if response.usage else 0,
+            "completion": response.usage.output_tokens if response.usage else 0,
+        }
+        return idx, parsed, tokens
+    except Exception as e:
+        logger.warning("Erro na chamada Claude para par %d: %s", idx, e)
+        return idx, None, {}
+
+
+async def _processar_batch_claude(
     client,
     batch: list[tuple[int, dict]],
     resultados: list[dict],
     custo_acumulado: list[float],
-    progress_cb: Callable[[str], None] | None,
 ) -> None:
-    """Processa um batch de pares em paralelo."""
-    tasks = []
-    for idx, par in batch:
-        prompt = _montar_prompt_par(par)
-        tasks.append(_chamar_api(client, prompt, idx, par))
-
+    tasks = [_chamar_claude(client, _montar_prompt_par(par), idx) for idx, par in batch]
     respostas = await asyncio.gather(*tasks, return_exceptions=True)
-
     for resp in respostas:
         if isinstance(resp, Exception):
-            logger.warning("Erro na API IA: %s", resp)
+            logger.warning("Erro na API Claude: %s", resp)
             continue
-        idx, parsed, tokens_used = resp
+        idx, parsed, tokens = resp
         if parsed:
             resultados[idx] = _aplicar_resposta_ia(resultados[idx], parsed)
-            # Estimativa de custo: ~$0.15/1M input tokens, $0.60/1M output tokens
-            custo = (tokens_used.get("prompt", 0) * 0.15 + tokens_used.get("completion", 0) * 0.60) / 1_000_000
+            # claude-haiku-4-5: $0.80/1M input, $4.00/1M output (valores aproximados)
+            custo = (tokens.get("prompt", 0) * 0.80 + tokens.get("completion", 0) * 4.00) / 1_000_000
             custo_acumulado[0] += custo
 
 
-async def _chamar_api(client, prompt: str, idx: int, par: dict) -> tuple[int, dict | None, dict]:
-    """Chama a API OpenAI e retorna (idx, parsed_json, tokens)."""
+async def camada5_claude_async(
+    pares_scored: list[dict],
+    progress_cb: Callable[[str], None] | None = None,
+) -> tuple[list[dict], float]:
+    try:
+        from anthropic import AsyncAnthropic
+    except ImportError:
+        logger.warning("anthropic não instalado — pulando camada IA")
+        return pares_scored, 0.0
+
+    client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
+    resultados = list(pares_scored)
+    custo_acumulado = [0.0]
+    pares_para_ia = min(len(pares_scored), MAX_PARES_IA)
+
+    for inicio in range(0, pares_para_ia, BATCH_SIZE_IA):
+        if custo_acumulado[0] >= BUDGET_SEMANAL_USD:
+            logger.warning("Budget semanal IA atingido (%.2f USD)", custo_acumulado[0])
+            break
+
+        fim = min(inicio + BATCH_SIZE_IA, pares_para_ia)
+        batch = [(i, pares_scored[i]) for i in range(inicio, fim)]
+
+        # Processar em chunks de 5 paralelos para não sobrecarregar rate limit
+        for chunk_start in range(0, len(batch), 5):
+            chunk = batch[chunk_start:chunk_start + 5]
+            await _processar_batch_claude(client, chunk, resultados, custo_acumulado)
+
+        if progress_cb:
+            progress_cb(f"Claude: {fim}/{pares_para_ia} pares — custo acumulado: ${custo_acumulado[0]:.4f}")
+
+    return resultados, custo_acumulado[0]
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# OpenAI (fallback)
+# ──────────────────────────────────────────────────────────────────────────────
+
+async def _chamar_openai(client, prompt: str, idx: int, par: dict) -> tuple[int, dict | None, dict]:
     try:
         response = await client.chat.completions.create(
             model=OPENAI_MODEL,
@@ -118,12 +184,67 @@ async def _chamar_api(client, prompt: str, idx: int, par: dict) -> tuple[int, di
         }
         return idx, parsed, tokens
     except Exception as e:
-        logger.warning("Erro na chamada IA para par %d: %s", idx, e)
+        logger.warning("Erro na chamada OpenAI para par %d: %s", idx, e)
         return idx, None, {}
 
 
+async def _processar_batch_openai(
+    client,
+    batch: list[tuple[int, dict]],
+    resultados: list[dict],
+    custo_acumulado: list[float],
+) -> None:
+    tasks = [_chamar_openai(client, _montar_prompt_par(par), idx, par) for idx, par in batch]
+    respostas = await asyncio.gather(*tasks, return_exceptions=True)
+    for resp in respostas:
+        if isinstance(resp, Exception):
+            logger.warning("Erro na API OpenAI: %s", resp)
+            continue
+        idx, parsed, tokens = resp
+        if parsed:
+            resultados[idx] = _aplicar_resposta_ia(resultados[idx], parsed)
+            custo = (tokens.get("prompt", 0) * 0.15 + tokens.get("completion", 0) * 0.60) / 1_000_000
+            custo_acumulado[0] += custo
+
+
+async def camada5_openai_async(
+    pares_scored: list[dict],
+    progress_cb: Callable[[str], None] | None = None,
+) -> tuple[list[dict], float]:
+    try:
+        from openai import AsyncOpenAI
+    except ImportError:
+        logger.warning("openai não instalado")
+        return pares_scored, 0.0
+
+    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+    resultados = list(pares_scored)
+    custo_acumulado = [0.0]
+    pares_para_ia = min(len(pares_scored), MAX_PARES_IA)
+
+    for inicio in range(0, pares_para_ia, BATCH_SIZE_IA):
+        if custo_acumulado[0] >= BUDGET_SEMANAL_USD:
+            logger.warning("Budget semanal IA atingido (%.2f USD)", custo_acumulado[0])
+            break
+
+        fim = min(inicio + BATCH_SIZE_IA, pares_para_ia)
+        batch = [(i, pares_scored[i]) for i in range(inicio, fim)]
+
+        for chunk_start in range(0, len(batch), 5):
+            chunk = batch[chunk_start:chunk_start + 5]
+            await _processar_batch_openai(client, chunk, resultados, custo_acumulado)
+
+        if progress_cb:
+            progress_cb(f"OpenAI: {fim}/{pares_para_ia} pares — custo: ${custo_acumulado[0]:.4f}")
+
+    return resultados, custo_acumulado[0]
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Helpers comuns
+# ──────────────────────────────────────────────────────────────────────────────
+
 def _aplicar_resposta_ia(par: dict, ia_resp: dict) -> dict:
-    """Aplica a resposta da IA ao par, atualizando classificação se válida."""
     updated = dict(par)
 
     classificacao = ia_resp.get("classificacao", "").upper()
@@ -132,7 +253,6 @@ def _aplicar_resposta_ia(par: dict, ia_resp: dict) -> dict:
 
     score_ia = ia_resp.get("score")
     if isinstance(score_ia, (int, float)) and 0.0 <= score_ia <= 1.0:
-        # Ponderar score IA com score da camada 4
         score_c4 = updated.get("score_final", 0.0)
         updated["score_final"] = round(0.6 * float(score_ia) + 0.4 * score_c4, 4)
         updated["score_ia"] = round(float(score_ia), 4)
@@ -147,55 +267,22 @@ def _aplicar_resposta_ia(par: dict, ia_resp: dict) -> dict:
     return updated
 
 
+# ──────────────────────────────────────────────────────────────────────────────
+# Ponto de entrada público
+# ──────────────────────────────────────────────────────────────────────────────
+
 async def camada5_async(
     pares_scored: list[dict],
     progress_cb: Callable[[str], None] | None = None,
 ) -> tuple[list[dict], float]:
-    """
-    Camada 5 assíncrona: refina com IA em batches de BATCH_SIZE_IA pares,
-    5 requests paralelos.
-
-    Retorna (resultados_refinados, custo_total_usd).
-    """
-    if not OPENAI_API_KEY:
-        logger.info("OPENAI_API_KEY não configurada — pulando camada IA")
-        return pares_scored, 0.0
-
-    try:
-        from openai import AsyncOpenAI
-    except ImportError:
-        logger.warning("openai não instalado — pulando camada IA")
-        return pares_scored, 0.0
-
-    client = AsyncOpenAI(api_key=OPENAI_API_KEY)
-    resultados = list(pares_scored)
-    custo_acumulado = [0.0]
-
-    # Limitar quantidade de pares enviados para IA
-    pares_para_ia = min(len(pares_scored), MAX_PARES_IA)
-
-    processados = 0
-    for inicio in range(0, pares_para_ia, BATCH_SIZE_IA):
-        # Verificar budget
-        if custo_acumulado[0] >= BUDGET_SEMANAL_USD:
-            logger.warning("Budget semanal IA atingido (%.2f USD) — usando scores Camada 4 para restantes",
-                           custo_acumulado[0])
-            break
-
-        fim = min(inicio + BATCH_SIZE_IA, pares_para_ia)
-        batch = [(i, pares_scored[i]) for i in range(inicio, fim)]
-
-        # Processar 5 batches por vez em paralelo
-        chunk_size = 5
-        for chunk_inicio in range(0, len(batch), chunk_size):
-            chunk = batch[chunk_inicio:chunk_inicio + chunk_size]
-            await _processar_batch(client, chunk, resultados, custo_acumulado, progress_cb)
-
-        processados = fim
-        if progress_cb:
-            progress_cb(f"IA: {processados}/{pares_para_ia} pares processados")
-
-    return resultados, custo_acumulado[0]
+    """Usa Claude se ANTHROPIC_API_KEY configurado, senão tenta OpenAI."""
+    if ANTHROPIC_API_KEY:
+        return await camada5_claude_async(pares_scored, progress_cb)
+    if OPENAI_API_KEY:
+        logger.info("ANTHROPIC_API_KEY não configurado — usando OpenAI fallback")
+        return await camada5_openai_async(pares_scored, progress_cb)
+    logger.info("Nenhuma API key configurada — pulando camada IA")
+    return pares_scored, 0.0
 
 
 def camada5(
