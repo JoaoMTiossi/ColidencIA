@@ -249,6 +249,31 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
         if sim_primeiro >= 0.92:
             score_primeiro_tok = sim_primeiro
 
+    # Token containment — vigilância marcária: se o token dominante de uma
+    # marca aparece verbatim (ou quase) em qualquer posição da outra, isso é
+    # um hit independente da similaridade do nome completo.
+    # Captura: "SUN" ⊂ "Capri Sun", "Cuidar" ⊂ "adoro cuidar", etc.
+    score_containment = 0.0
+    if toks_a and toks_b:
+        set_a = set(toks_a)
+        set_b = set(toks_b)
+        # Token compartilhado exato
+        shared = set_a & set_b
+        if shared:
+            score_containment = 0.72
+        else:
+            # Token dominante de uma contido como substring ou quase-idêntico em outra
+            from ..utils.distintividade import _token_dominante
+            dom_a = _token_dominante(toks_a)
+            dom_b = _token_dominante(toks_b)
+            for t_a in toks_a:
+                for t_b in toks_b:
+                    if jaro_winkler(t_a, t_b) >= 0.92:
+                        score_containment = 0.70
+                        break
+                if score_containment:
+                    break
+
     # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
             or len(nome_a) <= 4 or len(nome_b) <= 4):
@@ -261,7 +286,7 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
     jw_nucleo = jaro_winkler(nucleo_a, nucleo_b) * 1.1
     jac = jaccard_bigramas(nome_a, nome_b)
 
-    return min(1.0, max(jw_nome, jw_nucleo, jac, score_primeiro_tok))
+    return min(1.0, max(jw_nome, jw_nucleo, jac, score_primeiro_tok, score_containment))
 
 
 def _criar_candidato(
