@@ -194,16 +194,24 @@ def camada4(candidatos: list[dict]) -> list[dict]:
                 score *= 0.85
         else:
             # Cross-class: o sinal distintivo precisa ser forte E é necessária
-            # evidência real de afinidade (spec semântica ou correlatas acima do
-            # piso de colisão). Evita que afinidade de matriz (piso 0.60) resgate
-            # marcas cujos produtos/serviços são genuinamente distintos.
+            # evidência de afinidade mercadológica. Escalonado por força do sinal:
+            # - Sinal muito forte (≥0.92): aceita afinidade de colisão (≥0.65) —
+            #   "CAPRICHO" × "CAPRICCHE" ou "ACHEI" × "AcheiAutoMotors"
+            # - Sinal forte (≥0.90): exige af≥0.75 ou spec_semantico≥0.20
+            # - Abaixo: exige af≥0.85 ou spec_semantico≥0.25
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
-            afinidade_real = s_sem >= 0.25 or af_classes >= 0.85
-            if md < 0.90 and s_nome < 0.92:
+            s_sig_cross = max(md if md is not None else 0, s_nome)
+            if s_sig_cross < 0.90 and s_nome < 0.92:
                 continue
-            if not afinidade_real:
+            if s_sig_cross >= 0.92:
+                afinidade_ok = af_classes >= 0.65 or s_sem >= 0.15
+            elif s_sig_cross >= 0.90:
+                afinidade_ok = af_classes >= 0.75 or s_sem >= 0.20
+            else:
+                afinidade_ok = af_classes >= 0.85 or s_sem >= 0.25
+            if not afinidade_ok:
                 continue
-            if md < 0.95:
+            if md is not None and md < 0.95:
                 score *= 0.85
 
         # ── Superfície 2D — score da Regra Inversa ────────────────────────

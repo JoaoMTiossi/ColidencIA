@@ -169,12 +169,15 @@ def match_distintivo(
     ncl_b: int | None = None,
 ) -> float | None:
     """
-    Similaridade entre o TOKEN DOMINANTE de cada marca.
+    Melhor similaridade entre os tokens distintivos de duas marcas.
 
-    Usa o token distintivo mais longo (≥4 chars) de cada nome como
-    representante do elemento marcário principal. Isso evita inflação por
-    coincidência de tokens descritivos curtos que escaparam do vocabulário
-    ("arte", "fit", "rio") quando os tokens longos realmente divergem.
+    Estratégia em duas camadas:
+      1. Compara o PAR MAIS SIMILAR entre todos os tokens de cada lista —
+         captura casos como "CAPRICHO" vs "CAPRICCHE" onde o token único de
+         cada marca é exatamente o elemento marcário principal.
+      2. Penaliza se o par mais similar não inclui o TOKEN DOMINANTE (mais
+         longo) de pelo menos uma das marcas — evita inflação por tokens
+         curtos/descritivos residuais que escaparam do vocabulário.
 
     Retorna None quando ao menos uma das marcas não possui elemento distintivo
     próprio (é composta apenas por termos descritivos).
@@ -186,6 +189,27 @@ def match_distintivo(
     db = tokens_distintivos(nome_b, ncl_b)
     if not da or not db:
         return None
+
+    # Melhor par por similaridade (ortográfica ou fonética)
+    best = 0.0
+    best_a = best_b = ""
+    for x in da:
+        for y in db:
+            s = max(jaro_winkler(x, y), similaridade_fonetica(x, y))
+            if s > best:
+                best, best_a, best_b = s, x, y
+
+    # Penaliza quando o par de maior similaridade não inclui o token dominante
+    # de NENHUMA das duas marcas — indica que tokens secundários/residuais
+    # estão governando o score enquanto os elementos principais divergem.
     pa = _token_dominante(da)
     pb = _token_dominante(db)
-    return max(jaro_winkler(pa, pb), similaridade_fonetica(pa, pb))
+    dominante_incluido = (best_a == pa or best_b == pb)
+    if not dominante_incluido:
+        # Calcular score do par dominante como alternativa
+        score_dom = max(jaro_winkler(pa, pb), similaridade_fonetica(pa, pb))
+        # Retorna o maior entre o melhor par e o par dominante,
+        # mas penaliza o melhor par não-dominante (75% do valor)
+        best = max(score_dom, best * 0.75)
+
+    return best
