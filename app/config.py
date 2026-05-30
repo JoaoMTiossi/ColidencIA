@@ -105,11 +105,11 @@ ALERT_SERVICE_NAME: str = os.getenv("ALERT_SERVICE_NAME", "ColidencIA")
 # ---------------------------------------------------------------------------
 # Mínimo de marcas distintas processadas para uma classe ser considerada
 # com amostra suficiente para gerar vocab automático.
-CORPUS_MIN_AMOSTRA_CLASSE: int = int(os.getenv("CORPUS_MIN_AMOSTRA", "300"))
+CORPUS_MIN_AMOSTRA_CLASSE: int = int(os.getenv("CORPUS_MIN_AMOSTRA", "200"))
 # Frequência relativa mínima: termo descritivo se aparece em >= X% das marcas da classe.
-CORPUS_LIMIAR_FREQ: float = float(os.getenv("CORPUS_LIMIAR_FREQ", "0.01"))
+CORPUS_LIMIAR_FREQ: float = float(os.getenv("CORPUS_LIMIAR_FREQ", "0.004"))
 # Frequência absoluta mínima: ignorar limiares de freq se o termo aparece em < N marcas.
-CORPUS_LIMIAR_ABS: int = int(os.getenv("CORPUS_LIMIAR_ABS", "15"))
+CORPUS_LIMIAR_ABS: int = int(os.getenv("CORPUS_LIMIAR_ABS", "10"))
 
 # ---------------------------------------------------------------------------
 # Complementos descritivos (removidos do núcleo marcário)
@@ -169,6 +169,9 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "telemedicina", "telessaude",
     # Produto/processo industrial
     "injetados", "moldados", "usinados", "laminados",
+    # Qualificadores de público-alvo e gênero — descritivos, sem distintividade
+    "feminina", "feminino", "masculina", "masculino", "unissex",
+    "infantil", "adulto", "adultos", "juvenil",
     # Qualificadores genéricos em inglês usados como sufixo descritivo
     "fit", "life", "care", "well", "hub", "lab",
     # Tipos de estabelecimento comercial/alimentício adicionais

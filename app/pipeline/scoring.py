@@ -181,18 +181,30 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # é quase idêntico, descarta antes da IA.
         md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
         if md is None:
-            # Alguma das marcas é puramente descritiva — sem sinal próprio.
-            # Descarta apenas quando AMBAS as métricas de similaridade são baixas;
-            # alta fonética indica que os sinais soam o mesmo no mercado.
-            if s_nome < 0.80 and s_fon < 0.85:
+            # Marca puramente descritiva — sem sinal próprio. Só passa se o
+            # nome completo for quase idêntico (variação ortográfica evidente).
+            if s_nome < 0.92:
                 continue
-        elif md < 0.70 and s_nome < 0.90:
-            # Distintivo diverge — manter se a fonética é muito alta (nomes soam iguais)
-            if s_fon < 0.85:
+        elif ncl_a == ncl_b:
+            # Mesma classe: exige sinal distintivo sólido.
+            if md < 0.80 and s_nome < 0.90:
+                if s_fon < 0.85:
+                    continue
+            if md < 0.90:
+                score *= 0.85
+        else:
+            # Cross-class: o sinal distintivo precisa ser forte E é necessária
+            # evidência real de afinidade (spec semântica ou correlatas acima do
+            # piso de colisão). Evita que afinidade de matriz (piso 0.60) resgate
+            # marcas cujos produtos/serviços são genuinamente distintos.
+            s_sem = par.get("score_spec_semantico", 0.0) or 0.0
+            afinidade_real = s_sem >= 0.25 or af_classes >= 0.85
+            if md < 0.90 and s_nome < 0.92:
                 continue
-        elif md < 0.85:
-            # Distintivo apenas parcialmente semelhante — penaliza o score.
-            score *= 0.85
+            if not afinidade_real:
+                continue
+            if md < 0.95:
+                score *= 0.85
 
         # ── Superfície 2D — score da Regra Inversa ────────────────────────
         # Blend: (1 - w) * SAW + w * score_2D

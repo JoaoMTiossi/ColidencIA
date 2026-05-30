@@ -156,6 +156,12 @@ def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
     ]
 
 
+def _token_dominante(tokens: list[str]) -> str:
+    """Token mais representativo: o mais longo com len>=4, ou o mais longo disponível."""
+    longos = [t for t in tokens if len(t) >= 4]
+    return max(longos, key=len) if longos else max(tokens, key=len)
+
+
 def match_distintivo(
     nome_a: str,
     nome_b: str,
@@ -163,12 +169,15 @@ def match_distintivo(
     ncl_b: int | None = None,
 ) -> float | None:
     """
-    Melhor similaridade (ortográfica OU fonética) entre os elementos
-    distintivos das duas marcas.
+    Similaridade entre o TOKEN DOMINANTE de cada marca.
+
+    Usa o token distintivo mais longo (≥4 chars) de cada nome como
+    representante do elemento marcário principal. Isso evita inflação por
+    coincidência de tokens descritivos curtos que escaparam do vocabulário
+    ("arte", "fit", "rio") quando os tokens longos realmente divergem.
 
     Retorna None quando ao menos uma das marcas não possui elemento distintivo
-    próprio (é composta apenas por termos descritivos) — nesse caso só há
-    colidência se os nomes completos forem praticamente idênticos.
+    próprio (é composta apenas por termos descritivos).
 
     Quando `ncl_a`/`ncl_b` são informados, aplica também o vocabulário
     descritivo específico da classe (minerado do corpus acumulado).
@@ -177,8 +186,6 @@ def match_distintivo(
     db = tokens_distintivos(nome_b, ncl_b)
     if not da or not db:
         return None
-    return max(
-        max(jaro_winkler(x, y), similaridade_fonetica(x, y))
-        for x in da
-        for y in db
-    )
+    pa = _token_dominante(da)
+    pb = _token_dominante(db)
+    return max(jaro_winkler(pa, pb), similaridade_fonetica(pa, pb))
