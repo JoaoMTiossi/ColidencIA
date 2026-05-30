@@ -214,21 +214,30 @@ def executar_pipeline(
     # que o filtro de processo não pegou (processo ainda não está na carteira).
     from rapidfuzz import process as _rf_process, fuzz as _rf_fuzz
 
+    # Cache por titular_rpi único — evita O(n_pares × n_titulares) com rapidfuzz.
+    # Pré-computa uma vez por titular distinto, não por par.
+    _cache_titular: dict[str, bool] = {}
+
     def _titular_rpi_eh_cliente(titular_rpi: str) -> bool:
         if not titular_rpi:
             return False
         norm = _normalizar_titular(titular_rpi)
         if not norm:
             return False
+        if norm in _cache_titular:
+            return _cache_titular[norm]
         if norm in titulares_carteira_norm:
+            _cache_titular[norm] = True
             return True
         if titulares_carteira_lista:
             match = _rf_process.extractOne(
                 norm, titulares_carteira_lista,
                 scorer=_rf_fuzz.ratio, score_cutoff=92,
             )
-            if match is not None:
-                return True
+            resultado = match is not None
+            _cache_titular[norm] = resultado
+            return resultado
+        _cache_titular[norm] = False
         return False
 
     antes = len(todos_resultados)
