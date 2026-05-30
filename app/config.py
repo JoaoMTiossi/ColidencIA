@@ -177,6 +177,16 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     # Tipos de estabelecimento comercial/alimentício adicionais
     "emporio",       # ex: EMPÓRIO SOUZA → nucleo=souza
     "mercearia",
+    # Setoriais que vazaram na auditoria das RPIs 2884/2885/2886 (descrevem o
+    # ramo, não a marca — observados governando match_distintivo indevidamente)
+    "eletro", "eletros", "semijoias", "semijoia", "bijoux", "bijuteria",
+    "planejados", "planejado", "estofados", "estofado", "marmoraria",
+    "enxovais", "enxoval", "artesanal", "artesanato", "esquadrias", "esquadria",
+    "academy", "performance", "experience", "multimarcas", "multimarca",
+    "uniformes", "uniforme", "calhas", "telhas", "vidracaria", "vidros",
+    "climatizacao", "refrigeracao", "ferragens", "ferragem", "tintas",
+    "materiais", "material", "ferramentas", "equipamentos", "suprimentos",
+    "presentes", "variedades", "utilidades", "atacado", "varejo", "atacadao",
     # Serviços técnicos especializados — descrevem a ATIVIDADE, não o nome
     # (permitem que o núcleo sigla/nome próprio seja comparado isolado)
     "rebobinagem",   # ex: LL REBOBINAGEM → nucleo=ll
