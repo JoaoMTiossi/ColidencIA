@@ -34,11 +34,29 @@ _STOPWORDS: frozenset[str] = frozenset({
 })
 
 # Honoríficos/apelações religiosas: "SÃO JOÃO", "SANTA MARIA", "NOSSA SENHORA",
-# "BOM JESUS". O honorífico + o nome que o segue formam uma apelação comum, sem
-# distintividade própria — ambos são descartados do núcleo distintivo.
+# "BOM JESUS". Quando seguidos de um nome de santo clássico/topônimo (_NOMES_TOPOGRAFICOS),
+# formam designação comum sem distintividade própria e são descartados em conjunto.
+# Quando seguidos de elemento inventado/arbitrário ("SANTA LOLLA", "SANTO GRÃO"),
+# o conjunto É o elemento marcário e é preservado — doutrina Manual 5.9.9 + STJ.
 _HONORIFICOS: frozenset[str] = frozenset({
-    "sao", "santo", "santa", "sra", "senhora", "nossa", "nsa",
+    "sao", "santo", "santa", "san",
+    "sra", "senhora", "nossa", "nsa",
     "dom", "bom", "boa", "frei", "padre", "madre",
+})
+
+# Nomes próprios de santos e topônimos clássicos que, precedidos de um honorífico,
+# formam designações geográficas/religiosas de uso comum sem distintividade.
+# Critério: nomes que aparecem em >5 municípios brasileiros com o prefixo honorífico.
+_NOMES_TOPOGRAFICOS: frozenset[str] = frozenset({
+    "paulo", "joao", "jose", "maria", "pedro", "francisco",
+    "andre", "luis", "luiz", "antonio", "catarina", "barbara",
+    "amaro", "bento", "bernardo", "caetano", "roque", "sebastiao",
+    "lourenco", "mateus", "lazaro", "bosco", "esperanca",
+    "isabel", "rita", "helena", "angelo", "miguel", "gabriel",
+    "cruz",      # Santa Cruz — topônimo muito frequente
+    "spirito", "espirito",  # Espírito Santo
+    "senhora",   # Nossa Senhora (aninhado)
+    "gracas",    # Nossa Senhora das Graças
 })
 
 # Padrão de sigla: 2-4 letras maiúsculas, pode ter ponto separando
@@ -225,8 +243,14 @@ def extrair_nucleo_distintivo(nucleo: str) -> str:
     # Apara a borda esquerda
     while tokens:
         if tokens[0] in _HONORIFICOS and len(tokens) >= 2:
-            tokens = tokens[2:]
-            continue
+            prox = tokens[1]
+            # Só descarta o par quando o nome seguinte é topônimo/santo clássico
+            # (ex.: "são paulo", "santa cruz", "dom bosco") — ou ele mesmo fraco.
+            # Se o nome é arbitrário ("lolla", "grão"), o conjunto É a marca.
+            if prox in _NOMES_TOPOGRAFICOS or prox in fraco:
+                tokens = tokens[2:]
+                continue
+            break
         if tokens[0] in fraco:
             tokens.pop(0)
             continue

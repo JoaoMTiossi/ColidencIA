@@ -4,6 +4,8 @@ Gera campos derivados para cada marca antes das comparações.
 """
 from __future__ import annotations
 
+import re
+
 from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import bigramas, normalizar_base
 from ..utils.nucleo_marcario import (
@@ -13,6 +15,14 @@ from ..utils.nucleo_marcario import (
     is_marca_generica,
     is_nome_proprio,
     is_sigla,
+)
+
+# Sufixos de forma jurídica que aparecem no nome bruto e disparam falso positivo
+# no padrão de sigla pontilhada (_RE_SIGLA_SEPARADA capta "S.A." como sigla).
+_RE_FORMA_JURIDICA = re.compile(
+    r"\s+(?:S\.?/?A\.?|LTDA?\.?|ME\.?|EPP\.?|EIRELI\.?|S\.?S\.?|MEI\.?)"
+    r"(?:\s+|$)",
+    re.IGNORECASE,
 )
 
 
@@ -46,9 +56,11 @@ def preprocessar(marca: dict) -> dict:
     base_prefixo = (nucleo_distintivo or nucleo or nome_norm).replace(" ", "")
     resultado["prefixo_direto"] = base_prefixo[:4]
     resultado["bigrams_set"] = bigramas(nome)
-    # Sigla pelo nome completo OU pelo núcleo distintivo — capta "MS REBOBINAGEM"
-    # (núcleo "ms"), onde o nome completo é longo mas o elemento marcário é sigla.
-    resultado["is_sigla"] = is_sigla(nome) or is_sigla(nucleo_distintivo or nucleo)
+    # Sigla pelo nome (sem forma jurídica) OU pelo núcleo distintivo.
+    # A forma jurídica (S.A., LTDA) é removida do nome bruto antes do teste —
+    # "S.A." dispararia falso positivo no padrão de sigla pontilhada.
+    nome_sem_fj = _RE_FORMA_JURIDICA.sub(" ", nome).strip()
+    resultado["is_sigla"] = is_sigla(nome_sem_fj) or is_sigla(nucleo_distintivo or nucleo)
     resultado["is_nome_proprio"] = is_nome_proprio(resultado)
     resultado["is_marca_generica"] = is_marca_generica(nucleo)
     resultado["is_desgastado"] = is_desgastado(nome)

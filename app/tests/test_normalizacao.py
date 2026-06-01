@@ -158,6 +158,35 @@ class TestNucleoMarcario:
         # Conector interno é preservado
         assert extrair_nucleo_distintivo("matos e silva") == "matos e silva"
 
+    def test_honorifico_toponimo_vazio(self):
+        """Honorífico + nome de santo/topônimo clássico → distintivo vazio."""
+        from app.utils.nucleo_marcario import extrair_nucleo_distintivo, is_marca_generica
+        # Topônimos clássicos: sem distintividade
+        assert extrair_nucleo_distintivo("sao joao") == ""
+        assert extrair_nucleo_distintivo("sao paulo") == ""
+        assert extrair_nucleo_distintivo("santa cruz") == ""
+        assert extrair_nucleo_distintivo("dom bosco") == ""
+        assert is_marca_generica("sao joao") is True
+
+    def test_honorifico_elemento_inventado_preservado(self):
+        """Honorífico + elemento arbitrário/inventado → conjunto preservado (marca forte)."""
+        from app.utils.nucleo_marcario import extrair_nucleo_distintivo, is_marca_generica
+        # Manual 5.9.9: conjunto arbitrário é protegível mesmo com honorífico
+        assert extrair_nucleo_distintivo("santa lola") == "santa lola"
+        assert extrair_nucleo_distintivo("santo grao") == "santo grao"
+        assert extrair_nucleo_distintivo("dom perignon") == "dom perignon"
+        assert is_marca_generica("santa lola") is False
+
+    def test_is_sigla_forma_juridica_nao_dispara(self):
+        """Forma jurídica (S.A., LTDA) no nome não deve tornar a marca sigla."""
+        from app.pipeline.preprocessor import preprocessar
+        r = preprocessar({"marca": "GARCIA S.A.", "titular": "GARCIA SA", "ncl": 35})
+        assert r["is_sigla"] is False
+        assert r["nucleo"] == "garcia"
+        # Dotted sigla real ainda é detectada
+        r2 = preprocessar({"marca": "H.O.F LOCACAO", "titular": "X", "ncl": 40})
+        assert r2["is_sigla"] is True
+
 
 class TestNumeros:
     def test_numero_distintivo_por_extenso(self):

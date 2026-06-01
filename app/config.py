@@ -206,6 +206,17 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "vulcanizadora", "vulcanizacao",
     "locacoes", "locacao",  # ex: MG LOCAÇÕES → nucleo=mg
     "guindastes",
+    # Varejo de moda/vestuário — descrevem o setor
+    "calcados", "calcado", "roupas", "roupa", "vestuario", "confeccoes",
+    "sapatos", "sapato", "bolsas", "bolsa", "acessorios", "acessorio",
+    # Agência (comunicação, viagem, imóveis, seguros)
+    "agencia", "agencias",
+    # Gastronomia — tipos de estabelecimento que faltavam
+    "tapiocaria", "açaiteria", "acaiteria", "crepe", "creperia", "doceria",
+    # Hospedagem e turismo
+    "resort", "pousada", "hotel", "hostel", "motel", "hotelaria",
+    # Esporte/atividade física complementar
+    "sports",
 })
 
 # ---------------------------------------------------------------------------
@@ -215,9 +226,11 @@ ELEMENTOS_DESGASTADOS: frozenset[str] = frozenset({
     # Intensificadores e superlativos
     "super", "max", "maxi", "mega", "ultra", "hiper", "hyper", "extra",
     "multi", "mini", "micro", "macro", "big", "grande",
-    # Qualidade/excelência
-    "prime", "premium", "master", "gold", "silver", "platinum", "diamond",
+    # Qualidade/excelência — laudatórios sem distintividade (Manual 5.11.1)
+    "prime", "premier", "premium", "master", "gold", "silver", "platinum", "diamond",
     "top", "plus", "best", "good", "great", "first", "one", "numero",
+    # Estilo/moda — evocativos genéricos de segmento
+    "style", "styles", "chic", "chique",
     "royal", "imperial", "classic", "classico", "original", "autentico",
     "exclusive", "exclusivo", "unique", "unico", "especial", "special",
     "superior", "elite", "vip",
