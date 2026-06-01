@@ -33,6 +33,14 @@ _STOPWORDS: frozenset[str] = frozenset({
     "y", "del", "los", "las",
 })
 
+# Honoríficos/apelações religiosas: "SÃO JOÃO", "SANTA MARIA", "NOSSA SENHORA",
+# "BOM JESUS". O honorífico + o nome que o segue formam uma apelação comum, sem
+# distintividade própria — ambos são descartados do núcleo distintivo.
+_HONORIFICOS: frozenset[str] = frozenset({
+    "sao", "santo", "santa", "sra", "senhora", "nossa", "nsa",
+    "dom", "bom", "boa", "frei", "padre", "madre",
+})
+
 # Padrão de sigla: 2-4 letras maiúsculas, pode ter ponto separando
 _RE_SIGLA = re.compile(r'^[A-Z]{2,4}\.?$')
 
@@ -70,13 +78,31 @@ def extrair_nucleo(marca: str) -> str:
         while start < len(tokens) and tokens[start] in _STOPWORDS:
             start += 1
 
+    resto = tokens[start:]
     nucleo: list[str] = []
-    for tok in tokens[start:]:
+    i = 0
+    while i < len(resto):
+        tok = resto[i]
         if tok in _STOPWORDS and nucleo:
+            # Conector "e" entre dois elementos distintivos (padrão de razão
+            # social de sociedade: "MATTOS E SILVA", "PINHEIRO E SOUZA") integra
+            # o núcleo — não encerra a coleta. Só vale se o próximo token também
+            # for distintivo (não stopword, não complemento).
+            prox = resto[i + 1] if i + 1 < len(resto) else None
+            if (
+                tok == "e"
+                and prox is not None
+                and prox not in _STOPWORDS
+                and prox not in _COMPLEMENTOS
+            ):
+                nucleo.append(tok)
+                i += 1
+                continue
             break
         if tok in _COMPLEMENTOS and nucleo:
             break
         nucleo.append(tok)
+        i += 1
 
     nucleo_str = " ".join(nucleo) if nucleo else norm
     # PROTEÇÃO contra strip cego de complementos: se o que sobrou for fraco
@@ -158,10 +184,18 @@ def is_nome_proprio(marca: dict) -> bool:
 
 
 def is_marca_generica(nucleo: str) -> bool:
-    """Retorna True se o núcleo é composto majoritariamente por elementos desgastados."""
+    """Retorna True quando o núcleo não tem elemento distintivo próprio.
+
+    Critério primário: se a depuração das bordas (complementos, stopwords,
+    desgastados e apelações honoríficas) não deixa nenhum elemento, a marca é
+    inteiramente genérica. Mantém-se também o teste de proporção de desgaste
+    para núcleos com sobra fraca mas não vazia.
+    """
     tokens = normalizar_base(nucleo).split()
     if not tokens:
         return False
+    if not extrair_nucleo_distintivo(nucleo):
+        return True
     desg = sum(1 for t in tokens if t in _DESGASTADOS)
     if desg == len(tokens):
         return True
@@ -172,20 +206,33 @@ def is_marca_generica(nucleo: str) -> bool:
 
 def extrair_nucleo_distintivo(nucleo: str) -> str:
     """
-    Remove tokens desgastados das bordas do núcleo para revelar o elemento
-    verdadeiramente distintivo.
+    Remove tokens não-distintivos das bordas do núcleo para revelar o elemento
+    verdadeiramente distintivo. São aparados das pontas: complementos setoriais,
+    stopwords/conectores e termos desgastados. Apelações honoríficas ("SÃO
+    JOÃO", "SANTA MARIA") são descartadas junto com o nome que as segue, por
+    formarem designação comum sem distintividade própria.
 
     Exemplos:
-        "saude jaguara"   → "jaguara"
-        "cafe joao"       → "joao"
-        "saude forte"     → ""   (todos desgastados)
-        "jaguara saude"   → "jaguara"
-        "jaguara"         → "jaguara"
+        "saude jaguara"        → "jaguara"
+        "cafe joao"            → "joao"
+        "saude forte"          → ""   (todos desgastados)
+        "churrascaria do rei"  → ""   (complemento + stopword + desgastado)
+        "sao joao"             → ""   (apelação honorífica)
+        "matos e silva"        → "matos e silva"  (conector interno preservado)
     """
     tokens = normalizar_base(nucleo).split()
-    while tokens and tokens[0] in _DESGASTADOS:
-        tokens.pop(0)
-    while tokens and tokens[-1] in _DESGASTADOS:
+    fraco = _STOPWORDS | _COMPLEMENTOS | _DESGASTADOS
+    # Apara a borda esquerda
+    while tokens:
+        if tokens[0] in _HONORIFICOS and len(tokens) >= 2:
+            tokens = tokens[2:]
+            continue
+        if tokens[0] in fraco:
+            tokens.pop(0)
+            continue
+        break
+    # Apara a borda direita
+    while tokens and tokens[-1] in fraco:
         tokens.pop()
     return " ".join(tokens)
 

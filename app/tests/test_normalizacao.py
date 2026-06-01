@@ -125,6 +125,39 @@ class TestNucleoMarcario:
         # "royal" é desgastado → mantém nome completo
         assert extrair_nucleo("CAFE ROYAL") == "cafe royal"
 
+    def test_nucleo_conector_e_sociedade(self):
+        """Conector 'e' entre dois nomes (razão social) integra o núcleo."""
+        from app.utils.nucleo_marcario import extrair_nucleo
+        assert extrair_nucleo("MATTOS E SILVA ADVOGADOS") == "matos e silva"
+        assert extrair_nucleo("PINHEIRO E SOUZA CONSULTORIA") == "pinheiro e souza"
+
+    def test_nucleo_qualificador_retido(self):
+        """Qualificador desgastado ('gold') junto à marca permanece no núcleo."""
+        from app.utils.nucleo_marcario import extrair_nucleo
+        assert extrair_nucleo("ACADEMIA GOLD SPORT FITNESS") == "gold sport"
+
+    def test_distintivo_honorifico_vazio(self):
+        """'São João' é apelação comum → núcleo distintivo vazio."""
+        from app.utils.nucleo_marcario import (
+            extrair_nucleo,
+            extrair_nucleo_distintivo,
+            is_marca_generica,
+        )
+        nuc = extrair_nucleo("DROGARIA SAO JOAO")
+        assert extrair_nucleo_distintivo(nuc) == ""
+        assert is_marca_generica(nuc) is True
+
+    def test_distintivo_complemento_aparado(self):
+        """Complemento + stopword + desgastado nas bordas → distintivo vazio."""
+        from app.utils.nucleo_marcario import (
+            extrair_nucleo_distintivo,
+            is_marca_generica,
+        )
+        assert extrair_nucleo_distintivo("churascaria do rei") == ""
+        assert is_marca_generica("churascaria do rei") is True
+        # Conector interno é preservado
+        assert extrair_nucleo_distintivo("matos e silva") == "matos e silva"
+
 
 class TestNumeros:
     def test_numero_distintivo_por_extenso(self):

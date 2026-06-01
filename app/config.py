@@ -128,7 +128,7 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "solucoes", "inteligencia", "assessoria", "consultoria",
     "design", "conceito", "multivendas", "climatizacao", "moveis",
     "placas", "motos", "transports", "componentes",
-    "digital", "online", "express", "plus", "premium", "gold", "pro",
+    "digital", "online", "express", "plus", "pro",
     "delivery", "fitness", "pilates", "yoga", "crossfit",
     "croche", "malhas", "tecidos", "confeccao", "costura",
     # Produtos alimentícios usados como tipo de negócio
@@ -143,6 +143,7 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     # Tipos de estabelecimento alimentício
     "cafe", "cafeteria", "bar", "restaurante", "cantina", "lanchonete",
     "bistrô", "bistro", "choperia", "cervejaria", "pizzeria",
+    "churrascaria", "churrasco", "espetaria", "marmitaria", "temakeria",
     # Saúde e serviços médicos
     "hospital", "clinica", "medicina", "medico", "medica",
     "veterinaria", "farmaceutica",
@@ -154,6 +155,9 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "distribuidora", "transportadora", "logistica",
     # Outros tipos de negócio
     "contabilidade", "contabil", "tecnologia", "sistemas", "software",
+    # Serviços jurídicos
+    "advocacia", "advogados", "advogadas", "advogado", "advogada", "juridico",
+    "juridica", "associados", "associadas",
     "saude", "energia", "construcao",
     # Serviços automotivos e especializados
     "funilaria", "serralheria", "borracharia", "mecanica", "chaveiro",
