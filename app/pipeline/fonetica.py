@@ -157,6 +157,13 @@ def camada2(
                 if cod_nuc:
                     _indexar(ncl, cod_nuc, marca)
 
+        # 5. Indexar pelo prefixo literal do núcleo distintivo (sem Metaphone).
+        #    Reaproxima variações que o código fonético separa por descartar
+        #    vogais não-iniciais (ex.: "NEXO" e "NEXORA" → ambas "nexo").
+        prefixo = marca.get("prefixo_direto", "")
+        if len(prefixo) >= 3:
+            _indexar(ncl, f"_d:{prefixo}", marca)
+
         if marca.get("bigrams_set"):
             indice_bigrama[ncl].append(marca)
 
@@ -193,6 +200,12 @@ def camada2(
                 if cod:
                     cands_nucleo.extend(_busca_exata(cod, indice_fonetico, classes_ok))
 
+        # 2c. Busca pelo prefixo literal do núcleo distintivo (sem Metaphone)
+        cands_direto: list[dict] = []
+        prefixo_rpi = marca_rpi.get("prefixo_direto", "")
+        if len(prefixo_rpi) >= 3:
+            cands_direto = _busca_exata(f"_d:{prefixo_rpi}", indice_fonetico, classes_ok)
+
         # 3. Busca pelo código do nome completo (com Levenshtein-1)
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
         cands_full = _busca_com_vizinhos(cod_rpi, indice_fonetico, classes_ok) if cod_rpi else []
@@ -212,7 +225,7 @@ def camada2(
         # Unir candidatos sem duplicatas
         todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
-        for m in cands_tokens + cands_desgastados + cands_nucleo + cands_full + cands_bigrama:
+        for m in cands_tokens + cands_desgastados + cands_nucleo + cands_direto + cands_full + cands_bigrama:
             mid = id(m)
             if mid not in todos_ids:
                 todos_ids.add(mid)

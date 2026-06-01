@@ -6,7 +6,22 @@ from __future__ import annotations
 import re
 
 from ..config import COMPLEMENTOS_DESCRITIVOS, ELEMENTOS_DESGASTADOS
-from .normalizacao import normalizar_base
+from .normalizacao import _colapsar_dobras, normalizar_base
+
+
+def _augmentar_dobras(palavras: frozenset[str]) -> frozenset[str]:
+    """Inclui a forma com dobra simplificada de cada palavra do vocabulário.
+
+    Como ``normalizar_base`` colapsa dobras ("pizzaria"→"pizaria",
+    "terra"→"tera"), os tokens normalizados não casariam com as entradas
+    originais das listas. Augmentar com a forma colapsada mantém o
+    reconhecimento de complementos/desgastados consistente.
+    """
+    return frozenset(palavras) | frozenset(_colapsar_dobras(p) for p in palavras)
+
+
+_COMPLEMENTOS = _augmentar_dobras(COMPLEMENTOS_DESCRITIVOS)
+_DESGASTADOS = _augmentar_dobras(ELEMENTOS_DESGASTADOS)
 
 # Stopwords que indicam início do complemento descritivo
 _STOPWORDS: frozenset[str] = frozenset({
@@ -20,6 +35,12 @@ _STOPWORDS: frozenset[str] = frozenset({
 
 # Padrão de sigla: 2-4 letras maiúsculas, pode ter ponto separando
 _RE_SIGLA = re.compile(r'^[A-Z]{2,4}\.?$')
+
+# Sigla separada por pontos/espaços na origem: "M.S.", "M G", "H.O.F", "J.C.B".
+# Exige sequência de 2+ letras isoladas separadas só por pontos/espaços.
+_RE_SIGLA_SEPARADA = re.compile(
+    r"(?<![A-Za-z\d])[A-Za-z](?:[. ]+[A-Za-z])+[. ]*(?![A-Za-z\d])"
+)
 
 
 def extrair_nucleo(marca: str) -> str:
@@ -44,7 +65,7 @@ def extrair_nucleo(marca: str) -> str:
     # e stopwords sequenciais (de, do, da) antes da parte distintiva.
     start = 0
     if len(tokens) > 1:
-        while start < len(tokens) and tokens[start] in COMPLEMENTOS_DESCRITIVOS:
+        while start < len(tokens) and tokens[start] in _COMPLEMENTOS:
             start += 1
         while start < len(tokens) and tokens[start] in _STOPWORDS:
             start += 1
@@ -53,11 +74,22 @@ def extrair_nucleo(marca: str) -> str:
     for tok in tokens[start:]:
         if tok in _STOPWORDS and nucleo:
             break
-        if tok in COMPLEMENTOS_DESCRITIVOS and nucleo:
+        if tok in _COMPLEMENTOS and nucleo:
             break
         nucleo.append(tok)
 
     nucleo_str = " ".join(nucleo) if nucleo else norm
+    # PROTEÇÃO contra strip cego de complementos: se o que sobrou for fraco
+    # (vazio, só termos desgastados ou só números), o recorte não revelou uma
+    # âncora distintiva — mantém o nome completo como núcleo. Evita
+    # "CAFE ROYAL"→"royal" e "STUDIO 54"→"54"; nesses casos a marca é fraca e
+    # a barra de colisão fica alta via os gates de marca genérica.
+    nucleo_tokens = nucleo_str.split()
+    sobra_fraca = not nucleo_tokens or all(
+        t in _DESGASTADOS or t.isdigit() for t in nucleo_tokens
+    )
+    if sobra_fraca:
+        return norm
     # Permite siglas de 2 chars (LL, MS, LK); só rejeita núcleo de 1 char
     if len(nucleo_str.replace(" ", "")) < 2:
         return norm
@@ -65,17 +97,64 @@ def extrair_nucleo(marca: str) -> str:
 
 
 def is_sigla(texto: str) -> bool:
-    """Retorna True se o texto normalizado parece ser uma sigla (≤4 chars alfanuméricos)."""
-    norm = normalizar_base(texto).replace(" ", "").upper()
-    return len(norm) <= 4 and norm.isalpha()
+    """
+    Retorna True quando o texto é uma sigla/abreviação — não uma palavra curta
+    comum. Evidências de sigla:
+      - padrão separado por pontos/espaços na origem ("M.S.", "H O F", "J.C.B");
+      - forma curta (≤4 chars) sem vogais ("MS", "LK", "BMW", "JCB", "RM");
+      - caractere único.
 
-
-def is_nome_proprio(texto: str) -> bool:
-    """Heurística simples: dois tokens, ambos com inicial maiúscula."""
-    tokens = texto.strip().split()
-    if len(tokens) < 2:
+    Palavras curtas pronunciáveis ("NEXO", "CASA", "MALA", "ASIA") NÃO são
+    siglas — o tratamento de sigla (fonética zerada, peso de nome elevado) só
+    deve incidir sobre abreviações genuínas.
+    """
+    if _RE_SIGLA_SEPARADA.search(texto or ""):
+        return True
+    norm = normalizar_base(texto).replace(" ", "")
+    if not norm.isalpha():
         return False
-    return all(t[0].isupper() for t in tokens if t)
+    if len(norm) <= 1:
+        return True
+    if len(norm) > 4:
+        return False
+    # Curto (≤4): é sigla se NÃO tiver estrutura silábica pronunciável, isto é,
+    # nenhuma vogal precedida de consoante (padrão CV). "IBM"/"MS"/"BMW"/"USP"
+    # não têm CV → siglas. "NEXO"/"CASA"/"MALA"/"OVOS"/"SOL" têm CV → palavras.
+    tem_silaba = any(
+        norm[i] in "aeiou" and norm[i - 1] not in "aeiou"
+        for i in range(1, len(norm))
+    )
+    return not tem_silaba
+
+
+def is_nome_proprio(marca: dict) -> bool:
+    """
+    Retorna True quando a marca corresponde ao nome do próprio titular
+    (registrante) — ou seja, a marca É o nome do dono.
+
+    Critério: todos os tokens significativos da marca (descartando stopwords e
+    complementos descritivos) aparecem no nome do titular. Trabalha sobre o
+    texto normalizado, sem depender de capitalização.
+
+    Exemplos:
+        marca="CARLOS MOTTA ADVOCACIA", titular="CARLOS MOTTA"   → True
+        marca="NEXO", titular="NEXO INDUSTRIA LTDA"              → True
+        marca="COCA COLA", titular="OUTRA EMPRESA SA"            → False
+    """
+    nome = normalizar_base(marca.get("marca") or marca.get("nome_marca", ""))
+    titular = normalizar_base(marca.get("titular", ""))
+    if not nome or not titular:
+        return False
+    nome_tokens = set(nome.split())
+    # Tokens significativos do titular (descartando tipos societários e
+    # complementos) precisam estar todos presentes na marca.
+    titular_tokens = [
+        t for t in titular.split()
+        if t not in _STOPWORDS and t not in _COMPLEMENTOS
+    ]
+    if not titular_tokens:
+        return False
+    return all(t in nome_tokens for t in titular_tokens)
 
 
 def is_marca_generica(nucleo: str) -> bool:
@@ -83,7 +162,7 @@ def is_marca_generica(nucleo: str) -> bool:
     tokens = normalizar_base(nucleo).split()
     if not tokens:
         return False
-    desg = sum(1 for t in tokens if t in ELEMENTOS_DESGASTADOS)
+    desg = sum(1 for t in tokens if t in _DESGASTADOS)
     if desg == len(tokens):
         return True
     if len(tokens) >= 3 and desg / len(tokens) >= 2 / 3:
@@ -104,9 +183,9 @@ def extrair_nucleo_distintivo(nucleo: str) -> str:
         "jaguara"         → "jaguara"
     """
     tokens = normalizar_base(nucleo).split()
-    while tokens and tokens[0] in ELEMENTOS_DESGASTADOS:
+    while tokens and tokens[0] in _DESGASTADOS:
         tokens.pop(0)
-    while tokens and tokens[-1] in ELEMENTOS_DESGASTADOS:
+    while tokens and tokens[-1] in _DESGASTADOS:
         tokens.pop()
     return " ".join(tokens)
 
@@ -114,4 +193,4 @@ def extrair_nucleo_distintivo(nucleo: str) -> str:
 def is_desgastado(marca: str) -> bool:
     """Retorna True se qualquer token principal é um elemento desgastado."""
     tokens = set(normalizar_base(marca).split())
-    return bool(tokens & ELEMENTOS_DESGASTADOS)
+    return bool(tokens & _DESGASTADOS)

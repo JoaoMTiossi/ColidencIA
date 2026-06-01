@@ -108,14 +108,21 @@ def _vocab_inpi_servicos() -> frozenset[str]:
 
 @lru_cache(maxsize=1)
 def _vocab_descritivo() -> frozenset[str]:
-    """Vocabulário descritivo combinado (NICE + INPI serviços + listas curadas + complementos)."""
-    return (
+    """Vocabulário descritivo combinado (NICE + INPI serviços + listas curadas + complementos).
+
+    Inclui a forma com dobra simplificada de cada termo, pois ``normalizar_base``
+    colapsa dobras ("pizzaria"→"pizaria") e os tokens normalizados precisam
+    casar com o vocabulário.
+    """
+    from .normalizacao import _colapsar_dobras
+    base = (
         _vocab_nice()
         | _vocab_inpi_servicos()
         | _CURADAS
         | frozenset(COMPLEMENTOS_DESCRITIVOS)
         | frozenset(ELEMENTOS_DESGASTADOS)
     )
+    return base | frozenset(_colapsar_dobras(t) for t in base)
 
 
 @lru_cache(maxsize=1)
