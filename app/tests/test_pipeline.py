@@ -167,6 +167,98 @@ class TestCamada1:
         assert isinstance(alertas, list)
         assert isinstance(restante, list)
 
+    # ------------------------------------------------------------------
+    # Campos obrigatórios nos alertas de C1
+    # ------------------------------------------------------------------
+
+    def test_alerta_tem_motivo(self):
+        """Campo motivo sempre presente e correto."""
+        carteira = [_marca("NEXO", 35)]
+        rpi = [_marca("NEXO", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["motivo"] == "nome_identico"
+
+    def test_nucleo_identico_motivo(self):
+        carteira = [_marca("IBM BRASIL", 35)]
+        rpi = [_marca("IBM SOLUCOES", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["motivo"] == "nucleo_identico"
+
+    def test_alerta_tem_score_final(self):
+        """score_final presente e consistente com classificacao."""
+        # nome_identico + mesma classe → 1.0
+        carteira = [_marca("NEXO", 35)]
+        rpi = [_marca("NEXO", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["score_final"] == 1.0
+
+    def test_alerta_tem_nivel(self):
+        """nivel presente e correto para cada combinação."""
+        # nome_identico + classes colidem → ALTA
+        carteira = [_marca("NEXO", 35)]
+        rpi = [_marca("NEXO", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["nivel"] == "ALTA"
+
+    def test_nome_identico_cross_class_nao_colidente(self):
+        """Nome idêntico em classes sem relação → MEDIA, score_final na faixa MEDIA."""
+        carteira = [_marca("NEXO", 1)]
+        rpi = [_marca("NEXO", 45)]   # NCL 1 × 45 não colidem
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["nivel"] == "MEDIA"
+        assert alertas[0]["score_final"] == 0.75
+        assert alertas[0]["classificacao"] == "MEDIA"
+
+    def test_nucleo_identico_cross_class_nao_colidente_nivel(self):
+        """Núcleo idêntico em classes sem relação → VIGIAR."""
+        carteira = [_marca("IBM BRASIL", 35)]
+        rpi = [_marca("IBM SOLUCOES", 12)]   # NCL 35 × 12 não colidem
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["nivel"] == "VIGIAR"
+        assert alertas[0]["score_final"] == 0.70
+        assert alertas[0]["classificacao"] == "MEDIA"
+
+    # ------------------------------------------------------------------
+    # Bug fix: nome_identico não deve suprimir nucleo_identico para
+    # outras marcas da carteira
+    # ------------------------------------------------------------------
+
+    def test_nome_identico_nao_suprime_nucleo_identico_outra_marca(self):
+        """
+        Bug fix: quando nome_identico detecta (CartA × RPI), o nucleo_identico
+        de (CartB × RPI) ainda deve ser gerado.
+
+        Carteira: ["IBM" NCL35, "IBM BRASIL" NCL44]
+        RPI:      ["IBM" NCL35]
+
+        "IBM BRASIL" → nucleo_distintivo="ibm" (BRASIL é desgastado).
+        nome_identico detecta (IBM×IBM); sem o fix, suprimiria o
+        nucleo_identico de (IBM BRASIL×IBM).
+        """
+        carteira = [_marca("IBM", 35), _marca("IBM BRASIL", 44)]
+        rpi = [_marca("IBM", 35)]
+        alertas, restante = camada1(carteira, rpi)
+        assert len(alertas) == 2, (
+            f"Esperados 2 alertas (nome_identico + nucleo_identico), "
+            f"mas foram gerados {len(alertas)}: {[a['motivo'] for a in alertas]}"
+        )
+        motivos = {a["motivo"] for a in alertas}
+        assert "nome_identico" in motivos
+        assert "nucleo_identico" in motivos
+        # RPI não deve ser enviado para camada 2
+        assert len(restante) == 0
+
+    def test_nome_identico_nao_gera_nucleo_identico_duplicado(self):
+        """
+        Quando nome_identico detecta o par, nucleo_identico não deve criar
+        um segundo alerta para o MESMO par.
+        """
+        carteira = [_marca("NEXO", 35)]
+        rpi = [_marca("NEXO", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert len(alertas) == 1
+        assert alertas[0]["motivo"] == "nome_identico"
+
 
 class TestConfig:
     def test_classes_colidem(self):

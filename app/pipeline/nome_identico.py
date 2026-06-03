@@ -26,24 +26,28 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
     Retorna:
         (alertas_automaticos, rpi_restante_para_camada2)
     """
-    # Índice da carteira por hash do nome
-    carteira_por_hash: dict[str, list[dict]] = {}
-    for marca in carteira:
+    # Índice da carteira por hash do nome — (índice_carteira, marca)
+    carteira_por_hash: dict[str, list[tuple[int, dict]]] = {}
+    for idx_c, marca in enumerate(carteira):
         chave = normalizar_para_hash(marca["nome_normalizado"])
-        carteira_por_hash.setdefault(chave, []).append(marca)
+        carteira_por_hash.setdefault(chave, []).append((idx_c, marca))
 
     # Índice da carteira por hash do núcleo distintivo (ou núcleo quando
     # nucleo_distintivo está vazio — marca sem elemento descritivo aparável).
-    carteira_por_nucleo: dict[str, list[dict]] = {}
-    for marca in carteira:
+    carteira_por_nucleo: dict[str, list[tuple[int, dict]]] = {}
+    for idx_c, marca in enumerate(carteira):
         chave_nucleo = normalizar_para_hash(
             marca.get("nucleo_distintivo") or marca["nucleo"]
         )
         if chave_nucleo:
-            carteira_por_nucleo.setdefault(chave_nucleo, []).append(marca)
+            carteira_por_nucleo.setdefault(chave_nucleo, []).append((idx_c, marca))
 
     alertas: list[dict] = []
     rpi_processados: set[int] = set()
+    # Rastreia pares (idx_rpi, idx_carteira) capturados por nome_identico para
+    # evitar alerta nucleo_identico duplicado para o MESMO par, sem suprimir
+    # alertas com outras marcas da carteira que casam apenas pelo núcleo.
+    pares_nome_identico: set[tuple[int, int]] = set()
 
     for idx_rpi, marca_rpi in enumerate(rpi):
         hash_rpi = normalizar_para_hash(marca_rpi["nome_normalizado"])
@@ -52,8 +56,7 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
         )
 
         # Match por nome completo idêntico
-        matches = carteira_por_hash.get(hash_rpi, [])
-        for marca_base in matches:
+        for idx_c, marca_base in carteira_por_hash.get(hash_rpi, []):
             colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
             alertas.append(_criar_alerta(
                 marca_base=marca_base,
@@ -62,33 +65,66 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
                 score_nucleo=1.0,
                 camada=1,
                 motivo="nome_identico",
-                classes_colidem=colidem,
+                colidem=colidem,
+                mesma_classe=(marca_base["ncl"] == marca_rpi["ncl"]),
             ))
             rpi_processados.add(idx_rpi)
+            pares_nome_identico.add((idx_rpi, idx_c))
 
-        # Match por núcleo distintivo idêntico (apenas se não já detectado por
-        # nome e o núcleo não for genérico — evita falsos positivos como
-        # "SAÚDE X" vs "SAÚDE Y").
-        if idx_rpi not in rpi_processados and nucleo_hash_rpi:
-            if not marca_rpi.get("is_marca_generica"):
-                matches_nucleo = carteira_por_nucleo.get(nucleo_hash_rpi, [])
-                for marca_base in matches_nucleo:
-                    if marca_base.get("is_marca_generica"):
-                        continue
-                    colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
-                    alertas.append(_criar_alerta(
-                        marca_base=marca_base,
-                        marca_rpi=marca_rpi,
-                        score_nome=0.85,
-                        score_nucleo=1.0,
-                        camada=1,
-                        motivo="nucleo_identico",
-                        classes_colidem=colidem,
-                    ))
-                    rpi_processados.add(idx_rpi)
+        # Match por núcleo distintivo idêntico — corre mesmo quando nome_identico
+        # já detectou este RPI, pois pode haver outras marcas na carteira que casam
+        # pelo núcleo mas não pelo nome completo. Apenas o par exato já coberto por
+        # nome_identico é pulado.
+        if nucleo_hash_rpi and not marca_rpi.get("is_marca_generica"):
+            for idx_c, marca_base in carteira_por_nucleo.get(nucleo_hash_rpi, []):
+                if (idx_rpi, idx_c) in pares_nome_identico:
+                    continue  # par já capturado por nome_identico — mais forte
+                if marca_base.get("is_marca_generica"):
+                    continue
+                colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
+                alertas.append(_criar_alerta(
+                    marca_base=marca_base,
+                    marca_rpi=marca_rpi,
+                    score_nome=0.85,
+                    score_nucleo=1.0,
+                    camada=1,
+                    motivo="nucleo_identico",
+                    colidem=colidem,
+                    mesma_classe=(marca_base["ncl"] == marca_rpi["ncl"]),
+                ))
+                rpi_processados.add(idx_rpi)
 
     rpi_restante = [m for i, m in enumerate(rpi) if i not in rpi_processados]
     return alertas, rpi_restante
+
+
+def _nivel_alerta(motivo: str, colidem: bool) -> str:
+    """
+    Nível de urgência para alertas automáticos da camada 1.
+
+    Alinha com _nivel_severidade (scoring.py), sem importá-la:
+    - colidem=True (mesma classe ou classes correlatas) → ALTA
+    - nome_identico cross-class não correlato → MEDIA (advogado avalia art. 125)
+    - nucleo_identico cross-class não correlato → VIGIAR (diluição potencial)
+    """
+    if colidem:
+        return "ALTA"
+    return "MEDIA" if motivo == "nome_identico" else "VIGIAR"
+
+
+def _score_final_c1(motivo: str, colidem: bool) -> float:
+    """
+    Score final para alertas de camada 1 (bypassam camada 4).
+
+    Espelha os overrides de scoring.py:
+      nome_identico + colidem  → 1.0  (máximo — ALTA)
+      nome_identico + não col. → 0.75 (faixa MEDIA)
+      nucleo_identico + colidem → 0.85 (override mínimo de score_nucleo=1.0)
+      nucleo_identico + não col. → 0.70 (faixa MEDIA)
+    """
+    if motivo == "nome_identico":
+        return 1.0 if colidem else 0.75
+    return 0.85 if colidem else 0.70
 
 
 def _criar_alerta(
@@ -98,8 +134,10 @@ def _criar_alerta(
     score_nucleo: float,
     camada: int,
     motivo: str,
-    classes_colidem: bool = True,
+    colidem: bool = True,
+    mesma_classe: bool = False,
 ) -> dict:
+    sf = _score_final_c1(motivo, colidem)
     return {
         "processo_base": marca_base.get("processo", ""),
         "marca_base": marca_base.get("marca") or marca_base.get("nome_marca", ""),
@@ -117,17 +155,23 @@ def _criar_alerta(
         "despacho_codigo": marca_rpi.get("despacho_codigo", ""),
         "despacho_nome": marca_rpi.get("despacho_nome", ""),
         "tipo_acao": marca_rpi.get("tipo_acao", ""),
+        "motivo": motivo,
         "score_nome": round(score_nome, 4),
         "score_fonetico": 1.0 if motivo == "nome_identico" else 0.9,
-        "score_spec": 1.0 if classes_colidem else 0.5,
+        "score_spec": 1.0 if colidem else 0.5,
         "score_nucleo": round(score_nucleo, 4),
         "score_ia": None,
+        # score_final e campos derivados computados aqui porque C1 bypassa C4.
+        "score_final": round(sf, 4),
+        "score_ri": 0.0,
+        "af_classes": 1.0 if colidem else 0.0,
         "camada_deteccao": camada,
+        "nivel": _nivel_alerta(motivo, colidem),
         # Nome idêntico + classes colidem → ALTA (art. 124, XIX LPI).
         # Nome idêntico + classes não colidem → MEDIA: o advogado avalia
         # se há alto renome (art. 125) ou afinidade indireta.
-        "classificacao": "ALTA" if classes_colidem else "MEDIA",
-        "classes_colidem_flag": classes_colidem,
+        "classificacao": "ALTA" if colidem else "MEDIA",
+        "classes_colidem_flag": colidem,
         "is_sigla": bool(marca_base.get("is_sigla") or marca_rpi.get("is_sigla")),
         "is_desgastado": bool(marca_base.get("is_desgastado") or marca_rpi.get("is_desgastado")),
         "is_marca_generica": bool(marca_base.get("is_marca_generica") or marca_rpi.get("is_marca_generica")),
