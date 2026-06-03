@@ -123,6 +123,40 @@ class TestCamada1:
         assert len(alertas) == 0
         assert len(restante) == 1
 
+    def test_nucleo_distintivo_indice(self):
+        """Núcleo distintivo idêntico (IBM) casa mesmo com sufixos distintos."""
+        carteira = [_marca("IBM BRASIL", 35)]
+        rpi = [_marca("IBM SOLUCOES", 35)]
+        alertas, restante = camada1(carteira, rpi)
+        assert len(alertas) == 1, "IBM BRASIL × IBM SOLUCOES devem casar pelo nucleo 'ibm'"
+        assert len(restante) == 0
+
+    def test_classes_colidem_flag_correto(self):
+        """classes_colidem_flag reflete a realidade, não é sempre True."""
+        from app.config import classes_colidem as cc
+        # Classes que não colidem → MEDIA, flag=False, spec=0.5
+        carteira = [_marca("NEXO", 1)]
+        rpi = [_marca("NEXO", 45)]
+        alertas, _ = camada1(carteira, rpi)
+        assert len(alertas) == 1
+        assert alertas[0]["classes_colidem_flag"] is False
+        assert alertas[0]["score_spec"] == 0.5
+        assert alertas[0]["classificacao"] == "MEDIA"
+        # Classes que colidem → ALTA, flag=True, spec=1.0
+        carteira = [_marca("NEXO", 35)]
+        rpi = [_marca("NEXO", 35)]
+        alertas, _ = camada1(carteira, rpi)
+        assert alertas[0]["classes_colidem_flag"] is True
+        assert alertas[0]["score_spec"] == 1.0
+        assert alertas[0]["classificacao"] == "ALTA"
+
+    def test_nucleo_identico(self):
+        carteira = [_marca("INSPIRE STUDIO DE PILATES", 41)]
+        rpi = [_marca("INSPIRE PILATES", 35)]
+        alertas, restante = camada1(carteira, rpi)
+        assert isinstance(alertas, list)
+        assert isinstance(restante, list)
+
     def test_nucleo_identico(self):
         carteira = [_marca("INSPIRE STUDIO DE PILATES", 41)]
         rpi = [_marca("INSPIRE PILATES", 35)]

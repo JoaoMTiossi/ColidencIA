@@ -10,10 +10,18 @@ from ..utils.normalizacao import normalizar_para_hash
 
 def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dict]]:
     """
-    Verifica nomes idênticos (score = 1.0, classificação automática = ALTA).
+    Verifica nomes idênticos (score = 1.0) e núcleos idênticos (score = 0.85).
 
-    Regra: nome_normalizado igual → colidência independente de classe.
-    Também verifica núcleo idêntico → candidato com bonus.
+    Para nome idêntico: gera alerta independente de classe (o advogado avalia
+    o princípio da especialidade e o alto renome). A classificação reflete as
+    classes: ALTA se colidem, MEDIA se não colidem.
+
+    Para núcleo idêntico: verifica classes antes de gerar alerta — evita falsos
+    positivos entre marcas genéricas com mesmo elemento descritivo.
+
+    O índice de núcleo usa `nucleo_distintivo` (quando disponível) para que
+    "IBM BRASIL" e "IBM SOLUCOES" casem pelo núcleo "IBM", não pelo núcleo
+    composto que diverge.
 
     Retorna:
         (alertas_automaticos, rpi_restante_para_camada2)
@@ -24,10 +32,13 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
         chave = normalizar_para_hash(marca["nome_normalizado"])
         carteira_por_hash.setdefault(chave, []).append(marca)
 
-    # Índice da carteira por hash do núcleo
+    # Índice da carteira por hash do núcleo distintivo (ou núcleo quando
+    # nucleo_distintivo está vazio — marca sem elemento descritivo aparável).
     carteira_por_nucleo: dict[str, list[dict]] = {}
     for marca in carteira:
-        chave_nucleo = normalizar_para_hash(marca["nucleo"])
+        chave_nucleo = normalizar_para_hash(
+            marca.get("nucleo_distintivo") or marca["nucleo"]
+        )
         if chave_nucleo:
             carteira_por_nucleo.setdefault(chave_nucleo, []).append(marca)
 
@@ -36,11 +47,14 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
 
     for idx_rpi, marca_rpi in enumerate(rpi):
         hash_rpi = normalizar_para_hash(marca_rpi["nome_normalizado"])
-        nucleo_hash_rpi = normalizar_para_hash(marca_rpi["nucleo"])
+        nucleo_hash_rpi = normalizar_para_hash(
+            marca_rpi.get("nucleo_distintivo") or marca_rpi["nucleo"]
+        )
 
         # Match por nome completo idêntico
         matches = carteira_por_hash.get(hash_rpi, [])
         for marca_base in matches:
+            colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
             alertas.append(_criar_alerta(
                 marca_base=marca_base,
                 marca_rpi=marca_rpi,
@@ -48,18 +62,19 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
                 score_nucleo=1.0,
                 camada=1,
                 motivo="nome_identico",
+                classes_colidem=colidem,
             ))
             rpi_processados.add(idx_rpi)
 
-        # Match por núcleo idêntico (apenas se não já detectado por nome e
-        # o núcleo não for genérico — evita falsos positivos como "SAÚDE X" vs "SAÚDE Y")
+        # Match por núcleo distintivo idêntico (apenas se não já detectado por
+        # nome e o núcleo não for genérico — evita falsos positivos como
+        # "SAÚDE X" vs "SAÚDE Y").
         if idx_rpi not in rpi_processados and nucleo_hash_rpi:
             if not marca_rpi.get("is_marca_generica"):
                 matches_nucleo = carteira_por_nucleo.get(nucleo_hash_rpi, [])
                 for marca_base in matches_nucleo:
                     if marca_base.get("is_marca_generica"):
                         continue
-                    # Verificar classes para núcleo idêntico
                     colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
                     alertas.append(_criar_alerta(
                         marca_base=marca_base,
@@ -108,7 +123,10 @@ def _criar_alerta(
         "score_nucleo": round(score_nucleo, 4),
         "score_ia": None,
         "camada_deteccao": camada,
-        "classificacao": "ALTA",
+        # Nome idêntico + classes colidem → ALTA (art. 124, XIX LPI).
+        # Nome idêntico + classes não colidem → MEDIA: o advogado avalia
+        # se há alto renome (art. 125) ou afinidade indireta.
+        "classificacao": "ALTA" if classes_colidem else "MEDIA",
         "classes_colidem_flag": classes_colidem,
         "is_sigla": bool(marca_base.get("is_sigla") or marca_rpi.get("is_sigla")),
         "is_desgastado": bool(marca_base.get("is_desgastado") or marca_rpi.get("is_desgastado")),
