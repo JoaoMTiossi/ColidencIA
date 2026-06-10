@@ -220,7 +220,9 @@ def match_distintivo(
     # estão governando o score enquanto os elementos principais divergem.
     pa = _token_dominante(da)
     pb = _token_dominante(db)
-    dominante_incluido = (best_a == pa or best_b == pb)
+    # Exact token match (e.g. sigla "jb"=="jb") is always treated as dominant —
+    # the shared element IS the mark, regardless of which token is longest.
+    dominante_incluido = (best_a == best_b) or (best_a == pa or best_b == pb)
     if not dominante_incluido:
         # Calcular score do par dominante como alternativa
         score_dom = max(jaro_winkler(pa, pb), similaridade_fonetica(pa, pb))

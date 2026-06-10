@@ -205,6 +205,8 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "vulcanizadora", "vulcanizacao",
     "locacoes", "locacao",  # ex: MG LOCAÇÕES → nucleo=mg
     "guindastes",
+    # Alimentação premium/especializada — descrevem estilo do negócio, não a marca
+    "gourmet", "gelato", "doceria",
 })
 
 # ---------------------------------------------------------------------------
