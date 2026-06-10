@@ -26,7 +26,7 @@ DESPACHOS_NOMES: dict[str, str] = {
 # ---------------------------------------------------------------------------
 THRESHOLD_FONETICO: float = float(os.getenv("THRESHOLD_FONETICO", "0.60"))
 THRESHOLD_ESPECIFICACAO: float = float(os.getenv("THRESHOLD_ESPECIFICACAO", "0.40"))
-THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.55"))
+THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.62"))
 THRESHOLD_NUCLEO: float = 0.80
 
 # ---------------------------------------------------------------------------
@@ -61,7 +61,10 @@ CLASSES_TRANSVERSAIS: frozenset[int] = frozenset({35})
 # Afinidade-base atribuída a um par que envolve classe transversal em classes
 # distintas (acima do THRESHOLD_ESPECIFICACAO para não ser descartado, mas
 # abaixo de "mesma classe"; a similaridade semântica de spec refina depois).
-AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.70"))
+AFINIDADE_TRANSVERSAL: float = float(os.getenv("AFINIDADE_TRANSVERSAL", "0.45"))
+# Overlap textual mínimo para pares cross-class passarem a Camada 3
+# sem apoio de classe genuinamente afim (afasta falsos cruzamentos via classe 35).
+THRESHOLD_SPEC_CROSS: float = float(os.getenv("THRESHOLD_SPEC_CROSS", "0.10"))
 
 # ---------------------------------------------------------------------------
 # IA (Anthropic Claude — preferido; OpenAI como fallback)

@@ -152,13 +152,23 @@ def tokens_distintivos(nome: str, ncl: int | None = None) -> list[str]:
         if len(t) >= 2 and not t.isdigit() and t not in _STOP
     ]
     dist = [t for t in base if t not in vocab and t not in vocab_ncl]
-    # Proteção de marca curta: se a remoção descritiva esvazia a lista MAS o
-    # nome tinha um único token significativo, esse token É a marca (não pode
-    # ser "descritivo de si mesmo"). Recupera marcas como BRASA, SUN, CACAU,
-    # EGO que o corpus mineraria como termo setorial. Marcas multi-palavra
-    # (ex: "ODONTOLOGIA SORRISO PERFEITO") continuam zeradas — corretamente.
-    if not dist and len(base) == 1:
-        return base
+
+    if not dist and base:
+        # Proteção 1: marca de um único token (ex: BRASA, SUN, EGO, CACAU).
+        # O token não pode ser "descritivo de si mesmo".
+        if len(base) == 1:
+            return base
+
+        # Proteção 2: os tokens que passaram o filtro GERAL (vocab estático)
+        # foram removidos apenas pelo vocab de CORPUS específico da classe.
+        # O corpus é ruidoso — "brasa" aparece em muitos restaurantes mas ainda
+        # é o elemento marcário de "BRASA NCL30" comparado a "BRASA KING NCL43".
+        # Restaurar os tokens que sobreviveram ao filtro geral (para que
+        # elementos distintivos não sejam apagados por frequência sectorial).
+        after_general = [t for t in base if t not in vocab]
+        if after_general:
+            return after_general
+
     return dist
 
 

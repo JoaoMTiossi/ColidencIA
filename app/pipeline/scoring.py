@@ -21,6 +21,7 @@ from ..config import (
     PESO_SIMILARIDADE_NOME,
     PESO_TIPO_MARCA,
     THRESHOLD_SCORE_FINAL,
+    THRESHOLD_SPEC_CROSS,
 )
 from ..utils.distintividade import match_distintivo
 from ..utils.normalizacao import normalizar_base
@@ -60,35 +61,31 @@ def _nivel_severidade(
     """
     Nível de severidade no modelo de VIGILÂNCIA DE MARCA (trademark watch).
 
-    Diferente da classificação por score (que mede confiança no alerta), o
-    nível responde "quão urgente é revisar este caso" sob a ótica do cliente
-    que monitora a própria marca:
+    Baseado no ELEMENTO DISTINTIVO (md), não no nome completo (s_nome),
+    para que palavras descritivas compartilhadas não inflem a urgência.
 
-    - ALTA   : risco direto de confusão. Mesma classe com núcleo forte, OU
-               cross-class com núcleo idêntico E afinidade mercadológica.
-    - MEDIA  : núcleo idêntico/quase em classes distintas (diluição, prazo de
-               oposição) OU mesma classe com sinal moderado.
-    - VIGIAR : sinal mais fraco — vale acompanhar, baixa prioridade.
+    - ALTA   : elemento distintivo quase idêntico com afinidade mercadológica clara.
+    - MEDIA  : elemento distintivo muito similar, ou idêntico sem afinidade.
+    - VIGIAR : sinal moderado — vale monitorar, baixa prioridade para IA.
 
-    A lógica reflete o gold-set do especialista: marcas com elemento distintivo
-    idêntico são sinalizadas MESMO em classes diferentes (proteção marcária),
-    o que o gate de afinidade puro descartava.
+    A afinidade considera spec textual (s_spec) como evidência primária,
+    e classe NCL como evidência secundária.
     """
     md_v = md if md is not None else 0.0
-    sinal = max(md_v, s_nome)
-    afinidade = af_classes >= 0.65 or s_spec >= 0.80
+    # Afinidade: spec texto OU classe genuinamente afim (≥0.70 na tabela)
+    afinidade = s_spec >= 0.15 or af_classes >= 0.70
 
     if mesma_classe:
-        if md_v >= 0.85 or s_nome >= 0.90:
+        if md_v >= 0.90:
             return "ALTA"
-        if md_v >= 0.70 or s_fon >= 0.88 or s_nome >= 0.80:
+        if md_v >= 0.75 or (md_v >= 0.65 and s_fon >= 0.88):
             return "MEDIA"
         return "VIGIAR"
-    # Cross-class
-    if sinal >= 0.92:
+    # Cross-class: md é o sinal que importa, afinidade decide entre ALTA e MEDIA
+    if md_v >= 0.90:
         return "ALTA" if afinidade else "MEDIA"
-    if sinal >= 0.85:
-        return "MEDIA" if afinidade else "VIGIAR"
+    if md_v >= 0.75 and afinidade:
+        return "MEDIA"
     return "VIGIAR"
 
 
@@ -192,10 +189,12 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # marcas é o sinal mais forte de vigilância marcária.
         md = match_distintivo(par.get("marca_base", ""), par.get("marca_rpi", ""), ncl_a, ncl_b)
         mesma_classe = (ncl_a == ncl_b)
-        # "Núcleo forte" = elemento distintivo idêntico ou quase. Sob a ótica de
-        # vigilância de marca, esses pares NÃO devem ser descartados mesmo sem
-        # afinidade mercadológica (risco de diluição / prazo de oposição).
-        nucleo_forte = max(md if md is not None else 0.0, s_nome) >= 0.92
+        # "Núcleo forte" = ELEMENTO DISTINTIVO quase idêntico (md ≥ 0.90).
+        # Deliberadamente excluímos s_nome: o nome completo pode ser alto por
+        # palavras descritivas compartilhadas (ex: "ODONTOLOGIA SORRISO DENTAL"
+        # vs "ODONTOLOGIA SORRISO IMPLANTES" → s_nome≈0.92 mas md baixo).
+        # Usar s_nome inflava nucleo_forte e bypassava todos os gates cross-class.
+        nucleo_forte = (md is not None and md >= 0.90)
 
         # ── Gate: Regra Inversa LPI ────────────────────────────────────────
         # Melhor evidência de similaridade entre os sinais
@@ -238,6 +237,8 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # descartado — recebe apenas nível de severidade menor quando falta
         # afinidade mercadológica. Isso recupera os pares cross-class que o
         # especialista marca (proteção marcária) sem reintroduzir ruído.
+        s_spec_sem = par.get("score_spec_semantico", 0.0) or 0.0
+
         if md is None:
             # Marca puramente descritiva — sem sinal próprio. Só passa se o
             # nome completo for quase idêntico (variação ortográfica evidente).
@@ -251,18 +252,27 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             if md < 0.90:
                 score *= 0.85
         else:
-            # Cross-class. Núcleo forte sempre passa (severidade decide o tier).
-            # Sinal intermediário (0.85–0.92) exige afinidade. Sinal fraco cai.
-            s_sem = par.get("score_spec_semantico", 0.0) or 0.0
-            s_sig_cross = max(md if md is not None else 0, s_nome)
-            if not nucleo_forte:
-                if s_sig_cross < 0.85:
-                    continue
-                # 0.85–0.92: precisa de alguma evidência de afinidade
-                afinidade_ok = af_classes >= 0.75 or s_sem >= 0.20 or s_spec >= 0.80
+            # Cross-class — gate em gradiente: md alto requer menos afinidade.
+            # Isso recupera os pares com elemento distintivo similar mas classes
+            # distintas (diluição de marca) sem abrir a porteira para pares fracos.
+            if md >= 0.90:
+                # nucleo_forte — passa sempre; severidade decide o tier
+                pass
+            elif md >= 0.75:
+                # Sinal forte-médio: precisa de alguma evidência de afinidade
+                afinidade_ok = s_spec >= THRESHOLD_SPEC_CROSS or af_classes >= 0.75
                 if not afinidade_ok:
                     continue
-            if md is not None and md < 0.95:
+            elif md >= 0.60:
+                # Sinal médio: exige afinidade mais robusta
+                afinidade_ok = s_spec_sem >= 0.15 or s_spec >= 0.20 or af_classes >= 0.80
+                if not afinidade_ok:
+                    continue
+            else:
+                # Sinal fraco — descarta cross-class
+                continue
+
+            if md < 0.95:
                 score *= 0.85
 
         # ── Superfície 2D — score da Regra Inversa ────────────────────────
