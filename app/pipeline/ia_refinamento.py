@@ -85,6 +85,7 @@ async def _chamar_claude(client, prompt: str, idx: int) -> tuple[int, dict | Non
         response = await client.messages.create(
             model=ANTHROPIC_MODEL,
             max_tokens=300,
+            temperature=0.1,
             system=_SYSTEM_PROMPT,
             messages=[{"role": "user", "content": prompt}],
         )

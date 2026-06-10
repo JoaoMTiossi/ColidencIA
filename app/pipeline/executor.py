@@ -185,21 +185,28 @@ def executar_pipeline(
     scored_c4 = camada4(todos_candidatos)
     _progress(f"Camada 4: {len(scored_c4)} pares acima do threshold", 70)
 
-    # Unir resultados da camada 1 com os da camada 4
-    todos_resultados = alertas_c1 + scored_c4
-
     # -----------------------------------------------------------------------
     # Camada 5 — Refinamento IA
+    # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
+    # já estão juridicamente decididos (art. 124, XIX LPI) — enviá-los à IA
+    # gastaria orçamento e permitiria que uma resposta "NENHUMA" removesse
+    # silenciosamente um alerta certo do relatório.
     # -----------------------------------------------------------------------
     custo_ia = 0.0
-    if usar_ia and todos_resultados:
-        _progress(f"Camada 5: Refinamento IA ({len(todos_resultados)} pares)...", 75)
+    if usar_ia and scored_c4:
+        _progress(f"Camada 5: Refinamento IA ({len(scored_c4)} pares)...", 75)
 
         def _ia_progress(msg: str) -> None:
             _progress(f"Camada 5: {msg}", 80)
 
-        todos_resultados, custo_ia = camada5(todos_resultados, _ia_progress)
+        # Ordena por score DESC antes do corte de MAX_PARES_IA — o orçamento
+        # é gasto nos pares mais relevantes, não na ordem arbitrária da C4.
+        scored_c4.sort(key=lambda r: r.get("score_final", 0), reverse=True)
+        scored_c4, custo_ia = camada5(scored_c4, _ia_progress)
         _progress(f"Camada 5: Refinamento IA concluído (custo: ${custo_ia:.4f})", 90)
+
+    # Unir resultados da camada 1 com os da camada 4/5
+    todos_resultados = alertas_c1 + scored_c4
 
     # -----------------------------------------------------------------------
     # Pós-processamento

@@ -82,14 +82,21 @@ def _busca_com_vizinhos(
     codigo: str,
     index: dict[tuple[int, str], list[dict]],
     classes: set[int],
+    chaves_por_classe: dict[int, list[str]],
 ) -> list[dict]:
-    """Busca no bucket exato + buckets com Levenshtein-1 (tolerância a variações)."""
+    """Busca no bucket exato + buckets com Levenshtein-1 (tolerância a variações).
+
+    Usa `chaves_por_classe` (pré-computado uma vez na indexação) para varrer
+    apenas os códigos da classe corrente — sem isso, cada busca percorria
+    TODAS as chaves do índice para cada classe elegível (O(classes × chaves)),
+    o que degenerava em quase full-scan com carteiras grandes.
+    """
     resultado: list[dict] = []
     for cls in classes:
         resultado.extend(index.get((cls, codigo), []))
-        for (c, k) in list(index.keys()):
-            if c == cls and k != codigo and _levenshtein_1(codigo, k):
-                resultado.extend(index[(c, k)])
+        for k in chaves_por_classe.get(cls, ()):
+            if k != codigo and _levenshtein_1(codigo, k):
+                resultado.extend(index[(cls, k)])
     return resultado
 
 
@@ -113,7 +120,11 @@ def camada2(
     """
     indice_fonetico: dict[tuple[int, str], list[dict]] = defaultdict(list)
     _buckets_ids: dict[tuple[int, str], set[int]] = defaultdict(set)
-    indice_bigrama: dict[int, list[dict]] = defaultdict(list)
+    # Índice invertido de bigramas: (ncl, bigrama) → marcas da carteira que o
+    # contêm. Substitui a varredura completa de todas as marcas das classes
+    # elegíveis (que degenerava em O(n×m) quando classe 35/transversal tornava
+    # todas as classes elegíveis).
+    indice_bigrama: dict[tuple[int, str], list[dict]] = defaultdict(list)
 
     def _indexar(ncl: int, codigo: str, marca: dict) -> None:
         if not codigo:
@@ -164,8 +175,14 @@ def camada2(
         if len(prefixo) >= 3:
             _indexar(ncl, f"_d:{prefixo}", marca)
 
-        if marca.get("bigrams_set"):
-            indice_bigrama[ncl].append(marca)
+        for bg in marca.get("bigrams_set", ()):
+            indice_bigrama[(ncl, bg)].append(marca)
+
+    # Chaves do índice fonético agrupadas por classe — pré-computado uma vez
+    # para que _busca_com_vizinhos não varra o índice inteiro a cada chamada.
+    chaves_por_classe: dict[int, list[str]] = defaultdict(list)
+    for (cls, cod) in indice_fonetico:
+        chaves_por_classe[cls].append(cod)
 
     candidatos: list[dict] = []
 
@@ -208,19 +225,34 @@ def camada2(
 
         # 3. Busca pelo código do nome completo (com Levenshtein-1)
         cod_rpi = marca_rpi.get("codigo_fonetico", "")
-        cands_full = _busca_com_vizinhos(cod_rpi, indice_fonetico, classes_ok) if cod_rpi else []
+        cands_full = (
+            _busca_com_vizinhos(cod_rpi, indice_fonetico, classes_ok, chaves_por_classe)
+            if cod_rpi else []
+        )
 
-        # 4. Blocking por bigramas (cobertura adicional para variações)
+        # 4. Blocking por bigramas via índice invertido. Acumula a contagem de
+        #    bigramas compartilhados por marca e só calcula o Jaccard exato para
+        #    quem atinge o mínimo necessário: J = i/(a+b-i) ≥ 0.3 com b ≥ i
+        #    implica i ≥ 0.3·a — condição necessária usada como pré-filtro.
         cands_bigrama: list[dict] = []
         if bg_rpi:
+            contagem: dict[int, list] = {}  # id(marca) → [marca, n_compartilhados]
             for cls in classes_ok:
-                for marca in indice_bigrama.get(cls, []):
+                for bg in bg_rpi:
+                    for marca in indice_bigrama.get((cls, bg), ()):
+                        mid = id(marca)
+                        ent = contagem.get(mid)
+                        if ent is None:
+                            contagem[mid] = [marca, 1]
+                        else:
+                            ent[1] += 1
+            min_inter = 0.3 * len(bg_rpi)
+            for marca, inter in contagem.values():
+                if inter >= min_inter:
                     bg_cart = marca.get("bigrams_set", set())
-                    if bg_cart:
-                        inter = len(bg_rpi & bg_cart)
-                        union = len(bg_rpi | bg_cart)
-                        if union > 0 and inter / union >= 0.3:
-                            cands_bigrama.append(marca)
+                    union = len(bg_rpi | bg_cart)
+                    if union > 0 and inter / union >= 0.3:
+                        cands_bigrama.append(marca)
 
         # Unir candidatos sem duplicatas
         todos_ids: set[int] = set()
@@ -275,10 +307,7 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
         if shared:
             score_containment = 0.72
         else:
-            # Token dominante de uma contido como substring ou quase-idêntico em outra
-            from ..utils.distintividade import _token_dominante
-            dom_a = _token_dominante(toks_a)
-            dom_b = _token_dominante(toks_b)
+            # Token de uma quase-idêntico a token da outra
             for t_a in toks_a:
                 for t_b in toks_b:
                     if jaro_winkler(t_a, t_b) >= 0.92:
