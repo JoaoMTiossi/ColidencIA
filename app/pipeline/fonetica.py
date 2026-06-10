@@ -22,6 +22,7 @@ A busca usa match exato para tokens/núcleo e Levenshtein-1 para nome completo.
 from __future__ import annotations
 
 from collections import defaultdict
+from functools import lru_cache
 
 from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, ELEMENTOS_DESGASTADOS, THRESHOLD_FONETICO, classes_colidem
 from ..utils.distintividade import tokens_distintivos
@@ -33,12 +34,13 @@ from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
 _AFINIDADE_MIN_CLASSE: float = 0.60
 
 
-def _classes_elegiveis(ncl: int) -> set[int]:
+@lru_cache(maxsize=50)
+def _classes_elegiveis(ncl: int) -> frozenset[int]:
     """Retorna o conjunto de classes NCL elegíveis para comparação com ncl."""
     from .especificacao import _carregar_correlatas
     elegiveis: set[int] = {ncl}
     if ncl in CLASSES_TRANSVERSAIS or ncl == 0:
-        return set(range(0, 46))
+        return frozenset(range(0, 46))
     correlatas = _carregar_correlatas()
     for (a, b), af in correlatas.items():
         if a == ncl and af >= _AFINIDADE_MIN_CLASSE:
@@ -47,7 +49,7 @@ def _classes_elegiveis(ncl: int) -> set[int]:
         elegiveis.add(cls)
     elegiveis |= CLASSES_TRANSVERSAIS
     elegiveis.add(0)
-    return elegiveis
+    return frozenset(elegiveis)
 
 
 def _levenshtein_1(a: str, b: str) -> bool:
