@@ -270,14 +270,29 @@ def camada3(candidatos: list[dict]) -> list[dict]:
 
         else:
             # Cross-class: a especificação TEXTUAL decide.
-            # Bypass 1 — sinal de nome/núcleo muito forte: núcleos quase idênticos
-            # configuram risco de confusão independente da especificação
-            # (WIZE/Wyze, EGO/EGGOO, LIOR/LYOR — fonética idêntica cross-class).
+            # Bypass — sinal de elemento distintivo muito forte: núcleos quase
+            # idênticos configuram risco de confusão independente da especificação
+            # (WIZE/Wyze, EGO/EGGOO, ABC EMPREENDIMENTOS/ABC SUPORTES, etc.).
             # Passa para C4, onde o gate de md filtrará com precisão.
-            sinal_forte = (
-                par.get("score_nucleo", 0) >= 0.85
-                or par.get("score_nome", 0) >= 0.90
-            )
+            #
+            # score_nucleo (pré-computado) compara o TEXTO COMPLETO do núcleo, o
+            # que subestima o match quando o núcleo inclui palavras descritivas
+            # (ex: "abc empreendimentos" vs "abc suportes" → score_nucleo=0.67,
+            # mas md(abc,abc)=1.0). Por isso, quando score_nucleo é insuficiente,
+            # calculamos o match_distintivo real (tokens de alta distintividade).
+            sn = par.get("score_nucleo", 0) or 0.0
+            sinal_forte = (sn >= 0.85 or par.get("score_nome", 0) >= 0.90)
+            if not sinal_forte:
+                # match_distintivo real: mais preciso que score_nucleo pré-computado.
+                # Chamado apenas quando o check rápido falha (economiza ~70% das calls).
+                from ..utils.distintividade import match_distintivo as _md_c3
+                from ..utils.normalizacao import normalizar_base as _nb_c3
+                md_real = _md_c3(
+                    _nb_c3(par.get("marca_base", "")),
+                    _nb_c3(par.get("marca_rpi", "")),
+                    ncl_a, ncl_b,
+                )
+                sinal_forte = (md_real is not None and md_real >= 0.85)
             if sinal_forte:
                 score_spec = max(sc_3a, sc_3b, THRESHOLD_ESPECIFICACAO)
             else:
