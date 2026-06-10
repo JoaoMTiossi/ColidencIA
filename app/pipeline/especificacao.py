@@ -112,11 +112,14 @@ def _batch_tfidf(textos_a: list[str], textos_b: list[str]) -> list[float]:
     try:
         from sklearn.feature_extraction.text import TfidfVectorizer
 
-        # Vetorizar apenas os textos ÚNICOS — os 2M de pares reusam poucas
+        # Vetorizar apenas os textos ÚNICOS — os ~2M de pares reusam poucas
         # dezenas de milhares de specs distintas (carteira tem ~46k marcas).
+        # Specs truncadas em 1500 chars: o início carrega o essencial e o
+        # char-ngram de textos longos explode o número de nonzeros por linha.
         unicos: list[str] = []
         idx: dict[str, int] = {}
         for t in textos_a + textos_b:
+            t = t[:1500]
             if t not in idx:
                 idx[t] = len(unicos)
                 unicos.append(t)
@@ -124,17 +127,33 @@ def _batch_tfidf(textos_a: list[str], textos_b: list[str]) -> list[float]:
         # char_wb 3-5: captura morfologia do português (feminina/feminino,
         # roupa/roupas) que o word-level perde — medido ~3x mais sinal em
         # pares de spec relacionados, sem inflar pares não-relacionados.
-        vect = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), sublinear_tf=True)
+        # max_features limita a memória do vocabulário.
+        vect = TfidfVectorizer(
+            analyzer="char_wb", ngram_range=(3, 5),
+            sublinear_tf=True, max_features=200_000,
+        )
         mat = vect.fit_transform(unicos)  # linhas L2-normalizadas por padrão
+        mat = mat.tocsr()
 
-        # Cosseno = produto escalar (linhas já normalizadas) — vetorizado:
-        # mat_a.multiply(mat_b).sum(axis=1) calcula todos os pares de uma vez.
-        ia = [idx[t] for t in textos_a]
-        ib = [idx[t] for t in textos_b]
-        mat_a = mat[ia]
-        mat_b = mat[ib]
-        sims = mat_a.multiply(mat_b).sum(axis=1)
-        return [float(s) for s in np.asarray(sims).ravel()]
+        # Dedup de PARES: muitos pares repetem a mesma combinação de specs.
+        # Calculamos o cosseno uma única vez por par único.
+        n = len(textos_a)
+        par_ids = [(idx[textos_a[i][:1500]], idx[textos_b[i][:1500]]) for i in range(n)]
+        pares_unicos = list(set(par_ids))
+
+        # Cosseno = produto escalar (linhas L2-normalizadas), em CHUNKS para
+        # não materializar matrizes de milhões de linhas (evita OOM).
+        sims_por_par: dict[tuple[int, int], float] = {}
+        CHUNK = 50_000
+        for start in range(0, len(pares_unicos), CHUNK):
+            bloco = pares_unicos[start:start + CHUNK]
+            ia = [p[0] for p in bloco]
+            ib = [p[1] for p in bloco]
+            sims = np.asarray(mat[ia].multiply(mat[ib]).sum(axis=1)).ravel()
+            for p, s in zip(bloco, sims):
+                sims_por_par[p] = float(s)
+
+        return [sims_por_par[p] for p in par_ids]
 
     except Exception as exc:
         logger.warning("TF-IDF batch falhou: %s", exc)
