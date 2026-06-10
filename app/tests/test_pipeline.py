@@ -259,6 +259,46 @@ class TestCamada1:
         assert len(alertas) == 1
         assert alertas[0]["motivo"] == "nome_identico"
 
+    # ------------------------------------------------------------------
+    # Reclassificação pós-C3 (a C3 refina score_spec dos alertas C1)
+    # ------------------------------------------------------------------
+
+    def test_reclassificar_pos_c3_confirma_alta(self):
+        """Classes colidem + afinidade refinada alta → permanece ALTA."""
+        from app.pipeline.nome_identico import reclassificar_pos_c3
+        a = {"motivo": "nome_identico", "classes_colidem_flag": True,
+             "score_spec": 0.95}
+        reclassificar_pos_c3(a)
+        assert a["classificacao"] == "ALTA"
+        assert a["nivel"] == "ALTA"
+        assert a["score_final"] == 1.0
+
+    def test_reclassificar_pos_c3_rebaixa(self):
+        """Classes colidem formalmente mas afinidade real baixa → MEDIA."""
+        from app.pipeline.nome_identico import reclassificar_pos_c3
+        a = {"motivo": "nome_identico", "classes_colidem_flag": True,
+             "score_spec": 0.45}
+        reclassificar_pos_c3(a)
+        assert a["classificacao"] == "MEDIA"
+        assert a["nivel"] == "MEDIA"
+        assert a["score_final"] == 0.75
+
+    def test_reclassificar_pos_c3_eleva(self):
+        """Classes não colidem na matriz mas afinidade real forte → ALTA."""
+        from app.pipeline.nome_identico import reclassificar_pos_c3
+        a = {"motivo": "nucleo_identico", "classes_colidem_flag": False,
+             "score_spec": 0.85}
+        reclassificar_pos_c3(a)
+        assert a["classificacao"] == "ALTA"
+        assert a["score_final"] == 0.85
+
+    def test_reclassificar_pos_c3_ignora_outros(self):
+        """Pares que não vieram da C1 não são tocados."""
+        from app.pipeline.nome_identico import reclassificar_pos_c3
+        a = {"motivo": "", "classificacao": "BAIXA", "score_spec": 0.95}
+        reclassificar_pos_c3(a)
+        assert a["classificacao"] == "BAIXA"
+
 
 class TestConfig:
     def test_classes_colidem(self):

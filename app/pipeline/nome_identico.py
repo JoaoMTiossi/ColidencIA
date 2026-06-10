@@ -98,6 +98,35 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
     return alertas, rpi_restante
 
 
+def reclassificar_pos_c3(alerta: dict) -> dict:
+    """
+    Re-deriva classificacao/nivel/score_final de um alerta C1 após a camada 3
+    refinar score_spec.
+
+    A C1 classifica com o flag binário classes_colidem (matriz COLLISIONS).
+    A C3 sobrescreve score_spec com a afinidade real (correlatas/semântica),
+    que pode contradizer o flag em ambas as direções:
+      - classes colidem formalmente, mas a modulação semântica encontra
+        especificações de domínios distintos → rebaixa para MEDIA;
+      - classes não colidem na matriz, mas há afinidade real forte
+        (transversal, CSV ou semântica >= 0.80) → eleva para ALTA.
+    Sem esta etapa o alerta sairia com score_final=1.0/ALTA e score_spec=0.45
+    no mesmo registro — inconsistente para quem consome o relatório.
+    """
+    motivo = alerta.get("motivo", "")
+    if motivo not in ("nome_identico", "nucleo_identico"):
+        return alerta
+    spec = alerta.get("score_spec", 0.0)
+    if alerta.get("classes_colidem_flag"):
+        colidem = spec >= 0.60
+    else:
+        colidem = spec >= 0.80
+    alerta["classificacao"] = "ALTA" if colidem else "MEDIA"
+    alerta["nivel"] = _nivel_alerta(motivo, colidem)
+    alerta["score_final"] = round(_score_final_c1(motivo, colidem), 4)
+    return alerta
+
+
 def _nivel_alerta(motivo: str, colidem: bool) -> str:
     """
     Nível de urgência para alertas automáticos da camada 1.

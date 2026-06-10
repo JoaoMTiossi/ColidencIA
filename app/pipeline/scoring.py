@@ -278,10 +278,6 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             fator = _fator_distintividade(par.get("nucleo_base", "")) * _fator_distintividade(par.get("nucleo_rpi", ""))
             score = score * fator
 
-        # Override: nome idêntico → mínimo 0.85
-        if par.get("camada_deteccao") == 1 and "nome_identico" in str(par.get("motivo", "")):
-            score = max(score, 0.85)
-
         # Override: núcleo idêntico → mínimo 0.70
         if s_nucleo >= 0.99:
             score = max(score, 0.70)

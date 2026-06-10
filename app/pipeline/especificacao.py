@@ -107,6 +107,37 @@ def _afinidade_tfidf(spec_a: str, spec_b: str) -> float:
         return 0.0
 
 
+def _construir_indice_tfidf(candidatos: list[dict]) -> dict[str, object]:
+    """
+    Vetoriza todas as especificações únicas em um único fit (fallback TF-IDF).
+
+    Substitui o fit por par (um TfidfVectorizer treinado para cada candidato),
+    que era O(pares) fits — com dezenas de milhares de pares, minutos de CPU.
+    O fit único também usa IDF do corpus real (termos comuns a muitas specs
+    pesam menos), estatisticamente mais correto que IDF de 2 documentos.
+
+    Retorna {texto: vetor_esparso_L2} — o cosseno entre dois textos é o
+    produto escalar dos vetores (TfidfVectorizer normaliza L2 por padrão).
+    """
+    textos_unicos: list[str] = []
+    vistos: set[str] = set()
+    for par in candidatos:
+        for chave in ("spec_base", "spec_rpi"):
+            txt = (par.get(chave) or "").strip()
+            if txt and txt not in vistos:
+                vistos.add(txt)
+                textos_unicos.append(txt)
+    if not textos_unicos:
+        return {}
+    try:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        vect = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+        matriz = vect.fit_transform(textos_unicos)
+        return {txt: matriz[i] for i, txt in enumerate(textos_unicos)}
+    except Exception:
+        return {}
+
+
 # ---------------------------------------------------------------------------
 # Estratégia 3C — Similaridade semântica via embeddings
 # ---------------------------------------------------------------------------
@@ -156,11 +187,13 @@ def camada3(candidatos: list[dict]) -> list[dict]:
 
     usar_embeddings = embeddings_disponivel()
     indice_emb: dict[str, object] = {}
+    indice_tfidf: dict[str, object] = {}
     if usar_embeddings:
         logger.info("Camada 3: usando embeddings semânticos para %d candidatos", len(candidatos))
         indice_emb = _construir_indice_embeddings(candidatos)
     else:
         logger.info("Camada 3: embeddings indisponíveis — usando TF-IDF fallback")
+        indice_tfidf = _construir_indice_tfidf(candidatos)
 
     aprovados: list[dict] = []
 
@@ -177,6 +210,14 @@ def camada3(candidatos: list[dict]) -> list[dict]:
             emb_a = indice_emb.get(spec_a)
             emb_b = indice_emb.get(spec_b)
             sc_3c = cosseno(emb_a, emb_b)
+        elif indice_tfidf:
+            va = indice_tfidf.get(spec_a)
+            vb = indice_tfidf.get(spec_b)
+            if va is not None and vb is not None:
+                # Vetores L2-normalizados: produto escalar = cosseno
+                sc_3c = float((va @ vb.T).toarray()[0, 0])
+            else:
+                sc_3c = 0.0
         else:
             sc_3c = _afinidade_tfidf(spec_a, spec_b)
 

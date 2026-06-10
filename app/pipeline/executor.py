@@ -14,7 +14,7 @@ from ..parsers.parse_excel import parse_excel
 from ..parsers.parse_xml import parse_rpi_xml
 from .fonetica import camada2
 from .ia_refinamento import camada5
-from .nome_identico import camada1
+from .nome_identico import camada1, reclassificar_pos_c3
 from .preprocessor import preprocessar_lote
 from .scoring import camada4
 from .especificacao import camada3
@@ -152,6 +152,9 @@ def executar_pipeline(
         alertas_c1 = camada3(alertas_c1_raw)
         for a in alertas_c1:
             a["camada_deteccao"] = 1  # camada3 sobrescreve; restaurar origem
+            # A C3 refinou score_spec — re-derivar classificacao/nivel/score
+            # para o registro sair consistente (sem ALTA com afinidade baixa).
+            reclassificar_pos_c3(a)
         removidos_c1 = len(alertas_c1_raw) - len(alertas_c1)
         if removidos_c1:
             _progress(
@@ -186,35 +189,10 @@ def executar_pipeline(
     _progress(f"Camada 4: {len(scored_c4)} pares acima do threshold", 70)
 
     # -----------------------------------------------------------------------
-    # Camada 5 — Refinamento IA
-    # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
-    # já estão juridicamente decididos (art. 124, XIX LPI) — enviá-los à IA
-    # gastaria orçamento e permitiria que uma resposta "NENHUMA" removesse
-    # silenciosamente um alerta certo do relatório.
+    # Pós-filtros PRÉ-IA — não dependem do resultado da IA, então rodam antes
+    # da camada 5 para não gastar orçamento com pares que seriam removidos
+    # de qualquer forma no pós-processamento.
     # -----------------------------------------------------------------------
-    custo_ia = 0.0
-    if usar_ia and scored_c4:
-        _progress(f"Camada 5: Refinamento IA ({len(scored_c4)} pares)...", 75)
-
-        def _ia_progress(msg: str) -> None:
-            _progress(f"Camada 5: {msg}", 80)
-
-        # Ordena por score DESC antes do corte de MAX_PARES_IA — o orçamento
-        # é gasto nos pares mais relevantes, não na ordem arbitrária da C4.
-        scored_c4.sort(key=lambda r: r.get("score_final", 0), reverse=True)
-        scored_c4, custo_ia = camada5(scored_c4, _ia_progress)
-        _progress(f"Camada 5: Refinamento IA concluído (custo: ${custo_ia:.4f})", 90)
-
-    # Unir resultados da camada 1 com os da camada 4/5
-    todos_resultados = alertas_c1 + scored_c4
-
-    # -----------------------------------------------------------------------
-    # Pós-processamento
-    # -----------------------------------------------------------------------
-    _progress("Gerando relatório...", 95)
-
-    # Filtrar "NENHUMA" que podem ter vindo da IA
-    todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
 
     # Filtrar pares onde o titular da RPI bate com QUALQUER cliente da carteira.
     # Cobre o caso "cliente A da carteira × marca nova do cliente A na RPI"
@@ -247,20 +225,80 @@ def executar_pipeline(
         _cache_titular[norm] = False
         return False
 
-    antes = len(todos_resultados)
-    todos_resultados = [
-        r for r in todos_resultados
-        if not _titular_rpi_eh_cliente(r.get("titular_rpi", ""))
-    ]
-    removidos_titular = antes - len(todos_resultados)
+    def _filtrar_titular(pares: list[dict]) -> tuple[list[dict], int]:
+        antes = len(pares)
+        pares = [
+            r for r in pares
+            if not _titular_rpi_eh_cliente(r.get("titular_rpi", ""))
+        ]
+        return pares, antes - len(pares)
+
+    def _dedup_pares(pares: list[dict]) -> list[dict]:
+        """Remove duplicatas (mesma marca em múltiplos registros da carteira
+        gera pares com a mesma chave), mantendo o de maior score."""
+        ordenados = sorted(
+            pares,
+            key=lambda r: r.get("score_final", r.get("score_nome", 0)),
+            reverse=True,
+        )
+        seen: set[tuple] = set()
+        out: list[dict] = []
+        for r in ordenados:
+            key = (
+                r.get("marca_base", ""),
+                r.get("ncl_base", 0),
+                r.get("marca_rpi", ""),
+                r.get("ncl_rpi", 0),
+            )
+            if key not in seen:
+                seen.add(key)
+                out.append(r)
+        return out
+
+    alertas_c1, rem_t1 = _filtrar_titular(alertas_c1)
+    scored_c4, rem_t4 = _filtrar_titular(scored_c4)
+    removidos_titular = rem_t1 + rem_t4
     if removidos_titular:
         _progress(
-            f"Pós-processamento: {removidos_titular} par(es) removido(s) "
+            f"Pré-IA: {removidos_titular} par(es) removido(s) "
             f"— titular da RPI é cliente",
-            96,
+            72,
         )
 
-    # Ordenar por score_final DESC
+    alertas_c1 = _dedup_pares(alertas_c1)
+    scored_c4 = _dedup_pares(scored_c4)
+
+    # -----------------------------------------------------------------------
+    # Camada 5 — Refinamento IA
+    # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
+    # já estão juridicamente decididos (art. 124, XIX LPI) — enviá-los à IA
+    # gastaria orçamento e permitiria que uma resposta "NENHUMA" removesse
+    # silenciosamente um alerta certo do relatório.
+    # scored_c4 já está ordenado por score DESC (dedup) — o corte de
+    # MAX_PARES_IA atinge os pares menos relevantes.
+    # -----------------------------------------------------------------------
+    custo_ia = 0.0
+    if usar_ia and scored_c4:
+        _progress(f"Camada 5: Refinamento IA ({len(scored_c4)} pares)...", 75)
+
+        def _ia_progress(msg: str) -> None:
+            _progress(f"Camada 5: {msg}", 80)
+
+        scored_c4, custo_ia = camada5(scored_c4, _ia_progress)
+        _progress(f"Camada 5: Refinamento IA concluído (custo: ${custo_ia:.4f})", 90)
+
+    # Unir resultados da camada 1 com os da camada 4/5
+    todos_resultados = alertas_c1 + scored_c4
+
+    # -----------------------------------------------------------------------
+    # Pós-processamento
+    # -----------------------------------------------------------------------
+    _progress("Gerando relatório...", 95)
+
+    # Filtrar "NENHUMA" que podem ter vindo da IA
+    todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
+
+    # Ordenar por score_final DESC (a IA pode ter alterado os scores)
     todos_resultados.sort(key=lambda r: r.get("score_final", r.get("score_nome", 0)), reverse=True)
 
     # Remover duplicatas (mesma marca_base + marca_rpi + ncl_base + ncl_rpi)
