@@ -270,21 +270,32 @@ def camada3(candidatos: list[dict]) -> list[dict]:
 
         else:
             # Cross-class: a especificação TEXTUAL decide.
-            # Passe automático só quando a afinidade de classe é genuinamente alta
-            # (correlatas manuais ≥ 0.80) — classe 35 com AFINIDADE_TRANSVERSAL=0.45
-            # não satisfaz este critério e precisará de overlap textual.
-            spec_ok = sc_3c >= THRESHOLD_SPEC_CROSS
-            classe_genuina = sc_3b >= 0.80  # afim por tabela de correlatas ou COLLISIONS forte
-
-            if not spec_ok and not classe_genuina:
-                continue  # descarta cross-class sem overlap textual nem classe genuína
-
-            # Score: blend ponderado priorizando o sinal de texto
-            if spec_ok:
-                score_spec = max(sc_3a, sc_3b * 0.5 + sc_3c * 0.5, sc_3c)
+            # Bypass 1 — sinal de nome/núcleo muito forte: núcleos quase idênticos
+            # configuram risco de confusão independente da especificação
+            # (WIZE/Wyze, EGO/EGGOO, LIOR/LYOR — fonética idêntica cross-class).
+            # Passa para C4, onde o gate de md filtrará com precisão.
+            sinal_forte = (
+                par.get("score_nucleo", 0) >= 0.85
+                or par.get("score_nome", 0) >= 0.90
+            )
+            if sinal_forte:
+                score_spec = max(sc_3a, sc_3b, THRESHOLD_ESPECIFICACAO)
             else:
-                # Classe genuína mas sem overlap textual: afinidade reduzida
-                score_spec = sc_3b * 0.70
+                # Passe automático só quando a afinidade de classe é genuinamente alta
+                # (correlatas manuais ≥ 0.80) — classe 35 com AFINIDADE_TRANSVERSAL=0.45
+                # não satisfaz este critério e precisará de overlap textual.
+                spec_ok = sc_3c >= THRESHOLD_SPEC_CROSS
+                classe_genuina = sc_3b >= 0.80
+
+                if not spec_ok and not classe_genuina:
+                    continue  # descarta cross-class sem overlap textual nem classe genuína
+
+                # Score: blend ponderado priorizando o sinal de texto
+                if spec_ok:
+                    score_spec = max(sc_3a, sc_3b * 0.5 + sc_3c * 0.5, sc_3c)
+                else:
+                    # Classe genuína mas sem overlap textual: afinidade reduzida
+                    score_spec = sc_3b * 0.70
 
         if score_spec >= THRESHOLD_ESPECIFICACAO:
             updated = dict(par)

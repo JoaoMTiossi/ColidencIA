@@ -274,13 +274,15 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
                 if score_containment:
                     break
 
-    # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
+    # Siglas e nomes curtos — usar max(ratio, jaro_winkler, containment)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
             or len(nome_a) <= 4 or len(nome_b) <= 4):
         from rapidfuzz import fuzz
         ratio = fuzz.ratio(nome_a, nome_b) / 100.0
         jw = jaro_winkler(nome_a, nome_b)
-        return min(1.0, max(ratio, jw, score_primeiro_tok))
+        # Containment também se aplica a nomes curtos:
+        # "SUN" ⊂ "CAPRI SUN" — o token compartilhado é o elemento marcário.
+        return min(1.0, max(ratio, jw, score_primeiro_tok, score_containment))
 
     jw_nome = jaro_winkler(nome_a, nome_b)
     jw_nucleo = jaro_winkler(nucleo_a, nucleo_b) * 1.1
