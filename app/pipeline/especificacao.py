@@ -223,6 +223,10 @@ def camada3(candidatos: list[dict]) -> list[dict]:
             sc_3c = 0.0
 
         mesma_classe = (ncl_a == ncl_b)
+        # Pares vindos da Camada 1 (nome idêntico): aplicar gate mais suave.
+        # O nome ser idêntico já é o sinal mais forte — a classe só precisa ter
+        # alguma relação (mesmo que fraca). O gate textual cross-class não se aplica.
+        nome_identico = (par.get("camada_deteccao") == 1)
 
         if mesma_classe:
             # Mesma classe: sinal de classe suficiente (sc_3b=0.95 sempre passa)
@@ -233,6 +237,13 @@ def camada3(candidatos: list[dict]) -> list[dict]:
             else:
                 sc_3b_aj = sc_3b
             score_spec = max(sc_3a, sc_3b_aj, sc_3c)
+
+        elif nome_identico:
+            # Cross-class mas nome idêntico: gate suave — basta haver qualquer
+            # afinidade de classe (inclui correlatas fracas e COLLISIONS).
+            if sc_3b < THRESHOLD_ESPECIFICACAO and sc_3a < THRESHOLD_ESPECIFICACAO:
+                continue  # apenas descarta se classes completamente sem relação
+            score_spec = max(sc_3a, sc_3b, sc_3c)
 
         else:
             # Cross-class: a especificação TEXTUAL decide.
