@@ -61,6 +61,10 @@ def numero_por_extenso(n: int) -> str:
     """Converte um inteiro (0–999999) para extenso pt-BR, sem o conectivo "e"."""
     if n == 0:
         return "zero"
+    if n >= 1_000_000:
+        # CPF, CNPJ e outros identificadores — não são elementos de marca;
+        # devolve como string para não quebrar e não poluir o extenso.
+        return str(n)
     if n < 1000:
         return _extenso_ate_999(n)
     milhar, resto = divmod(n, 1000)
@@ -88,7 +92,12 @@ def tratar_numeros(text: str) -> str:
             # 2. Ano plausível (1990-2030, 4 dígitos) com outro token → remove
             if len(tk) == 4 and 1990 <= valor <= 2030 and n_tokens_texto >= 1:
                 continue
-            # 3. Número distintivo → extenso
+            # 3. CPF/CNPJ/processo (≥ 7 dígitos) — identificadores, não
+            #    elementos de marca; mantém como token opaco para não poluir.
+            if len(tk) >= 7:
+                out.append(tk)
+                continue
+            # 4. Número distintivo → extenso
             out.append(numero_por_extenso(valor))
         else:
             out.append(tk)
