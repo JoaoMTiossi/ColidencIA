@@ -73,6 +73,16 @@ OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 BATCH_SIZE_IA: int = int(os.getenv("BATCH_SIZE_IA", "20"))
 MAX_PARES_IA: int = int(os.getenv("MAX_PARES_IA", "15000"))
 BUDGET_SEMANAL_USD: float = float(os.getenv("BUDGET_SEMANAL_USD", "18.0"))
+# Pares de marcas agrupados em uma única chamada à IA (dilui o overhead de
+# system prompt + rede; reduz custo ~60-70% vs. uma chamada por par).
+PARES_POR_CHAMADA_IA: int = int(os.getenv("PARES_POR_CHAMADA_IA", "10"))
+
+# ---------------------------------------------------------------------------
+# Processamento em lotes
+# ---------------------------------------------------------------------------
+# Marcas da RPI processadas por lote (C1→C5). Após cada lote os resultados
+# parciais são gravados em checkpoint e o progresso é logado por % de lotes.
+TAMANHO_LOTE_RPI: int = int(os.getenv("TAMANHO_LOTE_RPI", "500"))
 
 # ---------------------------------------------------------------------------
 # Paths

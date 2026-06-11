@@ -312,3 +312,214 @@ class TestConfig:
         assert "IPAS009" in DESPACHOS_OPOSICAO
         assert "IPAS158" in DESPACHOS_PAN
         assert DESPACHOS_OPOSICAO | DESPACHOS_PAN == DESPACHOS_RELEVANTES
+
+
+class TestLoteIA:
+    """Agrupamento de pares por chamada IA (camada 5) — sem rede."""
+
+    def _pares_fake(self, n: int) -> list[dict]:
+        return [
+            {
+                "marca_base": f"MARCA{i}", "ncl_base": 35, "nucleo_base": f"marca{i}",
+                "marca_rpi": f"MARKA{i}", "ncl_rpi": 35, "nucleo_rpi": f"marka{i}",
+                "spec_base": "", "spec_rpi": "",
+                "score_nome": 0.9, "score_fonetico": 0.9,
+                "score_spec": 0.8, "score_nucleo": 0.9,
+            }
+            for i in range(n)
+        ]
+
+    def test_montar_prompt_lote_enumera(self):
+        from app.pipeline.ia_refinamento import _montar_prompt_lote
+        prompt = _montar_prompt_lote(self._pares_fake(3))
+        assert "=== PAR 1 ===" in prompt
+        assert "=== PAR 2 ===" in prompt
+        assert "=== PAR 3 ===" in prompt
+        assert "=== PAR 4 ===" not in prompt
+
+    def test_parsear_resposta_lote_wrapper(self):
+        from app.pipeline.ia_refinamento import _parsear_resposta_lote
+        content = (
+            '{"resultados":[{"par":1,"classificacao":"ALTA","score":0.9},'
+            '{"par":2,"classificacao":"BAIXA","score":0.3}]}'
+        )
+        mapa = _parsear_resposta_lote(content, 2)
+        assert mapa[1]["classificacao"] == "ALTA"
+        assert mapa[2]["classificacao"] == "BAIXA"
+
+    def test_parsear_resposta_lote_array_puro(self):
+        from app.pipeline.ia_refinamento import _parsear_resposta_lote
+        content = '[{"par":1,"classificacao":"MEDIA","score":0.5}]'
+        mapa = _parsear_resposta_lote(content, 1)
+        assert mapa[1]["classificacao"] == "MEDIA"
+
+    def test_parsear_resposta_lote_parcial(self):
+        """Par faltante na resposta fica fora do mapa → vai para fallback."""
+        from app.pipeline.ia_refinamento import _parsear_resposta_lote
+        content = (
+            '{"resultados":[{"par":1,"classificacao":"ALTA","score":0.9},'
+            '{"par":3,"classificacao":"BAIXA","score":0.2}]}'
+        )
+        mapa = _parsear_resposta_lote(content, 3)
+        assert 1 in mapa and 3 in mapa
+        assert 2 not in mapa
+
+    def test_parsear_resposta_lote_invalida(self):
+        from app.pipeline.ia_refinamento import _parsear_resposta_lote
+        assert _parsear_resposta_lote("isso não é json", 2) == {}
+        assert _parsear_resposta_lote('{"resultados":"oops"}', 2) == {}
+        # "par" fora do range é descartado
+        mapa = _parsear_resposta_lote('{"resultados":[{"par":9,"score":0.5}]}', 2)
+        assert mapa == {}
+
+    def test_parsear_resposta_lote_code_fence(self):
+        from app.pipeline.ia_refinamento import _parsear_resposta_lote
+        content = '```json\n{"resultados":[{"par":1,"classificacao":"ALTA"}]}\n```'
+        mapa = _parsear_resposta_lote(content, 1)
+        assert mapa[1]["classificacao"] == "ALTA"
+
+
+class TestNomeProprioApresentacao:
+    """Campos is_nome_proprio e apresentacao consumidos pelo pipeline (R5)."""
+
+    def test_candidato_propaga_campos(self):
+        """Candidatos da C2 carregam apresentacao e is_nome_proprio."""
+        base = {
+            "marca": "CARLOS MOTTA ADVOCACIA", "nome_marca": "CARLOS MOTTA ADVOCACIA",
+            "ncl": 45, "especificacao": "serviços jurídicos",
+            "apresentacao": "Mista", "tipo_acao": "OPOSICAO",
+            "processo": "111111111", "titular": "CARLOS MOTTA",
+            "despacho_codigo": "IPAS009", "despacho_nome": "Publicação para oposição",
+        }
+        rpi = dict(base, processo="222222222", nome_marca="CARLOS MOTA ADVOCACIA",
+                   marca="CARLOS MOTA ADVOCACIA", titular="CARLOS MOTA",
+                   apresentacao="Nominativa")
+        carteira = [preprocessar(base)]
+        cands, _ = camada2(carteira, [preprocessar(rpi)])
+        assert cands, "Par quase idêntico deve passar a C2"
+        c = cands[0]
+        assert c["apresentacao_base"] == "Mista"
+        assert c["apresentacao_rpi"] == "Nominativa"
+        assert c["is_nome_proprio_base"] is True
+        assert c["is_nome_proprio_rpi"] is True
+
+    def test_alerta_c1_propaga_campos(self):
+        from app.pipeline.nome_identico import camada1 as c1
+        m = _marca("NEXO", 9)
+        alertas, _ = c1([m], [m])
+        assert alertas
+        assert "apresentacao_base" in alertas[0]
+        assert "is_nome_proprio_rpi" in alertas[0]
+
+    def test_camada4_lenidade_homonimos(self):
+        """Ambas nome próprio + classes não colidentes → score reduzido."""
+        par_base = {
+            "marca_base": "CARLOS MOTTA", "ncl_base": 1,
+            "spec_base": "produtos químicos", "nucleo_base": "carlos motta",
+            "marca_rpi": "CARLOS MOTTA", "ncl_rpi": 45,
+            "spec_rpi": "serviços jurídicos", "nucleo_rpi": "carlos motta",
+            "titular_base": "X", "titular_rpi": "Y",
+            "score_nome": 1.0, "score_fonetico": 1.0,
+            "score_spec": 0.45, "score_nucleo": 1.0,
+            "classes_colidem_flag": False,
+            "nucleo_distintivo_base": "carlos motta",
+            "nucleo_distintivo_rpi": "carlos motta",
+        }
+        sem_flag = camada4([dict(par_base)])
+        com_flag = camada4([dict(
+            par_base, is_nome_proprio_base=True, is_nome_proprio_rpi=True,
+        )])
+        if sem_flag and com_flag:
+            assert com_flag[0]["score_final"] <= sem_flag[0]["score_final"]
+        else:
+            # Se o par com lenidade caiu abaixo do threshold, o sem flag
+            # precisa ter sobrevivido ou ambos caíram — nunca o inverso.
+            assert not (com_flag and not sem_flag)
+
+    def test_parse_xml_ignora_figurativa(self, tmp_path):
+        from app.parsers.parse_xml import parse_rpi_xml
+        xml = """<?xml version="1.0" encoding="UTF-8"?>
+<revista numero="2800" data="01/06/2026">
+  <processo numero="900000001">
+    <despachos><despacho codigo="IPAS009" nome="Publicação para oposição"/></despachos>
+    <marca apresentacao="Figurativa"><nome>LOGO QUALQUER</nome></marca>
+    <classes-nice><classe-nice codigo="35"><especificacao>comércio</especificacao></classe-nice></classes-nice>
+    <titulares><titular nome-razao-social="EMPRESA A LTDA"/></titulares>
+  </processo>
+  <processo numero="900000002">
+    <despachos><despacho codigo="IPAS009" nome="Publicação para oposição"/></despachos>
+    <marca apresentacao="Nominativa"><nome>MARCA VERBAL</nome></marca>
+    <classes-nice><classe-nice codigo="35"><especificacao>comércio</especificacao></classe-nice></classes-nice>
+    <titulares><titular nome-razao-social="EMPRESA B LTDA"/></titulares>
+  </processo>
+</revista>"""
+        path = tmp_path / "rpi.xml"
+        path.write_text(xml, encoding="utf-8")
+        records, _, _ = parse_rpi_xml(str(path))
+        nomes = [r["nome_marca"] for r in records]
+        assert "MARCA VERBAL" in nomes
+        assert "LOGO QUALQUER" not in nomes
+
+
+class TestLotesExecutor:
+    """Processamento em lotes de TAMANHO_LOTE_RPI no executor."""
+
+    def test_processar_lote_basico(self, monkeypatch):
+        """C1→C4 num lote pequeno, camada5 stub recebe custo_inicial."""
+        from app.pipeline import executor as ex
+
+        chamadas = []
+
+        def _camada5_stub(pares, progress_cb=None, custo_inicial=0.0):
+            chamadas.append(custo_inicial)
+            return pares, 0.01
+
+        monkeypatch.setattr(ex, "camada5", _camada5_stub)
+
+        carteira = [_marca("NOVA GERACAO", 25)]
+        chunk = [_marca("NOVA GERACAO", 25), _marca("XYZKW", 7)]
+
+        def _sem_filtro(pares):
+            return pares, 0
+
+        resultados, custo, cont = ex._processar_lote(
+            carteira=carteira, rpi_chunk=chunk, usar_ia=True,
+            custo_inicial=0.5, filtrar_titular=_sem_filtro,
+            progress=lambda msg, pct: None, pct=50,
+        )
+        assert cont["camada1_count"] == 1
+        assert resultados, "Nome idêntico deve gerar resultado"
+        # camada5 só roda se houver scored_c4; com custo_inicial repassado
+        if chamadas:
+            assert chamadas[0] == 0.5
+            assert custo == 0.01
+
+    def test_gravar_checkpoint_e_falha_nao_aborta(self, tmp_path, monkeypatch):
+        from app.pipeline import executor as ex
+
+        path = str(tmp_path / "sub" / "chk.json")
+        ex._gravar_checkpoint(path, [{"marca_base": "A"}], 1, 3, 0.05, "2800")
+        import json as _json
+        with open(path, encoding="utf-8") as f:
+            data = _json.load(f)
+        assert data["lote"] == 1
+        assert data["total_lotes"] == 3
+        assert data["resultados"][0]["marca_base"] == "A"
+
+        # Falha de escrita não pode propagar exceção
+        monkeypatch.setattr(ex.os, "replace", _raise_oserror)
+        ex._gravar_checkpoint(path, [], 2, 3, 0.05, "2800")  # não deve lançar
+
+    def test_dedup_cross_lote(self):
+        from app.pipeline.executor import _dedup_pares
+        lote1 = [{"marca_base": "A", "ncl_base": 35, "marca_rpi": "B",
+                  "ncl_rpi": 35, "score_final": 0.7}]
+        lote2 = [{"marca_base": "A", "ncl_base": 35, "marca_rpi": "B",
+                  "ncl_rpi": 35, "score_final": 0.9}]
+        dedup = _dedup_pares(lote1 + lote2)
+        assert len(dedup) == 1
+        assert dedup[0]["score_final"] == 0.9
+
+
+def _raise_oserror(*args, **kwargs):
+    raise OSError("disco cheio")

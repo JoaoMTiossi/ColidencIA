@@ -381,4 +381,8 @@ def _criar_candidato(
         "nucleo_rpi_generico": bool(marca_rpi.get("is_marca_generica")),
         "nucleo_distintivo_base": marca_base.get("nucleo_distintivo", ""),
         "nucleo_distintivo_rpi": marca_rpi.get("nucleo_distintivo", ""),
+        "apresentacao_base": marca_base.get("apresentacao", ""),
+        "apresentacao_rpi": marca_rpi.get("apresentacao", ""),
+        "is_nome_proprio_base": bool(marca_base.get("is_nome_proprio")),
+        "is_nome_proprio_rpi": bool(marca_rpi.get("is_nome_proprio")),
     }

@@ -85,6 +85,9 @@ _HEADERS_TECNICO = [
     "Classes Colidem",
     "Sigla?",
     "Desgastado?",
+    "Apresent. Base",
+    "Apresent. RPI",
+    "Nome Próprio?",
 ]
 
 
@@ -299,6 +302,9 @@ def _build_aba_tecnica(
             "Sim" if r.get("classes_colidem_flag") else "Não",
             "Sim" if r.get("is_sigla") else "Não",
             "Sim" if r.get("is_desgastado") else "Não",
+            r.get("apresentacao_base", ""),
+            r.get("apresentacao_rpi", ""),
+            "Sim" if r.get("is_nome_proprio_base") or r.get("is_nome_proprio_rpi") else "Não",
         ])
 
         fill = _cor_classificacao(classificacao)
@@ -309,7 +315,7 @@ def _build_aba_tecnica(
     ws.freeze_panes = "A2"
 
     larguras = [5, 12, 14, 10, 40, 8, 50, 40, 8, 50, 15, 40, 40, 8,
-                10, 10, 10, 10, 10, 60, 30, 30, 12, 8, 10]
+                10, 10, 10, 10, 10, 60, 30, 30, 12, 8, 10, 14, 14, 12]
     for i, w in enumerate(larguras, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
 

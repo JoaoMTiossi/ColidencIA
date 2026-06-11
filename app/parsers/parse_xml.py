@@ -92,6 +92,9 @@ def parse_rpi_xml(filepath: str) -> tuple[list[dict], str, str]:
             continue
 
         apresentacao = marca_el.get("apresentacao", "")
+        if apresentacao == "Figurativa":
+            # Sem elemento verbal — análise de colisão de nome não se aplica.
+            continue
         tipo_acao = _parse_tipo_acao(despacho_codigo)
 
         # Titular(es)

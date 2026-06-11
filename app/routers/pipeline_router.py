@@ -98,6 +98,8 @@ async def _executar_async(
         prog["percentual"] = pct
         prog["logs"].append(entry)
 
+    checkpoint_path = os.path.join(OUTPUT_DIR, f"checkpoint_execucao_{execucao_id}.json")
+
     try:
         output = executar_pipeline(
             path_carteira=path_carteira,
@@ -105,6 +107,7 @@ async def _executar_async(
             despachos_selecionados=despachos,
             progress_cb=_progress,
             usar_ia=True,
+            checkpoint_path=checkpoint_path,
         )
     except Exception as e:
         logger.exception("Erro no pipeline execucao_id=%d", execucao_id)
@@ -197,14 +200,38 @@ async def _executar_async(
 
         await db.commit()
 
-    # Atualizar corpus de vocabulário por classe e recompilar artefato
+    # Resultados persistidos — o checkpoint parcial não é mais necessário
+    try:
+        if os.path.exists(checkpoint_path):
+            os.remove(checkpoint_path)
+    except Exception as exc:
+        logger.warning("Falha ao remover checkpoint (não crítico): %s", exc)
+
+    # Atualizar corpus de vocabulário por classe e recompilar artefato.
+    # Guard: se esta MESMA RPI já foi processada antes (re-execução), pular o
+    # upsert — senão as contagens de termo/classe seriam infladas a cada
+    # re-execução, cruzando o limiar absoluto do vocab artificialmente.
     corpus_update = output.get("corpus_update")
     if corpus_update:
         try:
             async with AsyncSessionLocal() as db:
-                await _atualizar_corpus(db, corpus_update)
-            await _recompilar_vocab_corpus()
-            logger.info("Corpus de vocabulário atualizado e recompilado")
+                ja_processada = await db.scalar(
+                    select(Execucao.id).where(
+                        Execucao.numero_rpi == stats.get("rpi_numero"),
+                        Execucao.status == "concluido",
+                        Execucao.id != execucao_id,
+                    ).limit(1)
+                )
+                if ja_processada:
+                    logger.info(
+                        "RPI %s já processada (execucao_id=%d) — corpus não atualizado",
+                        stats.get("rpi_numero"), ja_processada,
+                    )
+                else:
+                    await _atualizar_corpus(db, corpus_update)
+            if not ja_processada:
+                await _recompilar_vocab_corpus()
+                logger.info("Corpus de vocabulário atualizado e recompilado")
         except Exception as exc:
             logger.warning("Falha ao atualizar corpus (não crítico): %s", exc)
 

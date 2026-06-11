@@ -181,6 +181,10 @@ def camada3(candidatos: list[dict]) -> list[dict]:
     o sinal de classe — i.e., classes podem colidir formalmente mas se os
     textos descrevem produtos genuinamente diferentes, score_spec é dampened.
     Isso ataca os falsos positivos do tipo "mesma classe, conteúdo distinto".
+
+    Decisão de design: alertas C1 (nome idêntico) cross-class sem afinidade
+    real também são descartados aqui — alto renome (art. 125 LPI) é exceção
+    rara, avaliada manualmente fora do pipeline.
     """
     if not candidatos:
         return []

@@ -3,13 +3,17 @@ Orquestrador do pipeline de colidência (Camadas 0–5).
 """
 from __future__ import annotations
 
+import json
 import logging
+import math
+import os
 import re
 import time
 import unicodedata
+from collections import Counter, defaultdict
 from typing import Callable
 
-from ..config import DESPACHOS_OPOSICAO, DESPACHOS_PAN
+from ..config import DESPACHOS_OPOSICAO, DESPACHOS_PAN, OUTPUT_DIR, TAMANHO_LOTE_RPI
 from ..parsers.parse_excel import parse_excel
 from ..parsers.parse_xml import parse_rpi_xml
 from .fonetica import camada2
@@ -44,15 +48,149 @@ def _normalizar_titular(t: str) -> str:
     return t
 
 
+def _dedup_pares(pares: list[dict]) -> list[dict]:
+    """Remove duplicatas (mesma marca em múltiplos registros da carteira
+    gera pares com a mesma chave), mantendo o de maior score."""
+    ordenados = sorted(
+        pares,
+        key=lambda r: r.get("score_final", r.get("score_nome", 0)),
+        reverse=True,
+    )
+    seen: set[tuple] = set()
+    out: list[dict] = []
+    for r in ordenados:
+        key = (
+            r.get("marca_base", ""),
+            r.get("ncl_base", 0),
+            r.get("marca_rpi", ""),
+            r.get("ncl_rpi", 0),
+        )
+        if key not in seen:
+            seen.add(key)
+            out.append(r)
+    return out
+
+
+def _gravar_checkpoint(
+    path: str,
+    resultados: list[dict],
+    lote: int,
+    total_lotes: int,
+    custo_ia_usd: float,
+    rpi_numero: str,
+) -> None:
+    """
+    Grava os resultados acumulados após cada lote — se a execução cair no
+    meio, o trabalho dos lotes concluídos não se perde. Escrita atômica
+    (tmp + os.replace). Falha de gravação NUNCA aborta o pipeline.
+    """
+    try:
+        dirname = os.path.dirname(path)
+        if dirname:
+            os.makedirs(dirname, exist_ok=True)
+        payload = {
+            "rpi_numero": rpi_numero,
+            "lote": lote,
+            "total_lotes": total_lotes,
+            "custo_ia_usd": round(custo_ia_usd, 4),
+            "resultados": resultados,
+        }
+        tmp = path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(payload, f, ensure_ascii=False)
+        os.replace(tmp, path)
+    except Exception as e:
+        logger.warning("Falha ao gravar checkpoint (não crítico): %s", e)
+
+
+def _processar_lote(
+    carteira: list[dict],
+    rpi_chunk: list[dict],
+    usar_ia: bool,
+    custo_inicial: float,
+    filtrar_titular: Callable[[list[dict]], tuple[list[dict], int]],
+    progress: Callable[[str, int], None],
+    pct: int,
+) -> tuple[list[dict], float, dict]:
+    """
+    Executa C1→C5 para um lote de marcas da RPI contra a carteira completa.
+
+    custo_inicial: gasto IA acumulado nos lotes anteriores — o budget da
+    camada 5 é global por execução, não por lote.
+
+    Retorna (resultados_do_lote, custo_ia_do_lote, contadores).
+    """
+    # Camada 1 — Nome idêntico
+    alertas_c1_raw, rpi_restante = camada1(carteira, rpi_chunk)
+
+    # Filtro de afinidade NCL/especificação sobre os alertas C1. Decisão de
+    # design (deliberada): nome idêntico cross-class SEM afinidade real é
+    # descartado aqui — o princípio da especialidade prevalece; alto renome
+    # (art. 125 LPI) é exceção rara, avaliada manualmente fora do pipeline.
+    if alertas_c1_raw:
+        alertas_c1 = camada3(alertas_c1_raw)
+        for a in alertas_c1:
+            a["camada_deteccao"] = 1  # camada3 sobrescreve; restaurar origem
+            # A C3 refinou score_spec — re-derivar classificacao/nivel/score
+            # para o registro sair consistente (sem ALTA com afinidade baixa).
+            reclassificar_pos_c3(a)
+    else:
+        alertas_c1 = alertas_c1_raw
+
+    # Camada 2 — Filtro fonético
+    candidatos_c2, _ = camada2(carteira, rpi_restante)
+
+    # Camada 3 — Filtro de especificação
+    candidatos_c3 = camada3(candidatos_c2)
+
+    # Camada 4 — Scoring composto (alertas C1 já têm score, bypassam C4)
+    scored_c4 = camada4(candidatos_c3)
+
+    # Pós-filtros PRÉ-IA — rodam antes da camada 5 para não gastar orçamento
+    # com pares que seriam removidos no pós-processamento.
+    alertas_c1, rem_t1 = filtrar_titular(alertas_c1)
+    scored_c4, rem_t4 = filtrar_titular(scored_c4)
+    alertas_c1 = _dedup_pares(alertas_c1)
+    scored_c4 = _dedup_pares(scored_c4)
+
+    # Camada 5 — Refinamento IA
+    # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
+    # já estão juridicamente decididos (art. 124, XIX LPI) — enviá-los à IA
+    # gastaria orçamento e permitiria que uma resposta "NENHUMA" removesse
+    # silenciosamente um alerta certo do relatório.
+    custo_lote = 0.0
+    if usar_ia and scored_c4:
+        def _ia_progress(msg: str) -> None:
+            progress(f"Camada 5: {msg}", pct)
+
+        scored_c4, custo_lote = camada5(
+            scored_c4, _ia_progress, custo_inicial=custo_inicial
+        )
+
+    contadores = {
+        "camada1_count": len(alertas_c1),
+        "camada2_count": len(candidatos_c2),
+        "camada3_count": len(candidatos_c3),
+        "camada4_count": len(scored_c4),
+        "removidos_titular": rem_t1 + rem_t4,
+    }
+    return alertas_c1 + scored_c4, custo_lote, contadores
+
+
 def executar_pipeline(
     path_carteira: str,
     path_rpi: str,
     despachos_selecionados: list[str] | None = None,
     progress_cb: Callable[[str, int], None] | None = None,
     usar_ia: bool = True,
+    checkpoint_path: str | None = None,
 ) -> dict:
     """
     Executa o pipeline completo de colidência.
+
+    A RPI é processada em lotes de TAMANHO_LOTE_RPI marcas (C1→C5 por lote);
+    após cada lote os resultados acumulados são gravados em checkpoint e o
+    progresso é logado por % de lotes concluídos.
 
     Parâmetros:
         path_carteira: caminho para o Excel da carteira
@@ -61,6 +199,8 @@ def executar_pipeline(
                                 (None = todos os relevantes)
         progress_cb: callback(mensagem: str, pct: int) para atualizar progresso
         usar_ia: se True e OPENAI_API_KEY configurada, executa camada 5
+        checkpoint_path: arquivo JSON de resultados parciais
+                         (None = OUTPUT_DIR/checkpoint_execucao.json)
 
     Retorna dict com:
         resultados, stats, custo_ia_usd, tempo_seg
@@ -125,10 +265,10 @@ def executar_pipeline(
     # -----------------------------------------------------------------------
     # Corpus de vocabulário — coleta frequência de tokens por classe NCL
     # Usa TODAS as marcas (não só colidências) para estatística não-enviesada.
+    # Roda sobre o conjunto COMPLETO, antes do processamento em lotes.
     # -----------------------------------------------------------------------
-    from collections import Counter as _Counter
-    _corpus_termos: _Counter[tuple[int, str]] = _Counter()
-    _corpus_classes: _Counter[int] = _Counter()
+    _corpus_termos: Counter[tuple[int, str]] = Counter()
+    _corpus_classes: Counter[int] = Counter()
     for _m in carteira + rpi:
         _ncl = _m.get("ncl", 0)
         if _ncl <= 0:
@@ -139,68 +279,15 @@ def executar_pipeline(
         _corpus_classes[_ncl] += 1
 
     # -----------------------------------------------------------------------
-    # Camada 1 — Nome idêntico
-    # -----------------------------------------------------------------------
-    _progress("Camada 1: Verificando nomes idênticos...", 30)
-    alertas_c1_raw, rpi_restante = camada1(carteira, rpi)
-    _progress(f"Camada 1: {len(alertas_c1_raw)} marcas idênticas detectadas", 32)
-
-    # Filtro de afinidade NCL/especificação: marcas idênticas só viram
-    # alerta se a NCL/spec forem concorrentes. "MISTER X" classe 25 contra
-    # "MISTER X" classe 7 (máquinas) não deve gerar colidência.
-    if alertas_c1_raw:
-        alertas_c1 = camada3(alertas_c1_raw)
-        for a in alertas_c1:
-            a["camada_deteccao"] = 1  # camada3 sobrescreve; restaurar origem
-            # A C3 refinou score_spec — re-derivar classificacao/nivel/score
-            # para o registro sair consistente (sem ALTA com afinidade baixa).
-            reclassificar_pos_c3(a)
-        removidos_c1 = len(alertas_c1_raw) - len(alertas_c1)
-        if removidos_c1:
-            _progress(
-                f"Camada 1: {removidos_c1} marca(s) idêntica(s) removida(s) "
-                f"— NCL/especificação não concorrente",
-                34,
-            )
-    else:
-        alertas_c1 = alertas_c1_raw
-    _progress(f"Camada 1: {len(alertas_c1)} colidências confirmadas", 35)
-
-    # -----------------------------------------------------------------------
-    # Camada 2 — Filtro fonético
-    # -----------------------------------------------------------------------
-    _progress(f"Camada 2: Filtro fonético ({len(rpi_restante)} marcas restantes)...", 40)
-    candidatos_c2, _ = camada2(carteira, rpi_restante)
-    _progress(f"Camada 2: {len(candidatos_c2)} candidatos após filtro fonético", 50)
-
-    # -----------------------------------------------------------------------
-    # Camada 3 — Filtro de especificação
-    # -----------------------------------------------------------------------
-    _progress("Camada 3: Filtro de especificação...", 55)
-    candidatos_c3 = camada3(candidatos_c2)
-    _progress(f"Camada 3: {len(candidatos_c3)} candidatos com afinidade suficiente", 60)
-
-    # -----------------------------------------------------------------------
-    # Camada 4 — Scoring composto
-    # -----------------------------------------------------------------------
-    _progress("Camada 4: Calculando scores...", 65)
-    todos_candidatos = candidatos_c3  # alertas da camada 1 já têm score
-    scored_c4 = camada4(todos_candidatos)
-    _progress(f"Camada 4: {len(scored_c4)} pares acima do threshold", 70)
-
-    # -----------------------------------------------------------------------
-    # Pós-filtros PRÉ-IA — não dependem do resultado da IA, então rodam antes
-    # da camada 5 para não gastar orçamento com pares que seriam removidos
-    # de qualquer forma no pós-processamento.
-    # -----------------------------------------------------------------------
-
-    # Filtrar pares onde o titular da RPI bate com QUALQUER cliente da carteira.
-    # Cobre o caso "cliente A da carteira × marca nova do cliente A na RPI"
+    # Filtro de titular — definido UMA vez, antes do loop de lotes, para que
+    # o cache rapidfuzz por titular persista entre os lotes.
+    # Filtra pares onde o titular da RPI bate com QUALQUER cliente da carteira:
+    # cobre o caso "cliente A da carteira × marca nova do cliente A na RPI"
     # que o filtro de processo não pegou (processo ainda não está na carteira).
+    # -----------------------------------------------------------------------
     from rapidfuzz import process as _rf_process, fuzz as _rf_fuzz
 
     # Cache por titular_rpi único — evita O(n_pares × n_titulares) com rapidfuzz.
-    # Pré-computa uma vez por titular distinto, não por par.
     _cache_titular: dict[str, bool] = {}
 
     def _titular_rpi_eh_cliente(titular_rpi: str) -> bool:
@@ -233,62 +320,60 @@ def executar_pipeline(
         ]
         return pares, antes - len(pares)
 
-    def _dedup_pares(pares: list[dict]) -> list[dict]:
-        """Remove duplicatas (mesma marca em múltiplos registros da carteira
-        gera pares com a mesma chave), mantendo o de maior score."""
-        ordenados = sorted(
-            pares,
-            key=lambda r: r.get("score_final", r.get("score_nome", 0)),
-            reverse=True,
-        )
-        seen: set[tuple] = set()
-        out: list[dict] = []
-        for r in ordenados:
-            key = (
-                r.get("marca_base", ""),
-                r.get("ncl_base", 0),
-                r.get("marca_rpi", ""),
-                r.get("ncl_rpi", 0),
-            )
-            if key not in seen:
-                seen.add(key)
-                out.append(r)
-        return out
-
-    alertas_c1, rem_t1 = _filtrar_titular(alertas_c1)
-    scored_c4, rem_t4 = _filtrar_titular(scored_c4)
-    removidos_titular = rem_t1 + rem_t4
-    if removidos_titular:
-        _progress(
-            f"Pré-IA: {removidos_titular} par(es) removido(s) "
-            f"— titular da RPI é cliente",
-            72,
-        )
-
-    alertas_c1 = _dedup_pares(alertas_c1)
-    scored_c4 = _dedup_pares(scored_c4)
-
     # -----------------------------------------------------------------------
-    # Camada 5 — Refinamento IA
-    # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
-    # já estão juridicamente decididos (art. 124, XIX LPI) — enviá-los à IA
-    # gastaria orçamento e permitiria que uma resposta "NENHUMA" removesse
-    # silenciosamente um alerta certo do relatório.
-    # scored_c4 já está ordenado por score DESC (dedup) — o corte de
-    # MAX_PARES_IA atinge os pares menos relevantes.
+    # Processamento em lotes — C1→C5 por grupo de TAMANHO_LOTE_RPI marcas.
+    # Checkpoint após cada lote; progresso por % de lotes concluídos.
     # -----------------------------------------------------------------------
+    if checkpoint_path is None:
+        checkpoint_path = os.path.join(OUTPUT_DIR, "checkpoint_execucao.json")
+
+    total_lotes = math.ceil(len(rpi) / TAMANHO_LOTE_RPI) if rpi else 0
+    _progress(
+        f"Processando {len(rpi)} marcas em {total_lotes} lote(s) "
+        f"de até {TAMANHO_LOTE_RPI}...",
+        25,
+    )
+
+    acumulado: list[dict] = []
     custo_ia = 0.0
-    if usar_ia and scored_c4:
-        _progress(f"Camada 5: Refinamento IA ({len(scored_c4)} pares)...", 75)
+    contadores_totais: defaultdict[str, int] = defaultdict(int)
 
-        def _ia_progress(msg: str) -> None:
-            _progress(f"Camada 5: {msg}", 80)
+    for i in range(total_lotes):
+        chunk = rpi[i * TAMANHO_LOTE_RPI:(i + 1) * TAMANHO_LOTE_RPI]
+        # Mapeia o avanço dos lotes na faixa 25..95 do progresso global
+        pct = 25 + int(70 * (i + 1) / total_lotes)
+        resultados_lote, custo_lote, cont = _processar_lote(
+            carteira=carteira,
+            rpi_chunk=chunk,
+            usar_ia=usar_ia,
+            custo_inicial=custo_ia,
+            filtrar_titular=_filtrar_titular,
+            progress=_progress,
+            pct=pct,
+        )
+        custo_ia += custo_lote
+        acumulado.extend(resultados_lote)
+        for k, v in cont.items():
+            contadores_totais[k] += v
 
-        scored_c4, custo_ia = camada5(scored_c4, _ia_progress)
-        _progress(f"Camada 5: Refinamento IA concluído (custo: ${custo_ia:.4f})", 90)
+        _gravar_checkpoint(
+            checkpoint_path, acumulado, i + 1, total_lotes, custo_ia, rpi_numero
+        )
+        _progress(
+            f"Lote {i + 1}/{total_lotes} concluído — "
+            f"{int(100 * (i + 1) / total_lotes)}% "
+            f"({len(acumulado)} alertas acumulados, custo IA ${custo_ia:.4f})",
+            pct,
+        )
 
-    # Unir resultados da camada 1 com os da camada 4/5
-    todos_resultados = alertas_c1 + scored_c4
+    if contadores_totais.get("removidos_titular"):
+        _progress(
+            f"Pré-IA: {contadores_totais['removidos_titular']} par(es) "
+            f"removido(s) — titular da RPI é cliente",
+            95,
+        )
+
+    todos_resultados = acumulado
 
     # -----------------------------------------------------------------------
     # Pós-processamento
@@ -298,22 +383,10 @@ def executar_pipeline(
     # Filtrar "NENHUMA" que podem ter vindo da IA
     todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
 
-    # Ordenar por score_final DESC (a IA pode ter alterado os scores)
-    todos_resultados.sort(key=lambda r: r.get("score_final", r.get("score_nome", 0)), reverse=True)
-
-    # Remover duplicatas (mesma marca_base + marca_rpi + ncl_base + ncl_rpi)
-    seen: set[tuple] = set()
-    dedup: list[dict] = []
-    for r in todos_resultados:
-        key = (
-            r.get("marca_base", ""),
-            r.get("ncl_base", 0),
-            r.get("marca_rpi", ""),
-            r.get("ncl_rpi", 0),
-        )
-        if key not in seen:
-            seen.add(key)
-            dedup.append(r)
+    # Dedup global final (ordena por score DESC e remove duplicatas) — cobre
+    # também duplicatas entre lotes (mesma marca da RPI em registros por
+    # classe distribuídos em lotes diferentes).
+    dedup = _dedup_pares(todos_resultados)
 
     # Estatísticas
     stats = {
@@ -329,10 +402,11 @@ def executar_pipeline(
         "alertas_baixa": sum(1 for r in dedup if r.get("classificacao") == "BAIXA"),
         "alertas_oposicao": sum(1 for r in dedup if r.get("tipo_acao") == "OPOSICAO"),
         "alertas_pan": sum(1 for r in dedup if r.get("tipo_acao") == "PAN"),
-        "camada1_count": len(alertas_c1),
-        "camada2_count": len(candidatos_c2),
-        "camada3_count": len(candidatos_c3),
-        "camada4_count": len(scored_c4),
+        "camada1_count": contadores_totais.get("camada1_count", 0),
+        "camada2_count": contadores_totais.get("camada2_count", 0),
+        "camada3_count": contadores_totais.get("camada3_count", 0),
+        "camada4_count": contadores_totais.get("camada4_count", 0),
+        "total_lotes": total_lotes,
     }
 
     tempo = round(time.time() - t0, 2)

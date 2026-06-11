@@ -278,6 +278,13 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             fator = _fator_distintividade(par.get("nucleo_base", "")) * _fator_distintividade(par.get("nucleo_rpi", ""))
             score = score * fator
 
+        # Homônimos: ambas as marcas são o nome do próprio titular
+        # (art. 124, XV LPI) e as classes não colidem → leve lenidade.
+        # Fator conservador; calibrar com o gold set.
+        if (par.get("is_nome_proprio_base") and par.get("is_nome_proprio_rpi")
+                and not par.get("classes_colidem_flag")):
+            score *= 0.90
+
         # Override: núcleo idêntico → mínimo 0.70
         if s_nucleo >= 0.99:
             score = max(score, 0.70)
