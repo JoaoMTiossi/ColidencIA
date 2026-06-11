@@ -239,27 +239,43 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # afinidade mercadológica. Isso recupera os pares cross-class que o
         # especialista marca (proteção marcária) sem reintroduzir ruído.
         if md is None:
-            # Marca puramente descritiva — sem sinal próprio. Só passa se o
-            # nome completo for quase idêntico (variação ortográfica evidente).
-            if s_nome < 0.92:
-                continue
+            # Marca puramente descritiva — sem sinal próprio.
+            # Exceções calibradas pelo gold set:
+            #   • Mesma classe + fonética/nome forte: variação ortográfica óbvia.
+            #   • Mesma classe + fon ≥ 0.62 + spec ≥ 0.94: spec quase-idêntica
+            #     (marcas de classe idêntica com som similar mas nome curto/diferente).
+            #   • Cross-class + fon ≥ 0.90: marcas foneticamente muito similares
+            #     em classes relacionadas (filtro de afinidade ativo abaixo).
+            allow_mc = mesma_classe and (
+                s_nome >= 0.85 or s_fon >= 0.85
+                or (s_fon >= 0.62 and s_spec >= 0.94)
+            )
+            allow_xc = not mesma_classe and s_fon >= 0.90
+            if not allow_mc and not allow_xc:
+                if s_nome < 0.92:
+                    continue
         elif mesma_classe:
             # Mesma classe: exige sinal distintivo sólido.
+            # Escape: spec muito alta (≥ 0.90) indica mesma sub-categoria de produto
+            # — sinal de mercado sobrepõe sinal fonético moderado.
             if md < 0.80 and s_nome < 0.90:
-                if s_fon < 0.85:
+                if s_fon < 0.85 and s_spec < 0.90:
                     continue
             if md < 0.90:
                 score *= 0.85
         else:
             # Cross-class. Núcleo forte sempre passa (severidade decide o tier).
             # Sinal intermediário (0.85–0.92) exige afinidade. Sinal fraco cai.
+            # Inclui s_fon_adj no sinal cross-class: fonética alta é evidência tão
+            # forte quanto similaridade de nome para detectar cópia fonética.
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
-            s_sig_cross = max(md if md is not None else 0, s_nome)
+            s_sig_cross = max(md if md is not None else 0, s_nome, s_fon_adj)
             if not nucleo_forte:
                 if s_sig_cross < 0.85:
                     continue
-                # 0.85–0.92: precisa de alguma evidência de afinidade
-                afinidade_ok = af_classes >= 0.75 or s_sem >= 0.20 or s_spec >= 0.80
+                # Threshold de afinidade reduzido: correlação moderada entre classes
+                # (≥ 0.60) é evidência suficiente quando o sinal de nome é alto.
+                afinidade_ok = af_classes >= 0.60 or s_sem >= 0.20 or s_spec >= 0.80
                 if not afinidade_ok:
                     continue
             if md is not None and md < 0.95:

@@ -315,6 +315,18 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
                         break
                 if score_containment:
                     break
+        # Equivalência fonética: mesmo código metaphone = cópia fonética
+        # (ex.: "kmey" e "kemei" → ambos "KM"; JW=0.67 passaria pelo gate).
+        if not score_containment:
+            for t_a in toks_a:
+                cod_a = metaphone_ptbr(t_a)
+                if cod_a:
+                    for t_b in toks_b:
+                        if cod_a == metaphone_ptbr(t_b):
+                            score_containment = max(score_containment, 0.72)
+                            break
+                    if score_containment:
+                        break
 
     # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
@@ -322,7 +334,7 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
         from rapidfuzz import fuzz
         ratio = fuzz.ratio(nome_a, nome_b) / 100.0
         jw = jaro_winkler(nome_a, nome_b)
-        return min(1.0, max(ratio, jw, score_primeiro_tok))
+        return min(1.0, max(ratio, jw, score_primeiro_tok, score_containment))
 
     jw_nome = jaro_winkler(nome_a, nome_b)
     jw_nucleo = jaro_winkler(nucleo_a, nucleo_b) * 1.1
