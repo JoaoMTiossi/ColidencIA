@@ -36,7 +36,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 1,36,0.5039,tabela_correlacoes,
 1,37,0.6703,tabela_correlacoes,
 1,38,0.5584,tabela_correlacoes,
-1,39,0.568,tabela_correlacoes,
+1,39,0.62,expert,Químicos e distribuição — distribuidoras de insumos químicos com marca própria
 1,40,0.72,expert,Químicos industriais e tratamento de materiais — processos químicos industriais integrados
 1,41,0.5847,tabela_correlacoes,
 1,42,0.7,expert,Químicos industriais e serviços de pesquisa química — P&D e produtos do mesmo setor
@@ -457,6 +457,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 14,34,0.6752,tabela_correlacoes,
 14,36,0.6038,tabela_correlacoes,
 14,37,0.7963,tabela_correlacoes,
+14,39,0.60,expert,Joias/bijuterias e distribuição — distribuidoras de acessórios com marca própria
 14,40,0.6895,collisions_config,
 14,41,0.6,collisions_config,
 14,45,0.5505,tabela_correlacoes,
@@ -661,7 +662,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 24,44,0.6192,tabela_correlacoes,
 25,26,0.8,expert,Roupas e aviamentos/acessórios de vestuário — complementares no mesmo setor têxtil
 25,27,0.52,expert,"Roupas e tapetes — overlap em produtos têxteis, marcas de moda-casa podem colidir"
-25,28,0.55,expert,"Roupas e brinquedos — overlap em fantasias, artigos de carnaval e bonecas"
+25,28,0.62,expert,"Roupas e brinquedos — overlap em fantasias, personagens infantis e bonecas"
 25,30,0.5188,tabela_correlacoes,
 25,31,0.528,tabela_correlacoes,
 25,32,0.519,tabela_correlacoes,
@@ -712,6 +713,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 29,33,0.68,expert,Alimentos e bebidas alcoólicas — mesmo canal de distribuição em supermercados
 29,34,0.505,tabela_correlacoes,
 29,35,0.6,collisions_config,
+29,39,0.65,expert,Alimentos e transporte/distribuição — distribuidoras de alimentos com marca própria
 29,40,0.6327,collisions_config,
 29,41,0.5464,tabela_correlacoes,
 29,43,0.85,expert,Alimentos e restaurantes — marcas de alimentos expandem para serviços gastronômicos
@@ -741,6 +743,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 32,43,0.8,expert,Bebidas e serviços de bar/restaurante — marcas de bebidas frequentemente abrem bares
 32,44,0.5041,tabela_correlacoes,
 33,34,0.62,expert,Bebidas alcoólicas e tabaco — mesmo canal duty-free e serviços de entretenimento adulto
+33,39,0.65,expert,Bebidas alcoólicas e distribuição — distribuidoras de bebidas com marca própria
 33,40,0.6,collisions_config,
 33,43,0.82,expert,"Bebidas alcoólicas e bares/restaurantes — extensão natural, mesmos estabelecimentos"
 34,35,0.6,collisions_config,

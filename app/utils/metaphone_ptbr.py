@@ -73,6 +73,11 @@ def metaphone_ptbr(palavra: str) -> str:
     # W → V
     w = w.replace("W", "V")
 
+    # Y → I (vogal em PT-BR): garante tratamento uniforme — sem isso,
+    # "SYKA" e "SIKA" divergem porque o Y não dispara as regras de vogal
+    # (ex.: S inicial antes de vogal).
+    w = w.replace("Y", "I")
+
     # Consoantes duplas → simples
     w = re.sub(r"([BCDFGHJKLMNPQRSTVXYZ])\1+", r"\1", w)
 

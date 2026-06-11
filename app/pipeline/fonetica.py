@@ -162,11 +162,21 @@ def camada2(
         #    aparece em posições diferentes nos dois nomes.
         nucleo = marca.get("nucleo", "")
         if nucleo:
-            first_tok = nucleo.split()[0]
+            toks_nucleo = nucleo.split()
+            first_tok = toks_nucleo[0]
             if len(first_tok) >= 2:
                 cod_nuc = metaphone_ptbr(first_tok)
                 if cod_nuc:
                     _indexar(ncl, cod_nuc, marca)
+            # Demais tokens do núcleo (≥ 3 chars): o núcleo preserva termos
+            # que tokens_distintivos remove por constarem do vocabulário NICE
+            # (ex.: "brilho", "cana", "king") mas que identificam a marca
+            # quando compartilhados entre as duas partes.
+            for tok in toks_nucleo[1:]:
+                if len(tok) >= 3:
+                    cod_t = metaphone_ptbr(tok)
+                    if cod_t:
+                        _indexar(ncl, cod_t, marca)
 
         # 5. Indexar pelo prefixo literal do núcleo distintivo (sem Metaphone).
         #    Reaproxima variações que o código fonético separa por descartar
@@ -207,15 +217,24 @@ def camada2(
                 if cod:
                     cands_desgastados.extend(_busca_exata(cod, indice_fonetico, classes_ok))
 
-        # 2b. Busca pelo núcleo da marca RPI (position-independent)
+        # 2b. Busca pelo núcleo da marca RPI (position-independent).
+        #     Primeiro token com Levenshtein-1 (tolera variações como
+        #     "rforte"/"refortec", "blom"/"bom"); demais tokens com busca exata.
         cands_nucleo: list[dict] = []
         nucleo_rpi_str = marca_rpi.get("nucleo", "")
         if nucleo_rpi_str:
-            first_tok_rpi = nucleo_rpi_str.split()[0]
+            toks_nucleo_rpi = nucleo_rpi_str.split()
+            first_tok_rpi = toks_nucleo_rpi[0]
             if len(first_tok_rpi) >= 2:
                 cod = metaphone_ptbr(first_tok_rpi)
                 if cod:
-                    cands_nucleo.extend(_busca_exata(cod, indice_fonetico, classes_ok))
+                    cands_nucleo.extend(_busca_com_vizinhos(
+                        cod, indice_fonetico, classes_ok, chaves_por_classe))
+            for tok_n in toks_nucleo_rpi[1:]:
+                if len(tok_n) >= 3:
+                    cod = metaphone_ptbr(tok_n)
+                    if cod:
+                        cands_nucleo.extend(_busca_exata(cod, indice_fonetico, classes_ok))
 
         # 2c. Busca pelo prefixo literal do núcleo distintivo (sem Metaphone)
         cands_direto: list[dict] = []

@@ -244,13 +244,18 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             #   • Mesma classe + fonética/nome forte: variação ortográfica óbvia.
             #   • Mesma classe + fon ≥ 0.62 + spec ≥ 0.94: spec quase-idêntica
             #     (marcas de classe idêntica com som similar mas nome curto/diferente).
-            #   • Cross-class + fon ≥ 0.90: marcas foneticamente muito similares
-            #     em classes relacionadas (filtro de afinidade ativo abaixo).
+            #   • Cross-class + fon/núcleo ≥ 0.90: marcas foneticamente ou
+            #     nuclearmente quase idênticas em classes relacionadas.
+            #   • Cross-class + fon ≥ 0.80 + spec ≥ 0.70: som muito próximo
+            #     com afinidade mercadológica relevante.
             allow_mc = mesma_classe and (
                 s_nome >= 0.85 or s_fon >= 0.85
                 or (s_fon >= 0.62 and s_spec >= 0.94)
             )
-            allow_xc = not mesma_classe and s_fon >= 0.90
+            allow_xc = not mesma_classe and (
+                s_fon >= 0.90 or s_nucleo >= 0.90
+                or (s_fon >= 0.80 and s_spec >= 0.70)
+            )
             if not allow_mc and not allow_xc:
                 if s_nome < 0.92:
                     continue
@@ -271,7 +276,10 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
             s_sig_cross = max(md if md is not None else 0, s_nome, s_fon_adj)
             if not nucleo_forte:
-                if s_sig_cross < 0.85:
+                # Escape graduado: sinal moderado (≥ 0.70) é aceito quando a
+                # afinidade de especificação é alta (≥ 0.80) — mercado próximo
+                # compensa sinal de nome intermediário.
+                if s_sig_cross < 0.85 and not (s_sig_cross >= 0.70 and s_spec >= 0.80):
                     continue
                 # Threshold de afinidade reduzido: correlação moderada entre classes
                 # (≥ 0.60) é evidência suficiente quando o sinal de nome é alto.
@@ -280,6 +288,11 @@ def camada4(candidatos: list[dict]) -> list[dict]:
                     continue
             if md is not None and md < 0.95:
                 score *= 0.85
+            # Sinal cross-class quase idêntico (≥ 0.90) que já passou pelo
+            # filtro de afinidade: garante sobrevivência ao threshold — o
+            # nível de severidade comunica a prioridade, não o descarte.
+            if s_sig_cross >= 0.90:
+                score = max(score, THRESHOLD_SCORE_FINAL)
 
         # ── Superfície 2D — score da Regra Inversa ────────────────────────
         # Blend: (1 - w) * SAW + w * score_2D
