@@ -51,4 +51,9 @@ def load_client_brands(path: str) -> pd.DataFrame:
     df = df[df['CLASSE_NUM'].notna()]
     df['CLASSE_NUM'] = df['CLASSE_NUM'].astype(int)
 
+    # Garantir que ESPECIFICAÇÃO esteja presente (usada como portão de spec)
+    if 'ESPECIFICAÇÃO' not in df.columns:
+        df['ESPECIFICAÇÃO'] = ''
+    df['ESPECIFICAÇÃO'] = df['ESPECIFICAÇÃO'].fillna('')
+
     return df.reset_index(drop=True)

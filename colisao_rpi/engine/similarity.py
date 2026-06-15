@@ -14,10 +14,10 @@ def similarity_score(a: str, b: str) -> float:
     """
     Retorna score 0.0–1.0 combinando 3 algoritmos.
 
-    Usa o MÁXIMO dos 3 resultados (conservador: qualquer algoritmo que acuse = marcar).
+    Usa o MÁXIMO de 2 algoritmos (token_set_ratio removido — inflava score quando
+    marcas compartilham apenas descritor genérico, ex: "CORRETORA DE SEGUROS").
         - Levenshtein ratio
         - Token Sort Ratio  (ordem das palavras não importa)
-        - Token Set Ratio   (interseção de tokens)
 
     Ambas as strings passam por normalização base + equivalências fonéticas
     antes da comparação.
@@ -30,9 +30,8 @@ def similarity_score(a: str, b: str) -> float:
 
     lev        = fuzz.ratio(a_key, b_key) / 100.0
     token_sort = fuzz.token_sort_ratio(a_key, b_key) / 100.0
-    token_set  = fuzz.token_set_ratio(a_key, b_key) / 100.0
 
-    return max(lev, token_sort, token_set)
+    return max(lev, token_sort)
 
 
 __all__ = [

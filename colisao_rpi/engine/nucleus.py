@@ -10,12 +10,49 @@ from .normalize import normalize
 # Stopwords que indicam início do complemento descritivo
 # ---------------------------------------------------------------------------
 _STOPWORDS_PT: frozenset[str] = frozenset({
+    # Preposições / conjunções
     'DE', 'DO', 'DA', 'DOS', 'DAS', 'E', 'EM', 'COM', 'PARA', 'POR',
-    'LTDA', 'ME', 'EPP', 'EIRELI', 'SA', 'SS', 'MEI',
+    'NO', 'NA', 'NOS', 'NAS', 'AO', 'AOS', 'OU',
+    # Sufixos jurídicos
+    'LTDA', 'ME', 'EPP', 'EIRELI', 'SA', 'SS', 'MEI', 'CIA', 'EIRELI',
+    # Descritores organizacionais
     'COMERCIO', 'INDUSTRIA', 'SERVICOS', 'SOLUCOES', 'ASSESSORIA',
-    'CONSULTORIA', 'GRUPO', 'HOLDING', 'PARTICIPACOES',
-    'STUDIO', 'CLINICA', 'FARMACIA', 'SUPERMERCADO', 'RESTAURANTE',
-    'ACADEMIA', 'ESCOLA', 'CENTRO', 'INSTITUTO',
+    'CONSULTORIA', 'GRUPO', 'HOLDING', 'PARTICIPACOES', 'EMPREENDIMENTOS',
+    'REPRESENTACOES', 'DISTRIBUIDORA', 'IMPORTADORA', 'EXPORTADORA',
+    # Segmentos — saúde / bem-estar
+    'CLINICA', 'CLINICAS', 'FARMACIA', 'DROGARIA', 'HOSPITAL',
+    'LABORATORIO', 'ODONTOLOGIA', 'VETERINARIA', 'ESTETICA', 'SAUDE',
+    # Segmentos — educação
+    'ACADEMIA', 'ESCOLA', 'INSTITUTO', 'CENTRO', 'CURSO', 'CURSOS',
+    'COLEGIO', 'FACULDADE', 'UNIVERSITARIO',
+    # Segmentos — alimentação
+    'RESTAURANTE', 'LANCHONETE', 'PADARIA', 'CONFEITARIA', 'DOCERIA',
+    'PIZZARIA', 'HAMBURGUERIA', 'CAFETERIA', 'SUSHI', 'TEMAKERIA',
+    # Segmentos — varejo / serviços
+    'SUPERMERCADO', 'MERCADO', 'LOJA', 'COMERCIAL', 'SHOPPING',
+    'STUDIO', 'ATELIE', 'BARBEARIA', 'LAVANDERIA',
+    # Segmentos — construção / imóveis
+    'CONSTRUTORA', 'INCORPORADORA', 'ENGENHARIA', 'ARQUITETURA',
+    'IMOBILIARIA', 'IMOVEIS', 'REFORMAS', 'CONSTRUCAO',
+    # Segmentos — tecnologia
+    'TECNOLOGIA', 'SISTEMAS', 'INFORMATICA', 'SOFTWARE', 'DIGITAL',
+    'SOLUCOES', 'DESENVOLVIMENTO', 'INOVACAO',
+    # Segmentos — finanças / seguros
+    'CONTABILIDADE', 'FINANCEIRA', 'SEGUROS', 'SEGURO', 'CORRETORA',
+    'INVESTIMENTOS', 'CREDITO', 'FINANCEIRO',
+    # Segmentos — transporte / logística
+    'LOGISTICA', 'TRANSPORTES', 'TRANSPORTE', 'MUDANCAS', 'FRETE',
+    # Segmentos — agro
+    'AGRONEGOCIO', 'AGRONEGÓCIOS', 'AGROPECUARIA', 'AGRICOLA',
+    # Complementos descritivos de moda / vestuário
+    'MODA', 'MODAS', 'FASHION', 'VESTUARIO', 'CONFECCOES',
+    'FEMININA', 'FEMININO', 'MASCULINO', 'MASCULINA', 'INFANTIL',
+    # Complementos de móveis / decoração
+    'MOVEIS', 'PLANEJADOS', 'DECORACAO', 'INTERIORES',
+    # Complementos automotivos
+    'PNEUS', 'AUTOPECAS', 'VEICULOS', 'AUTOMOVEIS',
+    # Genéricos de serviço
+    'SERVICO', 'SOLUCAO', 'GESTAO', 'ASSESSORIA', 'SUPORTE',
 })
 
 _STOPWORDS_EN: frozenset[str] = frozenset({'AND', 'OF', 'THE', 'FOR', 'BY', 'WITH'})

@@ -19,8 +19,82 @@ from .normalize import apply_phonetic, normalize, phonetic_key
 from .nucleus import ALL_STOPWORDS, extract_nucleus, is_common_mark
 from .similarity import similarity_score
 
-# Minimum token length to participate in cross-token matching (R4c)
-_MIN_TOKEN_LEN = 3
+# Minimum token length to participate in cross-token matching (R4c).
+# 4 chars elimina tokens curtos genéricos: VIA, NET, APP, ANA, ALE, etc.
+_MIN_TOKEN_LEN = 4
+
+# Threshold específico para R4c — mais alto que o geral pois compara token isolado.
+_THRESHOLD_TOKEN = 0.85
+
+# ---------------------------------------------------------------------------
+# Portão de especificação
+# ---------------------------------------------------------------------------
+
+# Palavras muito genéricas que aparecem em qualquer spec — ignoradas no overlap.
+_SPEC_STOPWORDS: frozenset[str] = frozenset({
+    'DE', 'DO', 'DA', 'DOS', 'DAS', 'E', 'EM', 'COM', 'PARA', 'POR', 'NO', 'NA',
+    'OS', 'AS', 'OU', 'SE', 'QUE', 'AO', 'AOS', 'UM', 'UMA',
+    'SERVICOS', 'SERVICO', 'PRODUTO', 'PRODUTOS', 'INCLUSIVE', 'EXCETO',
+    'TODOS', 'TODAS', 'GERAL', 'GERAIS', 'OUTROS', 'OUTRAS',
+    'FORMAS', 'FORMA', 'ATIVIDADES', 'ATIVIDADE', 'NESTE', 'ITEM',
+    'RELACIONADOS', 'RELACIONADAS', 'ENTRE', 'MEDIANTE', 'ATRAVES',
+})
+
+# Sobreposição mínima de tokens para considerar specs compatíveis.
+# Abaixo disto — quando ambas as specs estão disponíveis — a colidência é bloqueada.
+_SPEC_OVERLAP_MIN: float = 0.05
+
+# Mínimo de tokens significativos para a spec ser considerada válida.
+_SPEC_MIN_TOKENS: int = 2
+
+
+def _spec_tokens(spec: str) -> set[str]:
+    """Tokens normalizados da especificação, sem stopwords de baixo valor."""
+    if not spec or not str(spec).strip():
+        return set()
+    norm = normalize(str(spec))
+    return {t for t in norm.split() if len(t) >= 4 and t not in _SPEC_STOPWORDS}
+
+
+def _spec_overlap(spec_a: str, spec_b: str) -> float:
+    """
+    Coeficiente de sobreposição entre duas especificações:
+        overlap = |A ∩ B| / min(|A|, |B|)
+
+    Retorna -1.0 quando uma das specs não tem tokens suficientes
+    (portão não aplicável — não bloquear a análise fonética).
+    """
+    ta = _spec_tokens(spec_a)
+    tb = _spec_tokens(spec_b)
+    if len(ta) < _SPEC_MIN_TOKENS or len(tb) < _SPEC_MIN_TOKENS:
+        return -1.0
+    inter = len(ta & tb)
+    return inter / min(len(ta), len(tb))
+
+
+# ---------------------------------------------------------------------------
+# Tokens descritivos de segmento que não constituem elemento distintivo sozinhos.
+# Ex: MOTORS, DELIVERY, SEGUROS — compartilhados por centenas de marcas na mesma classe.
+_TOKENS_DESCRITORES: frozenset[str] = frozenset({
+    # Automotivo
+    'MOTORS', 'MOTOR', 'MOTO', 'AUTO', 'AUTOMOVEL', 'VEICULOS', 'VEICULO', 'AUTOMOTIVO',
+    # Logística / delivery
+    'DELIVERY', 'ENTREGA', 'EXPRESS', 'EXPRESSO',
+    # Financeiro / seguros
+    'SEGUROS', 'SEGURO', 'CORRETORA', 'FINANCEIRA', 'CREDITO', 'INVESTIMENTOS',
+    # Moda / vestuário
+    'MODA', 'MODAS', 'FASHION', 'ROUPAS', 'VESTUARIO',
+    # Alimentação
+    'PIZZA', 'PIZZARIA', 'BURGER', 'FOOD', 'LANCHE', 'SUSHI', 'PADARIA', 'RESTAURANTE',
+    # Varejo genérico
+    'SHOP', 'STORE', 'MERCADO', 'MARKET', 'COMERCIO', 'LOJA',
+    # Tech / digital
+    'TECH', 'DIGITAL', 'ONLINE', 'SISTEMAS', 'SOLUCOES',
+    # Qualificadores genéricos
+    'TUDO', 'GERAL', 'CLEAN', 'NOVO', 'NOVA', 'TOTAL',
+    # Cores (tokens fonéticos pós-normalização)
+    'PINK', 'ROSA', 'VERDE', 'AZUL', 'BRANCO', 'PRETO', 'DOURADO', 'PRATA',
+})
 
 
 def clean_titular(titular: str) -> str:
@@ -35,13 +109,15 @@ def _too_short(text: str) -> bool:
 
 def _token_keys(text: str) -> list[str]:
     """
-    Retorna a lista de chaves fonéticas dos tokens significativos da marca
-    (comprimento >= _MIN_TOKEN_LEN e não stopword).
+    Retorna chaves fonéticas dos tokens distintivos da marca para R4c.
+    Exclui stopwords, descritores de segmento e tokens curtos.
     """
     return [
         apply_phonetic(t)
         for t in normalize(text).split()
-        if len(t) >= _MIN_TOKEN_LEN and t not in ALL_STOPWORDS
+        if len(t) >= _MIN_TOKEN_LEN
+        and t not in ALL_STOPWORDS
+        and t not in _TOKENS_DESCRITORES
     ]
 
 
@@ -71,6 +147,8 @@ def check_collision(
     nucleo_rpi: str,
     classes_rpi: list[int],
     classe_match: bool,
+    spec_cli: str = '',
+    spec_rpi: str = '',
 ) -> tuple[bool, str | None, float]:
     """
     Avalia colidência entre uma marca do cliente e uma da RPI.
@@ -78,18 +156,26 @@ def check_collision(
     Retorna: (colide: bool, regra: str | None, score: float)
 
     Ordem de avaliação das regras:
+        R0   — Portão de especificação: specs incompatíveis bloqueiam tudo
         R1   — Chaves fonéticas idênticas (independente de classe)
         R3   — Núcleo idêntico ou muito próximo, classes correlatas
-        R4   — Nome completo similar fonético, classes correlatas
+        R4   — Nome completo similar fonético (conjunto marcário), classes correlatas
         R4b  — Núcleo similar fonético, classes correlatas
-        R4c  — Melhor token similar fonético, classes correlatas
+        R4c  — Melhor token DISTINTIVO similar fonético, classes correlatas
 
     Marcas muito curtas (< MIN_CHARS_SOFT_MATCH chars) só colidem por identidade.
     Marcas com núcleo genérico exigem threshold mais alto (THRESHOLD_NUCLEO).
+    Termos comuns sozinhos (BAR, CAFÉ, BRASIL…) não disparam R4c — mas contribuem
+    para o score do nome completo (R4), conforme o princípio do conjunto marcário.
     """
+    # --- Regra 0: portão de especificação ---
+    # Se ambas as specs estão disponíveis e têm sobreposição abaixo do mínimo,
+    # os produtos/serviços são incompatíveis → sem colidência possível.
+    sc_spec = _spec_overlap(spec_cli, spec_rpi)
+    if sc_spec != -1.0 and sc_spec < _SPEC_OVERLAP_MIN:
+        return False, None, 0.0
+
     # --- Regra 1: chaves fonéticas idênticas — independente de classe ---
-    # Usa igualdade exata de phonetic_key para evitar falsos positivos causados
-    # pelo token_set_ratio (que dá 1.0 quando uma marca é subconjunto da outra).
     if phonetic_key(nome_cli) == phonetic_key(nome_rpi):
         return True, 'R1-IDENTICA', 1.0
 
@@ -126,8 +212,12 @@ def check_collision(
     # --- Regra 4c: melhor par de tokens similares ---
     # Detecta casos como ROTTAS × ROTA CALHAS, FORTY × AVE FORTE,
     # TEATRO FACES × FACES TEAM CONGRESS (tokens cruzados).
+    # Pré-filtro: exige similaridade mínima no nome completo para evitar
+    # falsos positivos onde apenas um token coincide acidentalmente.
+    if score_completo < 0.50:
+        return False, None, 0.0
     score_token = _best_token_similarity(nome_cli, nome_rpi)
-    if score_token >= threshold_sim:
+    if score_token >= _THRESHOLD_TOKEN:
         return True, 'R4c-TOKEN-SIMILAR', score_token
 
     return False, None, 0.0
@@ -164,6 +254,7 @@ def run_collision_detection(
             'titular': clean_titular(str(row.get('TITULAR', ''))),
             'situacao': str(row.get('SITUACAO', '')),
             'pasta': str(row.get('PASTA', '')),
+            'spec': str(row.get('ESPECIFICAÇÃO', '') or ''),
         })
 
     # Parsear debug_pair
@@ -204,10 +295,20 @@ def run_collision_detection(
             # Verificar se ao menos uma classe da RPI colide com a do cliente
             classe_match = any(classes_collide(cls_cli, c) for c in classes_rpi)
 
+            # Recuperar especificação da RPI para a classe que efetivamente colide
+            spec_rpi = ''
+            for c in classes_rpi:
+                if classes_collide(cls_cli, c):
+                    spec_rpi = rpi['especificacoes'].get(str(c), '')
+                    if spec_rpi:
+                        break
+
             colide, regra, score = check_collision(
                 nome_cli, nucleo_cli, cls_cli,
                 nome_rpi, nucleo_rpi, classes_rpi,
                 classe_match,
+                spec_cli=cli['spec'],
+                spec_rpi=spec_rpi,
             )
 
             if colide:
