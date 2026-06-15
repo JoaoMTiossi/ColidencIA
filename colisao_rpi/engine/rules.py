@@ -18,7 +18,20 @@ from ..data.nice_matrix import classes_collide
 from ..data.term_common import EXCLUIR_R4C as _EXCLUIR_R4C
 from .normalize import apply_phonetic, normalize, phonetic_key
 from .nucleus import ALL_STOPWORDS, extract_nucleus, is_common_mark
-from .similarity import similarity_score
+from .similarity import similarity_score, weighted_similarity
+
+# Override de conjunto: score bruto acima disto colide independente de tokens.
+# Calibrado para capturar "CHINES FACIL × CHINES MUITO FACIL" (sc ~0.93)
+# sem disparar em "NIU SUSHI × HIRO RESTAURANTE" (sc ~0.90 por token_sort).
+_CONJUNTO_OVERRIDE: float = 0.93
+
+# Threshold do score PONDERADO — diferente por proximidade de classe.
+_THRESHOLD_PONDERADO_MESMA:    float = 0.68   # mesma classe NCL: mais permissivo
+_THRESHOLD_PONDERADO_CORRELATA: float = 0.76  # classes correlatas: mais estrito
+
+# Score bruto acima do qual R0 (spec gate) é contornado:
+# marcas quasi-idênticas (>=0.95) sempre alertam o advogado.
+_BRUTO_BYPASS_SPEC: float = 0.95
 
 # Minimum token length to participate in cross-token matching (R4c).
 # 4 chars elimina tokens curtos genéricos: VIA, NET, APP, ANA, ALE, etc.
@@ -149,76 +162,71 @@ def check_collision(
     classe_match: bool,
     spec_cli: str = '',
     spec_rpi: str = '',
+    corpus: dict | None = None,
 ) -> tuple[bool, str | None, float]:
     """
     Avalia colidência entre uma marca do cliente e uma da RPI.
 
     Retorna: (colide: bool, regra: str | None, score: float)
 
-    Ordem de avaliação das regras:
-        R0   — Portão de especificação: specs incompatíveis bloqueiam tudo
+    Ordem de avaliação:
+        R0   — Portão de especificação (specs incompatíveis bloqueiam tudo)
         R1   — Chaves fonéticas idênticas (independente de classe)
-        R3   — Núcleo idêntico ou muito próximo, classes correlatas
-        R4   — Nome completo similar fonético (conjunto marcário), classes correlatas
-        R4b  — Núcleo similar fonético, classes correlatas
-        R4c  — Melhor token DISTINTIVO similar fonético, classes correlatas
-
-    Marcas muito curtas (< MIN_CHARS_SOFT_MATCH chars) só colidem por identidade.
-    Marcas com núcleo genérico exigem threshold mais alto (THRESHOLD_NUCLEO).
-    Termos comuns sozinhos (BAR, CAFÉ, BRASIL…) não disparam R4c — mas contribuem
-    para o score do nome completo (R4), conforme o princípio do conjunto marcário.
+        R2   — Score PONDERADO por distintividade ≥ threshold (novo — camada híbrida)
+        R2b  — Override de conjunto marcário (score bruto ≥ 0.90)
+        R3   — Núcleo idêntico/muito próximo, classes correlatas (herdado, fallback)
+        R4c  — Melhor token DISTINTIVO similar (herdado, fallback)
     """
-    # --- Regra 0: portão de especificação ---
-    # Se ambas as specs estão disponíveis e têm sobreposição abaixo do mínimo,
-    # os produtos/serviços são incompatíveis → sem colidência possível.
-    sc_spec = _spec_overlap(spec_cli, spec_rpi)
-    if sc_spec != -1.0 and sc_spec < _SPEC_OVERLAP_MIN:
-        return False, None, 0.0
+    _corpus = corpus or {}
 
-    # --- Regra 1: chaves fonéticas idênticas — independente de classe ---
+    # --- R1: chaves fonéticas idênticas — prioridade sobre spec gate ---
+    # Marcas idênticas sempre alertam o advogado, mesmo com specs divergentes.
     if phonetic_key(nome_cli) == phonetic_key(nome_rpi):
         return True, 'R1-IDENTICA', 1.0
 
-    # Daqui em diante exige classes correlatas
+    # Pré-calcular score bruto (usado em R0 bypass e R2b)
+    sc_bruto = similarity_score(nome_cli, nome_rpi)
+
+    # --- R0: portão de especificação ---
+    # Bypass quando as marcas são quasi-idênticas (>=_BRUTO_BYPASS_SPEC):
+    # risco de confusão é alto independente do wording da spec.
+    sc_spec = _spec_overlap(spec_cli, spec_rpi)
+    if sc_spec != -1.0 and sc_spec < _SPEC_OVERLAP_MIN:
+        if sc_bruto < _BRUTO_BYPASS_SPEC:
+            return False, None, 0.0
+        # sc_bruto >= 0.95: não bloqueia, segue análise
+
     if not classe_match:
         return False, None, 0.0
 
-    # Marcas muito curtas: apenas identidade (já avaliada acima)
     if _too_short(nome_cli) or _too_short(nome_rpi):
         return False, None, 0.0
 
-    score_completo = similarity_score(nome_cli, nome_rpi)
-    score_nucleo   = similarity_score(nucleo_cli, nucleo_rpi)
+    # Threshold do score ponderado varia por proximidade de classe
+    mesma_classe = any(c == cls_cli for c in classes_rpi)
+    threshold_pond = (_THRESHOLD_PONDERADO_MESMA if mesma_classe
+                      else _THRESHOLD_PONDERADO_CORRELATA)
 
-    # --- Regra 3/7: núcleo idêntico ou muito próximo ---
-    if score_nucleo >= THRESHOLD_NUCLEO:
-        return True, 'R3-NUCLEO-IDENTICO', score_nucleo
+    # --- R2: score PONDERADO por distintividade ---
+    sc_pond = weighted_similarity(nome_cli, nome_rpi, cls_cli, _corpus)
+    if sc_pond >= threshold_pond:
+        return True, 'R2-PONDERADO', sc_pond
 
-    # Marcas com núcleo genérico (Regra 5): threshold mais alto apenas quando
-    # AMBOS os núcleos são palavras comuns — um único lado genérico vs. marca
-    # derivada (ex: TROPICAL × TROPI) ainda usa o threshold padrão.
-    threshold_sim = THRESHOLD_NUCLEO if (
-        is_common_mark(nucleo_cli) and is_common_mark(nucleo_rpi)
-    ) else THRESHOLD_SIMILAR
+    # --- R2b: override de conjunto marcário ---
+    # Score bruto >= 0.93: conjunto tão similar que advogado deve revisar.
+    if sc_bruto >= _CONJUNTO_OVERRIDE:
+        return True, 'R2b-CONJUNTO', sc_bruto
 
-    # --- Regra 4: nome completo similar ---
-    if score_completo >= threshold_sim:
-        return True, 'R4-SIMILAR-FONETICO', score_completo
+    # --- R3: núcleo idêntico (fallback para siglas/marcas curtas) ---
+    sc_nucleo = similarity_score(nucleo_cli, nucleo_rpi)
+    if sc_nucleo >= THRESHOLD_NUCLEO:
+        return True, 'R3-NUCLEO-IDENTICO', sc_nucleo
 
-    # --- Regra 4b: núcleo similar ---
-    if score_nucleo >= threshold_sim:
-        return True, 'R4b-NUCLEO-SIMILAR', score_nucleo
-
-    # --- Regra 4c: melhor par de tokens similares ---
-    # Detecta casos como ROTTAS × ROTA CALHAS, FORTY × AVE FORTE,
-    # TEATRO FACES × FACES TEAM CONGRESS (tokens cruzados).
-    # Pré-filtro: exige similaridade mínima no nome completo para evitar
-    # falsos positivos onde apenas um token coincide acidentalmente.
-    if score_completo < 0.50:
-        return False, None, 0.0
-    score_token = _best_token_similarity(nome_cli, nome_rpi)
-    if score_token >= _THRESHOLD_TOKEN:
-        return True, 'R4c-TOKEN-SIMILAR', score_token
+    # --- R4c: token distintivo isolado (fallback estrito) ---
+    if sc_bruto >= 0.50:
+        score_token = _best_token_similarity(nome_cli, nome_rpi)
+        if score_token >= _THRESHOLD_TOKEN:
+            return True, 'R4c-TOKEN-SIMILAR', score_token
 
     return False, None, 0.0
 
@@ -230,17 +238,28 @@ def run_collision_detection(
     rpi_data: str,
     verbose: bool = False,
     debug_pair: str | None = None,
+    update_corpus: bool = True,
 ) -> list[dict]:
     """
     Executa a detecção de colidências entre a base de clientes e os registros da RPI.
 
-    Otimizações:
-    1. Pré-filtro por classe: só calcula similaridade para pares com classes afins.
-    2. Blocking por prefixo fonético: pré-filtra por primeiras 3 letras do núcleo.
-       (desativado quando debug_pair está ativo)
+    Parâmetros:
+        update_corpus: se True, atualiza corpus_freq.json com os dados desta RPI
+                       antes de processar (melhora sinal de genericidade).
 
     Retorna lista de dicts com campos para o relatório.
     """
+    from .corpus import load_corpus, update_corpus as _update_corpus
+    import os as _os
+
+    _corpus_path = _os.path.join(
+        _os.path.dirname(__file__), '..', 'data', 'corpus_freq.json'
+    )
+
+    if update_corpus:
+        corpus = _update_corpus(rpi_records, _corpus_path)
+    else:
+        corpus = load_corpus(_corpus_path)
     # Pré-processar clientes
     client_rows = []
     for _, row in df_client.iterrows():
@@ -309,6 +328,7 @@ def run_collision_detection(
                 classe_match,
                 spec_cli=cli['spec'],
                 spec_rpi=spec_rpi,
+                corpus=corpus,
             )
 
             if colide:
