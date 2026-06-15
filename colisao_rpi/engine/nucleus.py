@@ -5,9 +5,11 @@ Extração do núcleo de uma marca (parte distintiva, antes de stopwords/descrit
 from __future__ import annotations
 
 from .normalize import normalize
+from ..data.term_common import PARAM_NUCLEUS as _PARAM_NUCLEUS
 
 # ---------------------------------------------------------------------------
 # Stopwords que indicam início do complemento descritivo
+# Mantidas para retrocompatibilidade — o engine usa PARAM_NUCLEUS de term_common
 # ---------------------------------------------------------------------------
 _STOPWORDS_PT: frozenset[str] = frozenset({
     # Preposições / conjunções
@@ -59,7 +61,7 @@ _STOPWORDS_EN: frozenset[str] = frozenset({'AND', 'OF', 'THE', 'FOR', 'BY', 'WIT
 
 _STOPWORDS_ES: frozenset[str] = frozenset({'Y', 'DEL', 'LOS', 'LAS', 'POR', 'PARA'})
 
-ALL_STOPWORDS: frozenset[str] = _STOPWORDS_PT | _STOPWORDS_EN | _STOPWORDS_ES
+ALL_STOPWORDS: frozenset[str] = _STOPWORDS_PT | _STOPWORDS_EN | _STOPWORDS_ES | _PARAM_NUCLEUS
 
 # ---------------------------------------------------------------------------
 # Palavras de uso comum/genérico (Regra 5)

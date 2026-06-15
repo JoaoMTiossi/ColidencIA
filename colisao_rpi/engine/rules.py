@@ -15,6 +15,7 @@ from rapidfuzz import fuzz as _fuzz
 
 from ..config import MIN_CHARS_SOFT_MATCH, THRESHOLD_IDENTICO, THRESHOLD_NUCLEO, THRESHOLD_SIMILAR
 from ..data.nice_matrix import classes_collide
+from ..data.term_common import EXCLUIR_R4C as _EXCLUIR_R4C
 from .normalize import apply_phonetic, normalize, phonetic_key
 from .nucleus import ALL_STOPWORDS, extract_nucleus, is_common_mark
 from .similarity import similarity_score
@@ -109,15 +110,14 @@ def _too_short(text: str) -> bool:
 
 def _token_keys(text: str) -> list[str]:
     """
-    Retorna chaves fonéticas dos tokens distintivos da marca para R4c.
-    Exclui stopwords, descritores de segmento e tokens curtos.
+    Retorna chaves fonéticas dos tokens DISTINTIVOS da marca para R4c.
+    Usa EXCLUIR_R4C de term_common (737 termos) como filtro único.
     """
     return [
         apply_phonetic(t)
         for t in normalize(text).split()
         if len(t) >= _MIN_TOKEN_LEN
-        and t not in ALL_STOPWORDS
-        and t not in _TOKENS_DESCRITORES
+        and t not in _EXCLUIR_R4C
     ]
 
 
