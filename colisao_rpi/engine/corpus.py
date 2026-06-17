@@ -93,6 +93,81 @@ def update_corpus(rpi_records: list[dict], path: str = _DEFAULT_PATH) -> dict:
     return merged
 
 
+def build_spec_corpus(rpi_records: list[dict]) -> dict:
+    """
+    Constrói corpus de frequência a partir das ESPECIFICAÇÕES declaradas ao INPI.
+
+    Este é o sinal correto para detectar termos descritivos: se "ESFIHA" aparece
+    na spec de 40 marcas da classe 30, é porque os próprios requerentes declaram
+    que seu produto É esfiha — portanto ESFIHA é descritor da cl.30.
+
+    Formato idêntico ao corpus de nomes (compatível com _w_corpus):
+    {
+      "_N": {"30": 412, "37": 88, ...},
+      "30": {"ESFIHA": 42, "SALGADO": 38, ...},
+      "37": {"LAVAGEM": 21, "LAVA": 18, "JATO": 16, ...},
+      ...
+    }
+    """
+    N:    dict[str, int] = defaultdict(int)
+    freq: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+    for r in rpi_records:
+        specs: dict[str, str] = r.get('especificacoes', {})
+        classes: list[int]    = r.get('classes', [])
+        if not specs or not classes:
+            continue
+
+        for cls in set(classes):
+            key  = str(cls)
+            spec = specs.get(key, '') or next(iter(specs.values()), '')
+            if not spec:
+                continue
+
+            N[key] += 1
+            tokens = {t for t in normalize(spec).split() if len(t) >= 3}
+            for tok in tokens:
+                freq[key][tok] += 1
+
+    result: dict = {'_N': dict(N)}
+    for cls, counts in freq.items():
+        result[cls] = dict(counts)
+    return result
+
+
+_DEFAULT_SPEC_PATH = os.path.join(
+    os.path.dirname(__file__), '..', 'data', 'corpus_spec_freq.json'
+)
+
+
+def update_spec_corpus(rpi_records: list[dict],
+                       path: str = _DEFAULT_SPEC_PATH) -> dict:
+    """Soma spec corpus desta RPI ao existente e persiste."""
+    existing = load_corpus(path)
+    new      = build_spec_corpus(rpi_records)
+
+    merged: dict = {'_N': {}}
+    all_classes = (set(existing.keys()) | set(new.keys())) - {'_N'}
+    for cls in all_classes:
+        merged[cls] = dict(existing.get(cls, {}))
+        for tok, cnt in new.get(cls, {}).items():
+            merged[cls][tok] = merged[cls].get(tok, 0) + cnt
+    for cls, n in existing.get('_N', {}).items():
+        merged['_N'][cls] = n
+    for cls, n in new.get('_N', {}).items():
+        merged['_N'][cls] = merged['_N'].get(cls, 0) + n
+
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(merged, f, ensure_ascii=False, separators=(',', ':'))
+    return merged
+
+
+def load_spec_corpus(path: str = _DEFAULT_SPEC_PATH) -> dict:
+    """Carrega spec corpus do disco."""
+    return load_corpus(path)
+
+
 def corpus_stats(corpus: dict) -> None:
     """Imprime estatísticas resumidas do corpus."""
     N = corpus.get('_N', {})

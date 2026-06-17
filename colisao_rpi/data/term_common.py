@@ -213,6 +213,68 @@ CAT_1_DESCRITORES: frozenset[str] = frozenset({
     'STUDIO', 'STUDIOS', 'ATELIE', 'ATELIES',
     'FRANQUIA', 'FRANQUIAS', 'HOLDING', 'PARTICIPACOES',
     'GRUPO', 'GRUPOS',
+
+    # --- Automotivo / limpeza (compostos comuns) ---
+    'LAVA', 'LAVAGEM', 'LAVANDERIA', 'LAVAGENS',
+    'JATO', 'LAVAJATO', 'BORRACHARIA', 'FUNILARIA',
+    'MECANICA', 'BORRACHA', 'FUNILEIRO',
+
+    # --- Agronegócio (complementos) ---
+    'AGRO', 'AGROS', 'AGRI',
+
+    # --- Construção / material ---
+    'GESSO', 'GESSOS', 'ARGAMASSA', 'CIMENTO',
+    'TINTAS', 'TINTA', 'VERNIZ', 'VERNIZES',
+    'VIDROS', 'VIDRO', 'ALUMINIO', 'FERRAGENS',
+    'FERRAGEM', 'PERSIANAS', 'PERSIANA',
+
+    # --- Varejo / atacado ---
+    'ATACADO', 'ATACADAO', 'ATACADISTA', 'ATACADISTAS',
+    'VAREJAO', 'VAREJISTA',
+
+    # --- Alimentação (complementos) ---
+    'ESFIHA', 'ESFIHAS', 'COXINHA', 'COXINHAS',
+    'PASTEL', 'PASTEIS', 'TAPIOCA', 'TAPIOCAS',
+    'ACAI', 'SORVETE', 'SORVETES', 'GELATO',
+    'BRIGADEIRO', 'BRIGADEIROS', 'BOLO', 'BOLOS',
+    'SALGADO', 'SALGADOS', 'DOCE', 'DOCES',
+    'MARMITA', 'MARMITAS', 'REFEICAO', 'REFEICOES',
+    'PRATO', 'PRATOS',
+
+    # --- Saúde / bem-estar (complementos) ---
+    'CARE', 'CARES', 'SAUDE', 'WELLNESS',
+    'OLEO', 'OLEOS',
+
+    # --- Moda / esporte ---
+    'SPORT', 'SPORTS', 'ESPORTIVO', 'ESPORTIVA',
+    'BABY', 'KIDS', 'INFANTIS',
+    'OUTLET', 'OUTLETS', 'BRECHÓ', 'BRECHO',
+
+    # --- Comunicação / media ---
+    'CANAL', 'CANAIS', 'MIDIA', 'MIDIAS',
+    'RADIO', 'PODCAST', 'STREAMING',
+
+    # --- Combustível / energia ---
+    'DIESEL', 'GASOLINA', 'COMBUSTIVEL', 'COMBUSTIVEIS',
+    'ETANOL', 'PETROLEO', 'GAS',
+
+    # --- Serviços gerais (complementos) ---
+    'BOMBAS', 'BOMBA', 'PISCINAS', 'PISCINA',
+    'JARDIM', 'JARDINAGEM', 'PAISAGISMO',
+    'DEDETIZACAO', 'DEDETIZADORA',
+
+    # --- Tecnologia / digital ---
+    'APP', 'APPS', 'APLICATIVO', 'APLICATIVOS',
+
+    # --- Saúde / diagnóstico ---
+    'IMAGEM', 'IMAGENS', 'DIAGNOSTICO', 'DIAGNOSTICOS',
+    'RADIOLOGIA', 'ULTRASSOM', 'RESSONANCIA',
+
+    # --- Temáticas genéricas ---
+    'COWBOY', 'COWBOYS',
+    'BOI', 'BOIS', 'BOVINO', 'BOVINOS',
+    'RODEIO', 'RODEIOS', 'COUNTRY',
+    'SERTANEJO', 'CAIPIRA',
 })
 
 # ===========================================================================
@@ -249,6 +311,7 @@ CAT_2_QUALIFICADORES: frozenset[str] = frozenset({
     'NOVA', 'NOVO', 'NOVAS', 'NOVOS',
     'MODERNA', 'MODERNO', 'MODERNAS', 'MODERNOS',
     'ATUAL', 'ATUALIZADA',
+    'DIA', 'DIAS', 'DIARIO', 'DIARIA',   # "do dia", "de cada dia" — qualificador temporal
 
     # Natureza / elementos
     'VERDE', 'VERDE', 'NATURAL', 'NATURAIS',
@@ -267,10 +330,34 @@ CAT_2_QUALIFICADORES: frozenset[str] = frozenset({
     'VERDE', 'MARROM',
 
     # Outros genéricos
-    'REDE', 'REDES', 'MUNDO', 'CASA', 'MAIS', 'MAIS',
+    'REDE', 'REDES', 'MUNDO', 'CASA', 'MAIS',
     'TUDO', 'FACIL', 'RAPIDO', 'RAPIDA',
     'POLAR', 'TROPICAL', 'SOLAR',
-    'ACE', 'ACT', 'TOP', 'ONE', 'WIN',
+    'ACE', 'TOP', 'ONE', 'WIN',
+
+    # Nomes geográficos / localidades genéricas
+    'PORTO', 'PORTOS',
+    'PARAISO', 'PARAÍSO',
+    'JARDIM', 'JARDINS',
+    'CENTRO', 'CENTROS',
+    'VILA', 'VILAS',
+    'BAIRRO', 'CIDADE',
+    'CAMPO', 'CAMPOS',
+    'VALE', 'VALES',
+    'SERRA', 'SERRAS',
+    'PRAIA', 'PRAIAS',
+    'LAGO', 'LAGOS',
+    'RIO', 'RIOS',
+    'NORTE', 'SUL', 'LESTE', 'OESTE',
+
+    # Qualificadores de escala / mercado
+    'ZERO', 'ZEROS',   # "zero burocracia", "zero taxa" — genérico
+    'FULL', 'PLUS',
+    'ATACADAO', 'VAREJAO',
+
+    # Inglês genérico adicional
+    'CARE', 'HOME', 'HOUSE', 'MARKET', 'STORE',
+    'GROUP', 'CORP', 'SOLUTIONS', 'SERVICES',
 })
 
 # ===========================================================================

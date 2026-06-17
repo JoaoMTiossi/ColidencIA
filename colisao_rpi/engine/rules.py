@@ -256,10 +256,16 @@ def run_collision_detection(
         _os.path.dirname(__file__), '..', 'data', 'corpus_freq.json'
     )
 
+    from .corpus import load_spec_corpus, update_spec_corpus
+
+    _spec_corpus_path = _os.path.join(
+        _os.path.dirname(__file__), '..', 'data', 'corpus_spec_freq.json'
+    )
+
     if update_corpus:
-        corpus = _update_corpus(rpi_records, _corpus_path)
+        corpus = update_spec_corpus(rpi_records, _spec_corpus_path)
     else:
-        corpus = load_corpus(_corpus_path)
+        corpus = load_spec_corpus(_spec_corpus_path)
     # Pré-processar clientes
     client_rows = []
     for _, row in df_client.iterrows():

@@ -17,6 +17,7 @@ from rapidfuzz import fuzz
 from ..config import THRESHOLD_IDENTICO, THRESHOLD_NUCLEO, THRESHOLD_SIMILAR
 from .normalize import apply_phonetic, normalize
 from .distinctiveness import token_weights
+# spec_corpus é o corpus de ESPECIFICAÇÕES — sinal correto de descritores por classe
 
 
 def similarity_score(a: str, b: str) -> float:
