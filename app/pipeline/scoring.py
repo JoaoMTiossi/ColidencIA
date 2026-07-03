@@ -23,6 +23,7 @@ from ..config import (
     THRESHOLD_SCORE_FINAL,
 )
 from ..utils.distintividade import match_distintivo
+from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import normalizar_base
 from .especificacao import _afinidade_classes, _afinidade_correlatas
 
@@ -90,6 +91,21 @@ def _nivel_severidade(
     if sinal >= 0.85:
         return "MEDIA" if afinidade else "VIGIAR"
     return "VIGIAR"
+
+
+def _nucleos_metafonicamente_equivalentes(par: dict) -> bool:
+    """Metaphone do nucleo_distintivo INTEIRO (sem espaços) de A == o de B.
+
+    Espelha o critério de escape usado no bypass de classe do C2
+    (fonetica.py) — mesma marca quase-idêntica, agora avaliada com os
+    campos já propagados no candidato.
+    """
+    nuc_a = (par.get("nucleo_distintivo_base") or "").replace(" ", "")
+    nuc_b = (par.get("nucleo_distintivo_rpi") or "").replace(" ", "")
+    if not nuc_a or not nuc_b:
+        return False
+    cod_a = metaphone_ptbr(nuc_a)
+    return bool(cod_a) and cod_a == metaphone_ptbr(nuc_b)
 
 
 def _score_tipo_marca(par: dict) -> float:
@@ -275,7 +291,17 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             # forte quanto similaridade de nome para detectar cópia fonética.
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
             s_sig_cross = max(md if md is not None else 0, s_nome, s_fon_adj)
-            if not nucleo_forte:
+            # Bypass de classe (C2): par cross-class sem afinidade de blocking
+            # cujo sinal de nome/núcleo é muito forte. Os gates de sig/afinidade
+            # abaixo foram calibrados para pares que já passaram pelo filtro de
+            # classe do C2 — um par bypass_classe não passou por ele, então
+            # aplicamos o mesmo alívio de nucleo_forte quando há evidência
+            # equivalente (núcleo metafonicamente idêntico). Não adiciona piso
+            # de score — o score composto ainda precisa superar o threshold.
+            bypass_forte = bool(par.get("bypass_classe")) and (
+                nucleo_forte or _nucleos_metafonicamente_equivalentes(par)
+            )
+            if not nucleo_forte and not bypass_forte:
                 # Escape graduado: sinal moderado (≥ 0.70) é aceito quando a
                 # afinidade de especificação é alta (≥ 0.80) — mercado próximo
                 # compensa sinal de nome intermediário.

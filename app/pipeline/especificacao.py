@@ -256,7 +256,14 @@ def camada3(candidatos: list[dict]) -> list[dict]:
 
         score_spec = max(sc_3a, sc_3b_aj, sc_3c)
 
-        if score_spec >= THRESHOLD_ESPECIFICACAO:
+        # Escape do bypass de classe (C2): marca quase-idêntica cross-class é
+        # caso de vigilância (alto renome, art. 125 LPI) que o C4/C5 decide —
+        # não pode ser descartada aqui só porque a especificação diverge.
+        # score_spec é gravado normalmente (não inventado) para que C4/C5
+        # avaliem o mérito real do par.
+        escapa_bypass = bool(par.get("bypass_classe")) or par.get("score_nucleo", 0.0) >= 0.92
+
+        if score_spec >= THRESHOLD_ESPECIFICACAO or escapa_bypass:
             updated = dict(par)
             updated["score_spec"] = round(score_spec, 4)
             updated["score_spec_semantico"] = round(sc_3c, 4)

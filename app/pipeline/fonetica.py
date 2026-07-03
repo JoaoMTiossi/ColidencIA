@@ -23,7 +23,13 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, ELEMENTOS_DESGASTADOS, THRESHOLD_FONETICO
+from ..config import (
+    CLASSES_TRANSVERSAIS,
+    COLLISIONS,
+    ELEMENTOS_DESGASTADOS,
+    THRESHOLD_FONETICO,
+    THRESHOLD_FONETICO_BYPASS,
+)
 from ..utils.distintividade import tokens_distintivos
 from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import jaccard_bigramas, normalizar_base
@@ -101,6 +107,50 @@ def _busca_com_vizinhos(
     return resultado
 
 
+def _chave_metaphone_nucleo_inteiro(marca: dict) -> str:
+    """Metaphone do nucleo_distintivo INTEIRO (sem espaços), ou "" se vazio."""
+    nucleo_dist = marca.get("nucleo_distintivo", "")
+    if not nucleo_dist:
+        return ""
+    return metaphone_ptbr(nucleo_dist.replace(" ", ""))
+
+
+def _chaves_fortes_globais(marca: dict) -> list[str]:
+    """
+    Chaves FORTES de uma marca para o índice global (bypass de classe):
+      1. Código fonético do nome completo.
+      2. Código do primeiro token do núcleo.
+      3. Código metaphone do nucleo_distintivo INTEIRO (sem espaços).
+      4. "_d:" + prefixo literal do núcleo distintivo.
+
+    Usadas tanto para indexar a carteira quanto para consultar o índice
+    global a partir de uma marca da RPI — mesma lógica, chaves simétricas.
+    """
+    chaves: list[str] = []
+
+    cod_full = marca.get("codigo_fonetico", "")
+    if cod_full:
+        chaves.append(cod_full)
+
+    nucleo = marca.get("nucleo", "")
+    if nucleo:
+        first_tok = nucleo.split()[0]
+        if len(first_tok) >= 2:
+            cod_nuc = metaphone_ptbr(first_tok)
+            if cod_nuc:
+                chaves.append(cod_nuc)
+
+    cod_nucleo_inteiro = _chave_metaphone_nucleo_inteiro(marca)
+    if cod_nucleo_inteiro:
+        chaves.append(cod_nucleo_inteiro)
+
+    prefixo = marca.get("prefixo_direto", "")
+    if len(prefixo) >= 3:
+        chaves.append(f"_d:{prefixo}")
+
+    return chaves
+
+
 def camada2(
     carteira: list[dict],
     rpi_restante: list[dict],
@@ -118,6 +168,16 @@ def camada2(
       - Tokens distintivos → busca exata no índice.
       - Tokens desgastados → busca exata no índice.
       - Código fonético do nome completo → busca com Levenshtein-1.
+
+    Bypass de classe (vigilância para nome quase-idêntico cross-class):
+      Além do índice por classe acima, um índice GLOBAL (sem classe na chave)
+      é construído com as mesmas chaves fortes de cada marca. Um par com nome
+      quase idêntico em classes sem afinidade de blocking (ex.: "KMEY PARFUM"
+      NCL 3 × "KEMEI" NCL 12) morreria no gate de classe sem os nomes serem
+      sequer comparados — o bypass global garante que a comparação aconteça,
+      sujeita a um gate mais duro (ver THRESHOLD_FONETICO_BYPASS) para conter
+      ruído, já que candidatos bypass não passaram pelo filtro de afinidade
+      de classe.
     """
     indice_fonetico: dict[tuple[int, str], list[dict]] = defaultdict(list)
     _buckets_ids: dict[tuple[int, str], set[int]] = defaultdict(set)
@@ -126,6 +186,10 @@ def camada2(
     # elegíveis (que degenerava em O(n×m) quando classe 35/transversal tornava
     # todas as classes elegíveis).
     indice_bigrama: dict[tuple[int, str], list[dict]] = defaultdict(list)
+    # Índice global (sem classe na chave) para o bypass de classe — ver
+    # docstring da função.
+    indice_global: dict[str, list[dict]] = defaultdict(list)
+    _buckets_ids_global: dict[str, set[int]] = defaultdict(set)
 
     def _indexar(ncl: int, codigo: str, marca: dict) -> None:
         if not codigo:
@@ -188,6 +252,14 @@ def camada2(
 
         for bg in marca.get("bigrams_set", ()):
             indice_bigrama[(ncl, bg)].append(marca)
+
+        # 6. Índice GLOBAL (sem classe na chave) — bypass de classe para
+        #    sinal fonético muito forte. Mesmas chaves fortes do índice por
+        #    classe, sem o gate de elegibilidade de classe.
+        for chave_g in _chaves_fortes_globais(marca):
+            if id(marca) not in _buckets_ids_global[chave_g]:
+                _buckets_ids_global[chave_g].add(id(marca))
+                indice_global[chave_g].append(marca)
 
     # Chaves do índice fonético agrupadas por classe — pré-computado uma vez
     # para que _busca_com_vizinhos não varra o índice inteiro a cada chamada.
@@ -274,10 +346,28 @@ def camada2(
                     if union > 0 and inter / union >= 0.3:
                         cands_bigrama.append(marca)
 
+        # 5. Bypass de classe: consulta o índice global com as mesmas chaves
+        #    fortes da marca RPI — busca EXATA apenas (sem Levenshtein), para
+        #    conter ruído. Candidatos encontrados aqui e em nenhuma busca por
+        #    classe acima ("bypass-only") passam por um gate mais duro antes
+        #    de entrar na lista final (ver abaixo).
+        cands_bypass: list[dict] = []
+        for chave_g in _chaves_fortes_globais(marca_rpi):
+            cands_bypass.extend(indice_global.get(chave_g, ()))
+
+        # ids encontrados pelas buscas em classes elegíveis (não-bypass) —
+        # usado para distinguir candidatos "bypass-only" dos que também
+        # foram encontrados normalmente (esses não precisam do gate duro).
+        ids_normais: set[int] = {
+            id(m) for m in
+            cands_tokens + cands_desgastados + cands_nucleo + cands_direto + cands_full + cands_bigrama
+        }
+
         # Unir candidatos sem duplicatas
         todos_ids: set[int] = set()
         todos_candidatos: list[dict] = []
-        for m in cands_tokens + cands_desgastados + cands_nucleo + cands_direto + cands_full + cands_bigrama:
+        for m in (cands_tokens + cands_desgastados + cands_nucleo + cands_direto
+                  + cands_full + cands_bigrama + cands_bypass):
             mid = id(m)
             if mid not in todos_ids:
                 todos_ids.add(mid)
@@ -286,9 +376,33 @@ def camada2(
         # Calcular score e filtrar pelo threshold
         for marca_base in todos_candidatos:
             score = _score_fonetico(marca_base, marca_rpi)
-            if score >= THRESHOLD_FONETICO:
-                col = classes_afins(marca_base.get("ncl", 0), ncl_rpi)
-                candidatos.append(_criar_candidato(marca_base, marca_rpi, score, col))
+            if score < THRESHOLD_FONETICO:
+                continue
+            bypass_classe = id(marca_base) not in ids_normais
+            if bypass_classe:
+                # Gate mais duro: fonética muito forte OU núcleo distintivo
+                # metafonicamente equivalente (ambos não-vazios).
+                cod_nuc_base = _chave_metaphone_nucleo_inteiro(marca_base)
+                cod_nuc_rpi = _chave_metaphone_nucleo_inteiro(marca_rpi)
+                equivalencia_nucleo = bool(cod_nuc_base) and cod_nuc_base == cod_nuc_rpi
+                # A via "score_fonetico muito forte" fica sujeita a ruído para
+                # marcas curtas/siglas: _score_fonetico usa fuzz.ratio/contenção
+                # de token nesses casos, o que infla o score por mera
+                # coincidência de uma palavra curta comum ("MITTI" contido em
+                # "MITTI GELATO") sem qualquer relação de mercado — cenário
+                # justamente coberto pelo gate de classe que o bypass contorna.
+                # Para marcas curtas (<=4 chars) ou siglas, exige-se a via mais
+                # precisa (equivalência do núcleo INTEIRO), não o score isolado.
+                curta = (
+                    marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
+                    or len(marca_base.get("nome_normalizado", "")) <= 4
+                    or len(marca_rpi.get("nome_normalizado", "")) <= 4
+                )
+                score_forte = score >= THRESHOLD_FONETICO_BYPASS and not curta
+                if not (score_forte or equivalencia_nucleo):
+                    continue
+            col = classes_afins(marca_base.get("ncl", 0), ncl_rpi)
+            candidatos.append(_criar_candidato(marca_base, marca_rpi, score, col, bypass_classe))
 
     return candidatos, []
 
@@ -368,6 +482,7 @@ def _criar_candidato(
     marca_rpi: dict,
     score_fonetico: float,
     col: bool,
+    bypass_classe: bool = False,
 ) -> dict:
     return {
         "processo_base": marca_base.get("processo", ""),
@@ -406,6 +521,7 @@ def _criar_candidato(
         "camada_deteccao": 2,
         "classificacao": None,
         "classes_colidem_flag": col,
+        "bypass_classe": bypass_classe,
         "is_sigla": bool(marca_base.get("is_sigla") or marca_rpi.get("is_sigla")),
         "is_desgastado": bool(marca_base.get("is_desgastado") or marca_rpi.get("is_desgastado")),
         "is_marca_generica": bool(marca_base.get("is_marca_generica") or marca_rpi.get("is_marca_generica")),

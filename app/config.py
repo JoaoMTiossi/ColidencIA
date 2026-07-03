@@ -28,6 +28,12 @@ THRESHOLD_FONETICO: float = float(os.getenv("THRESHOLD_FONETICO", "0.60"))
 THRESHOLD_ESPECIFICACAO: float = float(os.getenv("THRESHOLD_ESPECIFICACAO", "0.40"))
 THRESHOLD_SCORE_FINAL: float = float(os.getenv("THRESHOLD_SCORE_FINAL", "0.55"))
 THRESHOLD_NUCLEO: float = 0.80
+# Gate mais duro para candidatos do C2 encontrados APENAS via bypass de classe
+# (índice global sem classe na chave) — marca quase-idêntica em classes sem
+# afinidade de blocking. Evita que o bypass inunde o pipeline com ruído: só
+# candidatos com fonética muito forte (ou núcleo metafonicamente equivalente,
+# ver fonetica.py) passam sem terem sido encontrados nas classes elegíveis.
+THRESHOLD_FONETICO_BYPASS: float = float(os.getenv("THRESHOLD_FONETICO_BYPASS", "0.92"))
 
 # ---------------------------------------------------------------------------
 # Pesos do score composto (Camada 4) — derivados via AHP

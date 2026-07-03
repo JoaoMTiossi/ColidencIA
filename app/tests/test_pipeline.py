@@ -355,6 +355,59 @@ class TestCamada1:
         assert a["classificacao"] == "BAIXA"
 
 
+class TestBypassClasse:
+    """
+    C2: bypass de classe para sinal fonético muito forte (índice global sem
+    classe na chave) — ver app/pipeline/fonetica.py::camada2.
+
+    Motivação (gold set): "KMEY PARFUM" (NCL 3) × "KEMEI" (NCL 12/14) morre
+    no gate de classe (afinidade real 0.5897/0.593, abaixo do piso 0.60 de
+    elegibilidade de blocking) sem os nomes serem sequer comparados.
+
+    Nota sobre o caso literal do gold set: com o nome completo "KMEY PARFUM",
+    o núcleo distintivo NÃO se reduz a "kmey" — "parfum" não consta do
+    vocabulário de complementos descritivos e permanece no núcleo
+    ("kmey parfum"), então nem a via de score_fonetico (0.72, abaixo de
+    THRESHOLD_FONETICO_BYPASS=0.92) nem a de equivalência metafônica do
+    núcleo INTEIRO ("KMPRFM" ≠ "KM") habilitam o escape — o par permanece
+    FN. Recuperá-lo exigiria afrouxar o gate duro (ex.: comparar apenas o
+    primeiro token do núcleo, não o núcleo inteiro) e isso reproduziria a
+    regressão descrita em test_ramos_distintos (MITTI × MITTI GELATO voltaria
+    a colidir indevidamente) — por isso o gate permanece estrito e este caso
+    específico segue como FN conhecido (ver resumo da tarefa).
+
+    O teste abaixo comprova o mecanismo em si com um núcleo "limpo" (sem
+    palavra adicional não removida): "KMEY" × "KEMEI" — mesma família
+    fonética, núcleo distintivo de um único token em ambos os lados, o que
+    habilita a via de equivalência metafônica do núcleo inteiro.
+    """
+
+    def test_bypass_classe_nucleo_quase_identico_cross_class(self):
+        from app.config import THRESHOLD_SCORE_FINAL
+
+        alertas, scored = _rodar_pipeline(
+            "KMEY", 3, "KEMEI", 12,
+            carteira_spec="perfumes", rpi_spec="veiculos",
+        )
+        todos = alertas + scored
+        assert todos, "KMEY x KEMEI (NCL 3 x 12, sem afinidade de blocking) deve gerar candidato via bypass de classe"
+        assert any(r.get("bypass_classe") for r in todos), "candidato deve estar marcado bypass_classe=True"
+        assert any(r.get("score_final", 0.0) >= THRESHOLD_SCORE_FINAL for r in todos), (
+            f"score_final deve superar o threshold por mérito. Resultado: {todos}"
+        )
+
+    def test_bypass_classe_nao_reintroduz_falso_positivo_mitti(self):
+        """
+        Regressão: o bypass de classe não pode fazer marcas curtas com token
+        em comum (mas sem qualquer relação de mercado) colidirem — mesmo
+        cenário de test_ramos_distintos, verificado aqui também via C2 direto
+        para deixar explícito que bypass_classe não aparece nesse par.
+        """
+        alertas, scored = _rodar_pipeline("MITTI", 25, "MITTI GELATO", 30)
+        todos = alertas + scored
+        assert not todos, f"MITTI x MITTI GELATO não devem colidir mesmo com o bypass de classe. Resultado: {todos}"
+
+
 class TestConfig:
     def test_classes_colidem(self):
         from app.config import classes_colidem
