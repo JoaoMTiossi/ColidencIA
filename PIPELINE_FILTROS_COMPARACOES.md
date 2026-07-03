@@ -89,7 +89,13 @@ Caso contrário                                      → False
 ### Saída
 
 - **alertas_c1:** pares com colidência automática, classificação ALTA
-- **rpi_restante:** marcas da RPI que não tiveram match — seguem para Camada 2
+- **rpi_restante:** TODAS as marcas da RPI seguem para a Camada 2, inclusive
+  as que já geraram alerta em C1 — C1 opera sobre PARES (marca_rpi ×
+  marca_carteira), não sobre marcas isoladas: uma marca da RPI idêntica a
+  UMA marca da carteira pode ainda colidir foneticamente com OUTRAS marcas
+  da carteira. A supressão de duplicatas entre um alerta C1 e um candidato
+  C2/C4 do MESMO par acontece no dedup cruzado do executor
+  (`_remover_pares_ja_em_c1`), que garante que o alerta C1 sempre prevalece.
 
 ---
 

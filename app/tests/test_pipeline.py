@@ -114,7 +114,10 @@ class TestCamada1:
         rpi = [_marca("NOVA GERACAO", 41)]
         alertas, restante = camada1(carteira, rpi)
         assert len(alertas) == 1
-        assert len(restante) == 0
+        # rpi_restante contém TODAS as marcas da RPI (mesmo as já alertadas
+        # em C1) — a marca pode ainda colidir foneticamente com outras
+        # marcas da carteira em C2. Dedup do par C1×C4 acontece no executor.
+        assert len(restante) == 1
 
     def test_nao_detecta_diferente(self):
         carteira = [_marca("MINHA MARCA", 35)]
@@ -129,7 +132,9 @@ class TestCamada1:
         rpi = [_marca("IBM SOLUCOES", 35)]
         alertas, restante = camada1(carteira, rpi)
         assert len(alertas) == 1, "IBM BRASIL × IBM SOLUCOES devem casar pelo nucleo 'ibm'"
-        assert len(restante) == 0
+        # rpi_restante contém TODAS as marcas da RPI — ver nota em
+        # test_detecta_nome_identico.
+        assert len(restante) == 1
 
     def test_classes_colidem_flag_correto(self):
         """classes_colidem_flag reflete a realidade, não é sempre True."""
@@ -245,8 +250,11 @@ class TestCamada1:
         motivos = {a["motivo"] for a in alertas}
         assert "nome_identico" in motivos
         assert "nucleo_identico" in motivos
-        # RPI não deve ser enviado para camada 2
-        assert len(restante) == 0
+        # rpi_restante contém TODAS as marcas da RPI — ver nota em
+        # test_detecta_nome_identico. A supressão de duplicatas entre o
+        # alerta C1 e um eventual candidato C2/C4 do MESMO par é feita no
+        # dedup cruzado do executor, não aqui.
+        assert len(restante) == 1
 
     def test_nome_identico_nao_gera_nucleo_identico_duplicado(self):
         """
@@ -258,6 +266,40 @@ class TestCamada1:
         alertas, _ = camada1(carteira, rpi)
         assert len(alertas) == 1
         assert alertas[0]["motivo"] == "nome_identico"
+
+    # ------------------------------------------------------------------
+    # Bug fix: C1 opera sobre PARES, não sobre marcas — uma marca da RPI
+    # idêntica a UMA marca da carteira não pode ser removida de
+    # rpi_restante, sob pena de nunca chegar à C2 e perder colidências
+    # fonéticas com OUTRAS marcas da carteira (recall silencioso).
+    # ------------------------------------------------------------------
+
+    def test_c1_nao_suprime_candidato_c2_de_outra_marca_da_carteira(self):
+        """
+        Carteira: ["ALFA" NCL25, "ALPHA STORE" NCL25]
+        RPI:      ["ALFA" NCL25]
+
+        Esperado: alerta C1 nome_identico para ALFA×ALFA E um candidato C2+
+        para ALPHA STORE×ALFA. Antes do fix, "ALFA" era removida de
+        rpi_restante após o match com "ALFA" da carteira, e o par
+        ALPHA STORE×ALFA nunca chegava à camada 2.
+        """
+        carteira = [_marca("ALFA", 25), _marca("ALPHA STORE", 25)]
+        rpi = [_marca("ALFA", 25)]
+
+        alertas_c1, restante = camada1(carteira, rpi)
+        assert len(alertas_c1) == 1
+        assert alertas_c1[0]["motivo"] == "nome_identico"
+        assert alertas_c1[0]["marca_base"] == "ALFA"
+        # A marca "ALFA" da RPI segue para C2 mesmo já tendo gerado alerta C1.
+        assert len(restante) == 1
+
+        candidatos_c2, _ = camada2(carteira, restante)
+        marcas_base_c2 = {c.get("marca_base") for c in candidatos_c2}
+        assert "ALPHA STORE" in marcas_base_c2, (
+            f"Esperado candidato C2 para ALPHA STORE x ALFA, "
+            f"obtido: {candidatos_c2}"
+        )
 
     # ------------------------------------------------------------------
     # Reclassificação pós-C3 (a C3 refina score_spec dos alertas C1)
@@ -519,6 +561,63 @@ class TestLotesExecutor:
         dedup = _dedup_pares(lote1 + lote2)
         assert len(dedup) == 1
         assert dedup[0]["score_final"] == 0.9
+
+    # ------------------------------------------------------------------
+    # Dedup cruzado C1×C4: desde que C1 passou a deixar TODAS as marcas da
+    # RPI fluírem para C2 (bug fix "C1 opera sobre pares"), o MESMO par
+    # marca_base×marca_rpi pode aparecer tanto em alertas_c1 quanto em
+    # scored_c4 — o alerta C1 (juridicamente decidido) deve vencer SEMPRE,
+    # mesmo com score_final menor que o do candidato C4.
+    # ------------------------------------------------------------------
+
+    def test_remover_pares_ja_em_c1_vence_mesmo_com_score_menor(self):
+        """nucleo_identico cross-class não colidente (score_final=0.70) vs.
+        um candidato C4 do MESMO par com score maior (0.95) — C1 vence."""
+        from app.pipeline.executor import _remover_pares_ja_em_c1
+        alertas_c1 = [{"marca_base": "IBM BRASIL", "ncl_base": 44,
+                       "marca_rpi": "IBM", "ncl_rpi": 12,
+                       "score_final": 0.70, "camada_deteccao": 1}]
+        scored_c4 = [
+            {"marca_base": "IBM BRASIL", "ncl_base": 44, "marca_rpi": "IBM",
+             "ncl_rpi": 12, "score_final": 0.95, "camada_deteccao": 4},
+            {"marca_base": "OUTRA", "ncl_base": 9, "marca_rpi": "IBM",
+             "ncl_rpi": 12, "score_final": 0.50, "camada_deteccao": 4},
+        ]
+        restante = _remover_pares_ja_em_c1(alertas_c1, scored_c4)
+        assert len(restante) == 1
+        assert restante[0]["marca_base"] == "OUTRA"
+
+    def test_processar_lote_c1_vence_c4_para_par_real(self):
+        """
+        Caso real: "IBM BRASIL" (carteira, NCL 35) × "IBM" (RPI, NCL 35)
+        gera alerta C1 nucleo_identico (score_final=0.85) e, como a marca RPI
+        agora também flui para C2/C3/C4, o MESMO par textual pode receber um
+        score C4 maior (fonética + spec). O resultado final de
+        _processar_lote deve conter só o registro C1, não o C4.
+        """
+        from app.pipeline import executor as ex
+
+        carteira = [_marca("IBM BRASIL", 35)]
+        chunk = [_marca("IBM", 35)]
+
+        def _sem_filtro(pares):
+            return pares, 0
+
+        resultados, _custo, _cont = ex._processar_lote(
+            carteira=carteira, rpi_chunk=chunk, usar_ia=False,
+            custo_inicial=0.0, filtrar_titular=_sem_filtro,
+            progress=lambda msg, pct: None, pct=50,
+        )
+        pares_ibm = [
+            r for r in resultados
+            if r.get("marca_base") == "IBM BRASIL" and r.get("marca_rpi") == "IBM"
+        ]
+        assert len(pares_ibm) == 1, (
+            f"Esperado 1 registro para o par (C1 deve suprimir o duplicado "
+            f"C4), obtidos {len(pares_ibm)}: {pares_ibm}"
+        )
+        assert pares_ibm[0]["camada_deteccao"] == 1
+        assert pares_ibm[0]["motivo"] == "nucleo_identico"
 
 
 def _raise_oserror(*args, **kwargs):

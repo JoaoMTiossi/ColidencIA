@@ -48,6 +48,16 @@ def _normalizar_titular(t: str) -> str:
     return t
 
 
+def _chave_par(r: dict) -> tuple:
+    """Chave de identidade de um par marca_base×marca_rpi usada pelo dedup."""
+    return (
+        r.get("marca_base", ""),
+        r.get("ncl_base", 0),
+        r.get("marca_rpi", ""),
+        r.get("ncl_rpi", 0),
+    )
+
+
 def _dedup_pares(pares: list[dict]) -> list[dict]:
     """Remove duplicatas (mesma marca em múltiplos registros da carteira
     gera pares com a mesma chave), mantendo o de maior score."""
@@ -59,16 +69,27 @@ def _dedup_pares(pares: list[dict]) -> list[dict]:
     seen: set[tuple] = set()
     out: list[dict] = []
     for r in ordenados:
-        key = (
-            r.get("marca_base", ""),
-            r.get("ncl_base", 0),
-            r.get("marca_rpi", ""),
-            r.get("ncl_rpi", 0),
-        )
+        key = _chave_par(r)
         if key not in seen:
             seen.add(key)
             out.append(r)
     return out
+
+
+def _remover_pares_ja_em_c1(alertas_c1: list[dict], scored_c4: list[dict]) -> list[dict]:
+    """
+    Dedup cruzado C1×C4: como a camada 1 agora deixa fluir para C2 TODAS as
+    marcas da RPI (mesmo as que já geraram alerta com alguma marca da
+    carteira — ver nome_identico.camada1), o MESMO par (marca_base × marca_rpi)
+    pode aparecer tanto em alertas_c1 quanto em scored_c4.
+
+    O alerta C1 é juridicamente decidido (art. 124, XIX LPI) e deve vencer
+    SEMPRE — mesmo quando o score_final do C4 for maior que o do C1 (ex.:
+    nucleo_identico cross-class não colidente tem score_final=0.70, abaixo de
+    muitos scores C4). Por isso a remoção é por chave de par, não por score.
+    """
+    chaves_c1 = {_chave_par(r) for r in alertas_c1}
+    return [r for r in scored_c4 if _chave_par(r) not in chaves_c1]
 
 
 def _gravar_checkpoint(
@@ -152,6 +173,10 @@ def _processar_lote(
     scored_c4, rem_t4 = filtrar_titular(scored_c4)
     alertas_c1 = _dedup_pares(alertas_c1)
     scored_c4 = _dedup_pares(scored_c4)
+    # Dedup cruzado: um par já decidido em C1 (nome/núcleo idêntico) nunca
+    # deve reaparecer como candidato C4 — o alerta C1 sempre vence, mesmo com
+    # score_final menor (ver docstring de _remover_pares_ja_em_c1).
+    scored_c4 = _remover_pares_ja_em_c1(alertas_c1, scored_c4)
 
     # Camada 5 — Refinamento IA
     # Apenas os pares da camada 4: alertas da camada 1 (nome/núcleo idêntico)
@@ -382,6 +407,17 @@ def executar_pipeline(
 
     # Filtrar "NENHUMA" que podem ter vindo da IA
     todos_resultados = [r for r in todos_resultados if r.get("classificacao") != "NENHUMA"]
+
+    # Dedup cruzado C1×C4 GLOBAL (entre lotes): _remover_pares_ja_em_c1 já
+    # roda por lote em _processar_lote, mas um par pode teoricamente colidir
+    # entre lotes diferentes (mesmo marca_base/marca_rpi/ncl em registros
+    # processados em lotes distintos). O alerta C1 (camada_deteccao == 1)
+    # sempre vence — repete-se aqui para não depender apenas do score no
+    # dedup global logo abaixo, que ordena só por score_final.
+    alertas_c1_todos = [r for r in todos_resultados if r.get("camada_deteccao") == 1]
+    demais = [r for r in todos_resultados if r.get("camada_deteccao") != 1]
+    demais = _remover_pares_ja_em_c1(alertas_c1_todos, demais)
+    todos_resultados = alertas_c1_todos + demais
 
     # Dedup global final (ordena por score DESC e remove duplicatas) — cobre
     # também duplicatas entre lotes (mesma marca da RPI em registros por

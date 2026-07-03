@@ -23,6 +23,16 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
     "IBM BRASIL" e "IBM SOLUCOES" casem pelo núcleo "IBM", não pelo núcleo
     composto que diverge.
 
+    Importante — C1 opera sobre PARES (marca_rpi × marca_carteira), não sobre
+    marcas isoladas: uma marca da RPI idêntica a UMA marca da carteira pode
+    ainda colidir foneticamente com OUTRAS marcas da carteira. Por isso
+    `rpi_restante` retorna SEMPRE todas as marcas da RPI (não remove as que já
+    geraram alerta em C1) — a supressão de duplicatas entre o alerta C1 e um
+    eventual candidato C2 do MESMO par (mesma marca_base × mesma marca_rpi)
+    acontece no dedup cruzado do executor (`app/pipeline/executor.py`), que
+    também garante que o alerta C1 (juridicamente decidido) sempre prevalece
+    sobre um candidato C4 do mesmo par.
+
     Retorna:
         (alertas_automaticos, rpi_restante_para_camada2)
     """
@@ -43,7 +53,6 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
             carteira_por_nucleo.setdefault(chave_nucleo, []).append((idx_c, marca))
 
     alertas: list[dict] = []
-    rpi_processados: set[int] = set()
     # Rastreia pares (idx_rpi, idx_carteira) capturados por nome_identico para
     # evitar alerta nucleo_identico duplicado para o MESMO par, sem suprimir
     # alertas com outras marcas da carteira que casam apenas pelo núcleo.
@@ -68,7 +77,6 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
                 colidem=colidem,
                 mesma_classe=(marca_base["ncl"] == marca_rpi["ncl"]),
             ))
-            rpi_processados.add(idx_rpi)
             pares_nome_identico.add((idx_rpi, idx_c))
 
         # Match por núcleo distintivo idêntico — corre mesmo quando nome_identico
@@ -92,10 +100,10 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
                     colidem=colidem,
                     mesma_classe=(marca_base["ncl"] == marca_rpi["ncl"]),
                 ))
-                rpi_processados.add(idx_rpi)
 
-    rpi_restante = [m for i, m in enumerate(rpi) if i not in rpi_processados]
-    return alertas, rpi_restante
+    # rpi_restante contém TODAS as marcas da RPI, inclusive as que já geraram
+    # alerta em C1 — ver nota acima sobre pares vs. marcas.
+    return alertas, list(rpi)
 
 
 def reclassificar_pos_c3(alerta: dict) -> dict:
