@@ -1,0 +1,938 @@
+ncl_a,ncl_b,sim_top5,sim_max,item_a_max,item_b_max
+1,2,0.806838,0.922105,010073 Anti-incrustantes,020122 Tintas anti-incrustantes
+1,3,0.904068,1.0,"010635 Preparações desincrustantes, exceto para uso doméstico",030081 Preparações desincrustantes para uso doméstico
+1,4,0.846079,1.0,010706 Óleo para transmissão,040118 Óleo de transmissão
+1,5,0.958654,1.0,"010680 Preparações de microrganismos, exceto para uso medicinal ou veterinário",050454 Preparações de microrganismos para uso medicinal ou veterinário
+1,6,0.547245,0.613907,010137 Preparações para brasagem,060053 Ligas para brasagem
+1,7,0.876665,0.903737,010113 Sulfimida benzóica para uso industrial,070143 Máquinas para selecionar de uso industrial
+1,8,0.444376,0.530831,010307 Preparações para moldagem de fundição,080120 Ferros para moldagem
+1,9,0.857741,0.911025,010261 Sais para pilhas galvânicas,090272 Pilhas galvânicas
+1,10,0.566097,0.566097,"010690 Adjuvantes, exceto para fins médicos ou veterinários",100307 Nebulizadores para fins médicos
+1,11,0.698398,0.876652,010087 Combustíveis para reatores nucleares,110253 Reatores nucleares
+1,12,0.682659,0.717582,010197 Líquidos para circuitos hidráulicos,120079 Circuitos hidráulicos para veículos
+1,13,0.514678,0.891455,010700 Nitrato de amônio,130005 Explosivos de nitrato de amônio
+1,14,0.503515,0.5424,010391 Sais de metais preciosos para uso industrial,140055 Metais preciosos não trabalhados ou semitrabalhados
+1,15,0.248724,0.301018,010216 Preparações para acabamento de peles,150059 Peles de tambor
+1,16,0.696253,0.849718,010605 Dispersões de matérias plásticas,160195 Matérias plásticas para modelar
+1,17,0.74331,0.785084,"010455 Resinas sintéticas, não processadas","170075 Resinas sintéticas, semiprocessadas"
+1,18,0.479273,0.570348,010315 Fluidos para freios,180017 Freios para animais
+1,19,0.628058,0.94322,010467 Areia de fundição,"190166 Areia, exceto areia para fundição"
+1,20,0.597913,0.781798,010605 Dispersões de matérias plásticas,200003 Decorações de matérias plásticas para alimentos
+1,21,0.46716,0.490628,010263 Opacificadores para vidros,210085 Vidros [recipientes]
+1,22,0.419204,0.45007,010404 Preparações químicas para proteção contra mangra,220115 Lonas de proteção contra poeira
+1,23,0.337552,0.661229,010605 Dispersões de matérias plásticas,230020 Fios de matérias plásticas para uso têxtil
+1,24,0.500819,0.770749,010605 Dispersões de matérias plásticas,240081 Matérias plásticas [substitutas de tecidos]
+1,25,0.453715,0.514304,010170 Mástique para calçados,250110 Calçados de madeira
+1,26,0.428587,0.529246,010409 Sais de ouro,260094 Bordados de ouro
+1,27,0.461693,0.713304,010203 Substâncias adesivas para papel de parede,270007 Papel de parede
+1,28,0.423856,0.530482,010032 Composições para reparar câmaras-de-ar de pneus,280001 Câmaras de ar de bolas para jogos
+1,29,0.658886,0.800089,010029 Ágar-ágar para uso industrial,290250 Ágar-ágar para fins culinários
+1,30,0.808346,1.0,"010003 Sal para conservar, exceto para alimentos",300014 Sal para conservar alimentos
+1,31,0.694765,0.740736,010460 Subprodutos do processamento de cereais para uso industrial,"310129 Subprodutos do processamento de cereais, para consumo animal"
+1,32,0.579111,0.73889,010100 Soda do comércio [soda barrilha],320028 Água de soda
+1,33,0.360573,0.50221,010247 Água destilada,330039 Soju [bebida destilada coreana]
+1,34,0.373903,0.469058,010166 Carvão para filtros,340006 Filtros de cigarro
+1,35,0.354466,0.495977,010278 Papel químico para testes,"350090 Testes psicológicos, para seleção de pessoal"
+1,36,0.3699,0.47409,010568 Carbono animal,360104 Intermediação de créditos de carbono
+1,37,0.544179,0.585707,010203 Substâncias adesivas para papel de parede,370064 Colocação de papel de parede
+1,38,0.362377,0.387075,010644 Fluido para transmissão,380035 Transmissão por satélite
+1,39,0.457803,0.478435,010333 Gelo seco [dióxido de carbono],390134 Transporte de dióxido de carbono capturado para terceiros
+1,40,0.64114,0.779494,010406 Chapas sensibilizadas para impressão em ofsete,400113 Impressão ofsete
+1,41,0.48192,0.575681,"010598 Filmes cinematográficos sensibilizados, mas não expostos",410057 Projeções de filmes cinematográficos
+1,42,0.451762,0.509798,"010180 Elementos químicos de fissão Substâncias químicas para análises em laboratório, exceto para uso médico ou 1 veterinário Preparações químicas para análises em laboratórios, exceto para uso médico ou 1 veterinário",420007 Análises químicas
+1,43,0.293538,0.334722,010669 Alginato para indústria de alimentos,430197 Decoração de alimentos
+1,44,0.504967,0.545323,010079 Preparações viscosas para enxertos de árvores,440166 Cirurgia de árvores
+1,45,0.310657,0.354393,010194 Cimento para consertar objetos quebrados,450200 Devolução de objetos perdidos
+2,3,0.644272,0.859963,020094 Preparações para proteção de metais,030225 Preparações para proteção solar
+2,4,0.547026,0.597615,020082 Óleos para conservação de madeira,040090 Óleos para conservação de couro
+2,5,0.586918,0.795996,020076 Gomas-gutas para pintura,050341 Gomas-gutas para uso medicinal
+2,6,0.574393,0.662255,020038 Alvaiade [branco de chumbo],060046 Metal branco
+2,7,0.598153,0.644574,020065 Esmaltes para pintar,070297 Máquinas para pintar
+2,8,0.442777,0.554101,020037 Tintas para cerâmica,080266 Facas de cerâmica
+2,9,0.651933,0.722968,020010 Preparações anticorrosão,090412 Dispositivos catódicos anticorrosão
+2,10,0.303059,0.472035,020021 Faixas anticorrosão,100217 Tipoias [faixas de sustentação]
+2,11,0.345605,0.473052,020048 Corantes de malte,110191 Torrefadores de malte
+2,12,0.227397,0.27386,020125 Pastilhas de pintura removíveis,120263 Pastilhas de freio para veículos
+2,13,0.3775,0.469532,020038 Alvaiade [branco de chumbo],130041 Chumbo de caça [granalha]
+2,14,0.409885,0.492287,020014 Pasta de prata,140163 Prata semitrabalhada ou batida
+2,15,0.117422,0.212903,020046 Colofônia [resina natural] *,150093 Colofônia [breu] para instrumentos musicais de corda
+2,16,0.526245,0.604664,020023 Corantes para manteiga,160399 Papel manteiga
+2,17,0.556222,0.608508,020009 Tintas de amianto,170071 Papel de amianto
+2,18,0.437013,0.455976,020033 Tintas para couro,180130 Etiquetas de couro
+2,19,0.629306,0.896039,020026 Revestimentos para madeira [tintas],190035 Revestimentos de madeira
+2,20,0.379516,0.422652,020111 Madeira corante,200027 Fitas de madeira
+2,21,0.468419,0.652297,020088 Corantes para licores,210155 Baixelas [serviços] para licores
+2,22,0.349337,0.379082,020111 Madeira corante,220005 Palha de madeira
+2,23,0.059562,0.06695,020140 Brilho para uso em tinta,230018 Fios de borracha para uso têxtil
+2,24,0.3488,0.415163,020033 Tintas para couro,240138 Lençóis de couro
+2,25,0.471651,0.537265,020021 Faixas anticorrosão,250070 Faixas [vestuário]
+2,26,0.411477,0.49657,020014 Pasta de prata,260093 Bordados de prata
+2,27,0.362438,0.40447,020070 Revestimentos [tintas],270022 Revestimentos têxteis para paredes
+2,28,0.42245,0.621185,020041 Tintas para calçado,280187 Raquete para neve [calçado]
+2,29,0.486555,0.519706,020014 Pasta de prata,290229 Pasta de frutas prensadas
+2,30,0.578896,0.741666,020142 Verniz comestível para decorar alimentos,300322 Ouro comestível para decorar alimentos e bebidas
+2,31,0.396088,0.497732,020042 Leite de cal,310028 Cal para forragem animal
+2,32,0.490337,0.570046,020024 Corantes para cerveja,320005 Cerveja não fermentada [mosto de cerveja]
+2,33,0.404742,0.508551,020088 Corantes para licores,330001 Licores de menta
+2,34,0.28319,0.374534,020073 Negro de fumo [pigmento],340032 Recipientes para fumo
+2,35,0.285986,0.342866,020093 Produtos antiembaciamento para metais,350023 Demonstração de produtos
+2,36,0.307197,0.36623,020040 Fundos seladores para proteção de chassis de veículos,360109 Serviços de fundos de previdência
+2,37,0.649373,0.880774,020130 Corantes sob a forma de caneta para restauração de mobiliário,370060 Restauração de mobiliário
+2,39,0.162397,0.206416,020040 Primer anticorrosivo para chassis de veículos,390044 Aluguel de veículos
+2,40,0.45737,0.521503,020014 Pasta de prata,400007 Prateação [revestimento com prata]
+2,41,0.248571,0.26984,020008 Pó de alumínio para pintura,410230 Serviços de pintura facial
+2,42,0.290524,0.355583,"020137 Tintas para escrita, desenho ou impressão condutoras",420211 Análise da escrita [grafologia]
+2,43,0.219727,0.255816,020067 Tintas para marcar animais,430134 Pensão para animais
+2,44,0.354164,0.612204,020138 Tinta para tatuagem,440197 Serviço de tatuagem
+2,45,0.248062,0.308003,020122 Tintas anti-incrustantes,450194 Monitorização de alarmes anti-roubo e de segurança
+3,4,0.742358,0.778015,030179 Produtos para remover a pintura,040038 Produtos para remover pó
+3,5,0.943071,1.0,"030031 Enxaguantes bucais, exceto para uso medicinal",050383 Enxaguantes bucais para uso medicinal
+3,6,0.511961,0.532592,030209 Ar comprimido em lata para fins de limpeza,060267 Armaduras de metal para dutos de ar comprimido
+3,7,0.814589,0.89057,030280 Detergentes para máquinas de lavar louças,070231 Máquinas de lavar louças
+3,8,0.623557,0.740438,030041 Preparações para ondular os cabelos,080126 Aparelhos manuais para ondular cabelos
+3,9,0.480453,0.592602,030212 Produtos para dar brilho às folhas das plantas,090283 Aparelhos para dar brilho às fotografias
+3,10,0.71994,0.848932,"030265 Máscaras descartáveis aquecidas a vapor, exceto para fins medicinais",100288 Máscaras descartáveis aquecidas a vapor para fins terapêuticos
+3,11,0.551554,0.578981,030266 Pastilhas de limpeza para máquinas de café,110383 Máquinas de café com purificadores de água
+3,12,0.440643,0.497075,030126 Líquidos para limpeza de para-brisa,120121 Limpadores de para-brisa
+3,13,0.415742,0.518556,030259 Algodão impregnado com preparações demaquilantes,130030 Algodão-pólvora
+3,14,0.372713,0.435428,030228 Preparações polidoras para calçados,140119 Joias e bijuterias para calçados
+3,15,0.207187,0.442538,030249 Cosméticos para crianças,150099 Instrumentos musicais para crianças
+3,16,0.543565,0.619243,030067 Giz para limpeza,160112 Porta giz
+3,17,0.486835,0.515584,030076 Soluções para decapagem,170114 Soluções de borracha
+3,18,0.437703,0.454214,030073 Pastas para afiar navalha,180083 Pastas [malas]
+3,19,0.527455,0.575831,030168 Pedras de alúmen [pedras-ume] [adstringente],190141 Pedras de construção
+3,20,0.45201,0.479831,030007 Sabonete de amêndoas,"200378 Dispensadores de sabonete, exceto de metal"
+3,21,0.735249,0.772351,030279 Detergentes para lavar louça,210304 Escovas para lavar louça
+3,22,0.547466,0.852617,030160 Tela [tecido] abrasiva,220001 Tela de tecido para tabiques de ventilação
+3,23,0.305805,0.624979,030259 Algodão impregnado com preparações demaquilantes,230002 Fios de algodão
+3,24,0.620296,0.704806,030161 Tecido de vidro [tecido abrasivo],240048 Tecido para vidro [toalha]
+3,25,0.550542,0.637784,030228 Preparações polidoras para calçados,250110 Calçados de madeira
+3,26,0.636881,0.824985,030041 Preparações para ondular os cabelos,260039 Grampos para ondular os cabelos
+3,27,0.443748,0.736335,030138 Preparações para limpeza de papel de parede,270007 Papel de parede
+3,28,0.468224,0.53472,030171 Preparações para bronzear [cosméticos],280237 Cosméticos de brinquedo
+3,29,0.57159,0.681465,030169 Leite de amêndoas para uso cosmético,290218 Leite de amêndoas
+3,30,0.691705,0.758686,030204 Pulverizadores para refrescar o hálito,300271 Balas para refrescar hálito
+3,31,0.474031,0.543977,030219 Preparações de aloe vera para uso cosmético,310148 Aloe vera [planta]
+3,32,0.497025,0.569556,030027 Soda para branquear,320028 Água de soda
+3,33,0.295736,0.421892,030289 Essências para perfumar,330024 Essências alcoólicas
+3,34,0.368431,0.460399,030168 Pedras de alúmen [pedras-ume] [adstringente],340027 Pedras de isqueiro para fumantes
+3,35,0.320263,0.357831,030028 Produtos para alvejar roupa,350023 Demonstração de produtos
+3,36,0.149555,0.193142,030047 Cera para assoalhos e móveis,360132 Serviços bancários móveis
+3,37,0.779933,0.864896,030145 Pedra-pomes,370069 Abrasão com pedra pomes
+3,39,0.300175,0.343809,030249 Cosméticos para crianças,"390129 Aluguel de assentos de segurança para crianças, para veículos"
+3,40,0.601144,0.663307,030091 Água de cheiro para perfumar,400082 Perfumar o ar
+3,41,0.342732,0.475073,030058 Água de colônia [eau de cologne],410055 Colônia de férias
+3,42,0.384749,0.442977,030227 Henna [tintura cosmética],420045 Pesquisas em cosmética
+3,43,0.306201,0.410347,030058 Água de colônia [eau de cologne],430145 Colônia de férias [alojamento]
+3,44,0.611074,1.0,030097 Cera para depilação,440213 Depilação com cera
+3,45,0.316591,0.352713,030290 Cera de efeitos especiais para maquiagem,450219 Soltura de pombos para ocasiões especiais
+4,5,0.704625,0.834594,040089 Óleo de rícino para uso industrial,050344 Óleo de rícino para uso medicinal
+4,6,0.45602,0.65731,040013 Lenha para fogo,060431 Suportes para lenha [trasfogueiro]
+4,7,0.548396,0.597216,040123 Combustível hidrogênio,070579 Bombas distribuidoras de hidrogênio para postos de combustível
+4,8,0.413981,0.496573,040114 Cera para esquis,080274 Raspadores para esquis
+4,9,0.430574,0.550152,040106 Energia elétrica,090213 Indicadores de perda elétrica
+4,10,0.357251,0.525137,040123 Combustível hidrogênio,100257 Inaladores de hidrogênio
+4,11,0.518972,0.542367,040061 Pavios de candeeiro,110042 Camisas de candeeiro
+4,12,0.535126,0.587248,040123 Combustível hidrogênio,120328 Carros movidos a hidrogênio
+4,13,0.47059,0.494456,040050 Gás de óleo,130008 Armas de gás lacrimogêneo
+4,14,0.252384,0.341479,040026 Graxa para calçados,140119 Joias e bijuterias para calçados
+4,15,0.210119,0.390551,040028 Cera para correias,150096 Correias [straps] para instrumentos musicais
+4,16,0.432482,0.457454,040030 Cera industrial,160055 Cera para lacrar
+4,17,0.471807,0.518254,040036 Óleos para desmoldar [construção],170052 Óleos isolantes
+4,18,0.421818,0.460262,040028 Cera para correias,180033 Correias de arreios
+4,19,0.517845,0.785786,040053 Òleo de coltar [óleo de alcatrão de hulha],190097 Alcatrão de hulha
+4,20,0.359184,0.393399,040011 Graxa para armas,200118 Prateleiras para armas
+4,21,0.58013,0.638719,040058 Preparações de óleo de soja para tratamento antiaderente de utensílios de cozinha,210273 Utensílios para cozinha
+4,22,0.504049,0.599776,040006 Aparas de madeira para acender fogo,220004 Aparas de madeira para enchimento
+4,23,0.301865,0.387973,040080 Óleo para uso têxtil,230018 Fios de borracha para uso têxtil
+4,24,0.321197,0.353616,040026 Graxa para calçados,240021 Tecido para calçados
+4,25,0.455319,0.519503,040009 Preparações antiderrapantes para correias,250001 Antiderrapantes para calçados
+4,26,0.171407,0.28463,040067 Óleo de ossos para uso industrial,260012 Ossos de baleia para espartilhos
+4,27,0.273477,0.528626,040009 Preparações antiderrapantes para correias,270012 Tapetes antiderrapantes
+4,28,0.419231,0.496573,040114 Cera para esquis,280152 Esquis aquáticos
+4,29,0.668429,0.783269,040065 Óleo de colza para uso industrial,290022 Óleo de colza para uso alimentar
+4,30,0.567294,0.872215,040001 Cera de abelha*,300318 Cera de abelha comestível
+4,31,0.535668,0.756119,040027 Cera [matéria-prima],310057 Pólen [matéria-prima]
+4,32,0.35046,0.450731,040003 Álcool [combustível],320065 Cerveja sem álcool
+4,33,0.159915,0.178879,040004 Combustível à base de álcool,330038 Bebidas à base de vinho
+4,34,0.374181,0.533027,040046 Pavios para velas,340044 Pavios para isqueiros
+4,35,0.212329,0.226465,040087 Óleo industrial,350025 Assessoria em gestão comercial ou industrial
+4,36,0.228252,0.376461,040050 Gás de óleo,"360121 Avaliação financeira de custos de desenvolvimento relacionados com as indústrias de óleo, gás e mine"
+4,37,0.455157,0.638566,040124 Gás natural,370174 Serviços de reabastecimento de gás natural para veículos motorizados
+4,38,0.310448,0.334848,040118 Óleo de transmissão,380035 Transmissão por satélite
+4,39,0.240037,0.477158,040106 Energia elétrica,390090 Distribuição de energia
+4,40,0.476093,0.535266,040101 Fluidos de corte,400021 Corte de tecidos
+4,41,0.446613,0.459061,040040 Gás para iluminação,410224 Serviços de técnico de iluminação para eventos
+4,42,0.395738,0.457971,"040071 Petróleo, em bruto ou refinado",420095 Prospecção de petróleo
+4,43,0.333998,0.429286,040117 Carvão para narguilé,430201 Serviços de bares para fumar narguilé
+4,44,0.394546,0.457454,040030 Cera industrial,440213 Depilação com cera
+4,45,0.281144,0.363685,040013 Lenha para fogo,450179 Combate ao fogo
+5,6,0.48514,0.557453,050480 Sabonete medicinal,060506 Dispensadores de metal para sabonete
+5,7,0.53522,0.591683,050058 Lama medicinal,070059 Coletores de lama [máquinas]
+5,8,0.59938,0.706787,050086 Cocaína para fins medicinais,"080289 Dispositivos depilatórios a laser, exceto para fins medicinais"
+5,9,0.728047,0.851923,050096 Substâncias para contraste radiológico para uso médico,"090429 Termômetros, exceto para uso médico"
+5,10,1.0,1.0,050095 Contraceptivos químicos,"100184 Contraceptivos, exceto os químicos"
+5,11,0.769852,0.769852,050050 Bálsamos para uso medicinal,"110360 Lâmpadas de cura, exceto para uso medicinal"
+5,12,0.466037,0.575326,050440 Fraldas para animais de estimação,120311 Carrinhos de passeio para animais de estimação
+5,13,0.444538,0.534232,050068 Cápsulas para remédios,130019 Estojos [cápsulas] de cartucho
+5,14,0.498129,0.565805,050440 Fraldas para animais de estimação,140187 Joias e bijuterias para animais de estimação
+5,15,0.207834,0.245732,050512 Rolos de moxa para moxabustão,150078 Rolos musicais
+5,16,0.500858,0.601551,050440 Fraldas para animais de estimação,160371 Sacos plásticos para dejetos de animais de estimação
+5,17,0.504123,0.548141,050028 Substâncias contra traças,170058 Substâncias para isolamento de construções contra umidade
+5,18,0.665602,1.0,050087 Coleiras antiparasitas para animais,180030 Coleiras para animais*
+5,19,0.442296,0.545266,050127 Magnésia para uso farmacêutico,190118 Cimento de magnésia
+5,20,0.640547,0.709935,050509 Tapetes higiênicos descartáveis para forrar colchonetes para animais de estimação,200356 Almofadas para forrar colchonetes para animais de estimação
+5,21,0.62713,0.696841,050440 Fraldas para animais de estimação,210473 Tapetes de lamber para animais de estimação
+5,22,0.464251,0.553423,050170 Ervas medicinais,220044 Ervas para estofamento
+5,23,0.364542,0.498633,050072 Algodão [chumaço] para uso medicinal,230002 Fios de algodão
+5,24,0.721161,0.782755,"050497 Colchonetes, descartáveis, para a troca de fraldas de bebês",240120 Panos para troca de fraldas para bebês
+5,25,0.461288,0.50289,050227 Ópio para fins médicos,"250195 Máscaras faciais [vestuário], exceto para fins médicos ou sanitários"
+5,26,0.412542,0.535523,050294 Fitas adesivas para uso medicinal,260145 Fitas adesivas dupla face para vestuário [fashion tape]
+5,27,0.211036,0.246205,050177 Sêmen para inseminação artificial,270003 Grama artificial
+5,28,0.569059,0.696841,050440 Fraldas para animais de estimação,280004 Brinquedos para animais de estimação
+5,29,0.70065,0.890429,050449 Leite em pó para bebês,290192 Leite em pó*
+5,30,0.88292,0.944155,050148 Infusões medicinais,"300009 Infusões, exceto infusões medicinais"
+5,31,0.665249,0.774087,050132 Cascas de árvore para uso farmacêutico,310139 Cascas de árvore em bruto
+5,32,0.667277,0.747847,050130 Sais de água mineral,320015 Água mineral [bebida]
+5,33,0.43358,0.518901,050122 Digestivos para uso farmacêutico,330012 Digestivos [licores e destilados]
+5,34,0.534047,0.873823,050336 Ervas para fumar para uso medicinal,340028 Ervas para fumar *
+5,35,0.351252,0.400132,050287 Preparações veterinárias,"350148 no atacado, de preparações sanitárias, farmacêuticas e veterinárias e de suprimentos médic"
+5,36,0.303413,0.389922,050028 Substâncias contra traças,360034 Seguros contra incêndio
+5,37,0.395981,0.422893,050413 Fraldas-calças para bebês,370102 Lavagem de fraldas
+5,38,0.23569,0.390189,050259 Rádio para uso medicinal,380052 Comunicação por rádio
+5,39,0.207441,0.247644,050334 Flores de enxofre para uso farmacêutico,390096 Entrega de flores
+5,40,0.520143,0.71773,050453 Produtos farmacêuticos,400148 Biofabricação personalizada de produtos farmacêuticos
+5,41,0.327021,0.428011,050440 Fraldas para animais de estimação,410261 Provimento de playgrounds para animais de estimação Simulated restaurant services provided in virtual environments for entertainment
+5,42,0.316783,0.412913,050401 Preparações para desodorizar ambientes,420296 Hospedagem de ambientes virtuais
+5,43,0.328137,0.444575,050298 Alimentos para bebês,430197 Decoração de alimentos
+5,44,0.620542,1.0,050177 Sêmen para inseminação artificial,440194 Inseminação artificial
+5,45,0.435996,0.523891,050440 Fraldas para animais de estimação,450198 Serviços de babá de animais de estimação
+6,7,0.771026,0.817168,060357 Carretéis não mecânicos de metal para mangueiras flexíveis,070376 Carretéis mecânicos para mangueiras flexíveis
+6,8,0.565637,0.673139,060096 Moldes em forma de concha [fundição],080176 Concha ou colher para fundição
+6,9,0.90626,1.0,060353 Fios de cobre não isolados,090558 Fios de cobre isolados
+6,10,0.562615,0.624922,060064 Ponteiras de metal para bengalas,100263 Bengalas para uso medicinal
+6,11,0.634062,0.731819,060415 Dutos de metal para ventilação e instalações de ar condicionado,110014 Instalações de ar-condicionado
+6,12,0.694215,0.767832,060013 Agulhas para estradas de ferro,120140 Vagões [estradas de ferro]
+6,13,0.457084,0.591345,060370 Sinalizadores de metal,130035 Fogos sinalizadores
+6,14,0.791992,0.869413,060493 Etiquetas de metal costuradas para vestuário,140185 Etiquetas de metal precioso costuradas para vestuário
+6,15,0.509751,0.709032,060341 Cordas de metal,150090 Balalaicas [instrumentos de cordas]
+6,16,0.640016,0.686246,060376 Chapas e placas de metal,160170 Chapas ou placas para gravar
+6,17,0.754776,1.0,060173 Mangas de engate metálicas para canos,170067 Mangas de engate não metálicas para canos
+6,18,0.6884,0.885774,060494 Etiquetas adesivas em metal para bolsas,180147 Etiquetas adesivas de couro para bolsas
+6,19,1.0,1.0,060260 Janelas de batente metálicas,"190179 Janelas de batente, não metálicas"
+6,20,1.0,1.0,"060451 Barras de apoio, metálicas, para banheiras",200290 Barras de apoio não metálicas para banheiras
+6,21,0.62198,0.746142,060199 Cestos de metal,210340 Cestos para papel
+6,22,0.710264,0.837937,060500 Redes de proteção feitas de metal para rochas,220123 Redes de proteção não metálicas para rochas
+6,23,0.586612,0.691399,060184 Tecidos de fios de metal,230032 Fios de metal para bordados
+6,24,0.563462,0.883552,060494 Etiquetas adesivas em metal para bolsas,240135 Etiquetas adesivas de tecido para bolsas
+6,25,0.734684,0.846592,060471 Tacos de metal para saltos de sapatos,250131 Saltos de sapatos
+6,26,0.496358,0.517367,060153 Fechos de molas,260010 Fechos para vestuário
+6,27,0.386787,0.477176,060113 Capachos de metal,"270019 Capachos, resistentes ao fogo, para lareiras e churrasqueiras"
+6,28,0.588106,0.604793,060024 Varas de metal,280210 Varas para salto com vara
+6,29,0.439558,0.634804,060502 Folhas de alumínio para fins culinários,290262 Agraço para fins culinários
+6,30,0.545607,0.685243,060150 Fôrmas de metal para gelo,300076 Gelo [água congelada]
+6,31,0.470169,0.513157,060044 Correntes para gado,310014 Sal para gado
+6,32,0.30532,0.482097,060356 Canos de metal para escoamento de águas,320012 Águas [bebidas]
+6,33,0.125303,0.190081,060439 Casas pré-fabricadas [prontas para montar] de metal,330035 Bebidas alcóolicas prontas
+6,34,0.310166,0.364365,060398 Recipientes de metal,340032 Recipientes para fumo
+6,35,0.367154,0.399623,060375 Folha de estanho,350067 Preparação de folha de pagamento
+6,36,0.344727,0.411605,060066 Cofres de segurança,360022 Serviços de depósito em cofres bancários
+6,37,0.737481,0.851207,060056 Bronzes [obras de arte],370126 Restauração de obras de arte
+6,38,0.341774,0.518078,060427 Cabo de aço,380021 Teledifusão por cabo
+6,39,0.53548,0.598674,060083 Chaves de metal,390121 Armazenamento temporário de chaves
+6,40,0.685017,1.0,060056 Bronzes [obras de arte],400084 Molduragem de obras de arte
+6,41,0.545663,0.932083,060056 Bronzes [obras de arte],410212 Aluguel de obras de arte
+6,42,0.603308,0.846851,060056 Bronzes [obras de arte],420132 Autenticação de obras de arte
+6,43,0.442253,0.76221,060170 Construções transportáveis de metal,430160 Aluguel de construções transportáveis
+6,44,0.378242,0.434494,060028 Protetores de metal para árvores,440166 Cirurgia de árvores
+6,45,0.473198,0.652839,060066 Cofres de segurança,450215 Aluguel de cofres
+7,8,0.969101,1.0,"070585 Fatiadores de queijo, elétricos","080248 Fatiadores de queijo, não elétricos"
+7,9,0.712077,0.841034,070331 Dispositivos elétricos para cortinas,090163 Dispositivos elétricos para comutação
+7,10,0.648542,0.794859,"070582 Trajes exoesqueléticos robóticos, exceto para fins medicinais",100264 Trajes exoesqueléticos robóticos para uso médico
+7,11,0.829985,0.865485,070311 Bombas para instalações de aquecimento,110073 Instalações de aquecimento
+7,12,1.0,1.0,"070253 Mecanismos de transmissão, exceto para veículos terrestres",120142 Mecanismos de transmissão para veículos terrestres
+7,13,0.5374,0.734312,070477 Pistolas [ferramentas que utilizam cartuchos explosivos],130003 Cartuchos explosivos
+7,14,0.443238,0.473328,070212 Mecanismos para teares,140023 Mecanismos de relógios
+7,15,0.481874,0.540121,070377 Tímpanos [tipografia],150020 Cavaletes para tímpanos
+7,16,0.612611,0.749915,070139 Cilindros para máquinas,160118 Cilindros para máquinas de escrever
+7,17,0.577954,0.607272,070576 Canetas de impressão em 3d,170125 Filamentos plásticos para impressão 3d
+7,18,0.559701,0.614467,070041 Armações para máquinas,180004 Armações de selas
+7,19,0.534152,0.622773,070420 Rodas de oleiro,190011 Argila de oleiro
+7,20,0.767135,0.879927,070376 Carretéis mecânicos para mangueiras flexíveis,200103 Carretéis não metálicos e não mecânicos para mangueiras flexíveis
+7,21,1.0,1.0,070403 Batedores elétricos,210238 Batedores não elétricos
+7,22,0.582635,0.687246,070478 Aparelhos para içamento de redes [pesca],220011 Redes de pesca comerciais
+7,23,0.285656,0.370894,070604 Agulhas para máquinas cardadoras de lã,230004 Fios de lã
+7,24,0.473061,0.616658,070206 Máquinas para estampagem,240060 Tecidos de seda para estampagem
+7,25,0.584503,0.64679,070041 Armações para máquinas,250028 Armações de chapéus
+7,26,0.609362,0.733719,070283 Máquinas para debruar,260096 Fitas para debruar
+7,27,0.341011,0.445684,070518 Esteiras rolantes,270009 Esteiras de junco
+7,28,0.638221,0.715302,070511 Máquinas para encordoar raquetes,280277 Fitas de aderência para raquetes
+7,29,0.711123,0.819598,"070455 Máquinas raladoras de frutas, legumes e verduras","290066 Preparações para sopas [frutas, legumes e verduras]"
+7,30,0.539992,0.78917,070609 Máquinas para fazer molho de soja,300179 Molho de soja
+7,31,0.604193,0.743123,070089 Descascadores de grãos e cereais,310066 Grãos [cereais]
+7,32,0.544921,0.607286,070390 Bombas para cerveja,320005 Cerveja não fermentada [mosto de cerveja]
+7,33,0.303358,0.357608,070390 Bombas para cerveja,"330026 Bebidas alcoólicas, exceto cerveja"
+7,34,0.512929,0.590671,070255 Máquinas para processar tabaco,340037 Escarradeira para usuários de tabaco
+7,35,0.448663,0.64379,070537 Máquinas automáticas de venda,350089 Aluguel de máquinas de autosserviço Aluguel de máquinas automáticas de venda
+7,36,0.271586,0.344605,070097 Carros corrediça para máquinas de tricotar,360141 Serviços de corretor de carros
+7,37,0.905083,0.954006,070328 Máquinas para passar roupa,370062 Prensagem para passar roupa
+7,38,0.401518,0.596059,070619 Splicers de fusão de fibra óptica,380030 Comunicação por redes de fibra óptica
+7,39,0.719998,0.891758,070537 Máquinas automáticas de venda,390115 Reabastecimento de máquinas automáticas de venda
+7,40,0.833832,0.959529,070266 Máquinas para moagem de farinha,400044 Moagem de farinha
+7,41,0.413878,0.489083,070005 Bombas de aeração para aquários,410213 Aluguel de aquários indoor
+7,42,0.567174,0.621624,070598 Robôs domésticos para limpeza e lavanderia com inteligência artificial,420277 Consultoria em inteligência artificial
+7,43,0.493349,0.786719,070164 Aparelhos para a mineralização de água potável,430191 Aluguel de dispensadores de água potável
+7,44,0.497861,0.541091,070616 Centros de usinagem para metalurgia,440209 Serviços de centros médicos
+7,45,0.367718,0.443147,070239 Máquinas para torcer roupas,450081 Aluguel de roupas
+8,9,0.556475,0.583035,080162 Coletores de dinheiro,090129 Coletores elétricos
+8,10,0.54493,0.572629,"080262 Pistolas para calafetar, não elétricas",100300 Pistolas de massagem elétricas
+8,11,0.51391,0.531857,080181 Atiçadores [ferros para atiçar fogo],110086 Aquecedores para ferros
+8,12,0.517237,0.752075,080265 Bombas de ar manuais,120009 Bombas de ar [acessórios de veículos]
+8,13,0.524293,0.643577,080247 Cintos porta-ferramentas,130074 Cintos porta-munição
+8,14,0.373966,0.423352,080186 Porta-serras,140166 Porta-joias
+8,15,0.372129,0.53838,080063 Chaves de boca,150014 Harmônicas [gaitas de boca]
+8,16,0.639003,0.798801,080256 Aparelhos para fazer tatuagens,160263 Aparelhos para fazer vinhetas
+8,17,0.543121,0.598066,080045 Ferros para calafetar,170040 Materiais para calafetar
+8,18,0.601501,0.813931,080006 Correias de couro usadas para afiar,180096 Correias de couro usadas a tiracolo
+8,19,0.450287,0.495785,080047 Martelos de pedra,190142 Pedra artificial
+8,20,0.517903,0.70249,080287 Garras de urso para carnes [garras trinchantes],200010 Garras de animais
+8,21,0.768789,0.879724,080224 Ferros de passar,210112 Descansos para ferros de passar
+8,22,0.460743,0.555461,080276 Cabos para facas,220084 Cabos não metálicos
+8,23,0.287546,0.3184,080304 Abridores de costura,230009 Fios para costura [linhas]
+8,24,0.238139,0.338158,"080248 Fatiadores de queijo, não elétricos",240053 Panos para queijo
+8,25,0.47201,0.588253,080302 Coletes para ferramentas,250159 Coletes para pesca
+8,26,0.567051,0.68222,080126 Aparelhos manuais para ondular cabelos,260039 Grampos para ondular os cabelos
+8,27,0.203006,0.269161,080181 Atiçadores [ferros para atiçar fogo],"270019 Capachos, resistentes ao fogo, para lareiras e churrasqueiras"
+8,28,0.473007,0.567243,080302 Coletes para ferramentas,280213 Coletes de natação
+8,29,0.55818,0.602001,080022 Armas brancas,290241 Salsichas brancas
+8,30,0.529299,0.612954,080295 Debulhadores de milho manuais,300059 Farinha de milho
+8,31,0.483689,0.590774,080295 Debulhadores de milho manuais,310164 Espigas de milho não processadas [abertas ou fechadas]
+8,32,0.414504,0.594294,080136 Instrumentos para picar verduras e legumes,"320022 Sucos de frutas, verduras e legumes [bebidas]"
+8,33,0.251285,0.310659,080283 Cortadores manuais de cápsulas de garrafas de vinho,330021 Mosto de pêra [vinho de pêra]
+8,34,0.410308,0.550483,"080249 Cortadores de pizza, não elétricos",340014 Cortadores de charuto
+8,35,0.259196,0.478254,080270 Espátulas para uso por artistas,350079 Agenciamento de artistas
+8,36,0.079685,0.139066,080155 Maços [martelos de madeira],360105 Avaliação financeira de madeira em pé
+8,37,0.449852,0.499294,080281 Aparelhos elétricos para trançar o cabelo,370117 Supressão de interferência em aparelhos elétricos
+8,38,0.178351,0.201519,080305 Cinzéis sem corte,380048 Serviços de difusão sem fio [telecomunicações]
+8,39,0.389094,0.441044,080063 Chaves de boca,390121 Armazenamento temporário de chaves
+8,40,0.478482,0.532195,080052 Ferramentas manuais para pisoamento,400120 Pisoamento de tecidos
+8,41,0.24599,0.410702,080270 Espátulas para uso por artistas,410036 Serviços de modelos vivos para artistas
+8,42,0.255243,0.309453,080068 Suporte para pedras de amolar,420198 Conversão de dados e documentos de suporte físico para suporte eletrônico
+8,43,0.260804,0.312181,080019 Instrumentos e ferramentas para esfolar animais,430134 Pensão para animais
+8,44,0.530106,0.618402,"080242 Aparelhos para depilação, elétricos ou não",440213 Depilação com cera
+8,45,0.313893,0.410673,080181 Atiçadores [ferros para atiçar fogo],450179 Combate ao fogo
+9,10,1.0,1.0,"090263 Filtros para máscaras respiratórias, exceto para fins médicos",100308 Filtros para máscaras respiratórias para fins médicos
+9,11,0.866378,1.0,"090311 Aparelhos de ionização, exceto para tratamento de ar e água",110174 Aparelhos de ionização para tratamento de ar ou água
+9,12,0.808874,0.892551,090260 Redes salva-vidas,120354 Botes salva-vidas
+9,13,0.875391,1.0,"090830 Sinalizadores de resgate, não explosivos e não pirotécnicos","130080 Sinalizadores de resgate, explosivos ou pirotécnicos"
+9,14,0.511569,0.55619,090749 Relógios inteligentes,140032 Relógios elétricos
+9,15,0.623286,0.700334,090768 Unidades de efeitos elétricos e eletrônicos para instrumentos musicais,150044 Instrumentos musicais eletrônicos
+9,16,0.718141,0.754892,090453 Aparelhos e máquinas para sondagem,160230 Aparelhos e máquinas para mimeografar
+9,17,0.564161,0.626509,090861 Anéis de luz [ring lights] de selfie para smartphones,170131 Anéis o-ring
+9,18,0.488003,0.510618,090605 Joelheiras para operários,180053 Joelheiras para cavalos
+9,19,0.729771,0.979975,"090516 Placas sinalizadoras para estrada, luminosas ou mecânicas","190164 Placas sinalizadoras para estrada, exceto luminosas e mecânicas, não metálicas"
+9,20,0.814161,0.902219,090833 Cadeados eletrônicos,"200344 Cadeados não metálicos, exceto eletrônicos"
+9,21,0.678113,0.769448,090141 Condutores elétricos,210229 Vidro incorporado com finos condutores elétricos
+9,22,0.509784,0.540697,090676 Aparelhos de proteção contra variação de tensão,220115 Lonas de proteção contra poeira
+9,23,0.433421,0.458272,090293 Fios para identificação para fios elétricos,230004 Fios de lã
+9,24,0.502412,0.546199,090638 Cobertores para incêndio,240114 Cobertores de cama
+9,25,0.610312,0.772641,090939 Luvas de dedo capacitivas para dispositivos com tela de toque,250194 Luvas térmicas para dispositivos com tela de toque
+9,26,0.625445,0.71952,090734 Telefones celulares,260151 Berloques decorativos para telefones celulares
+9,27,0.323502,0.547648,090772 Balanças de banheiro,270001 Tapetes de banheiro
+9,28,0.692471,0.820537,090751 Filmes protetores adaptados para telas de computador,280229 Filmes protetores adaptados para telas de jogos portáteis
+9,29,0.520144,0.647358,090241 Aparelhos para examinar ovos,290087 Ovos em pó
+9,30,0.338842,0.388355,090761 Balanças com avaliadores de massa corporal,300220 Massa de farinha
+9,31,0.507084,0.606404,090241 Aparelhos para examinar ovos,310097 Ovos de siba [sépia] para aves
+9,32,0.27587,0.373029,090903 Roupas secas para mergulho [dry suit],320061 Bebidas de frutas secas não alcoólicas
+9,33,0.131369,0.150675,090204 Indicadores de nível de água,330041 Água de seltz alcoólica
+9,34,0.686912,0.851091,090738 Carregadores para cigarros eletrônicos,340039 Cigarros eletrônicos
+9,35,0.74302,0.938061,090525 Caixas registradoras,350174 Aluguel de caixas registradoras
+9,36,0.722207,0.827663,090843 Máquinas para pagamento com cartão de crédito,360056 Processamento de pagamento de cartão de crédito
+9,37,0.749456,0.918243,090765 Estações de carga para veículos elétricos,370176 Reserva de estações de carga para veículos elétricos
+9,38,0.793837,0.920944,090600 Aparelhos de fac-símile [fax],380031 Aluguel de aparelhos de fac-símile [fax]
+9,39,0.83742,0.873051,090197 Quadros de distribuição [eletricidade],390031 Distribuição de eletricidade
+9,40,0.825501,0.954462,090618 Impressoras para uso com computadores*,400144 Aluguel de impressoras para uso com computadores
+9,41,0.950342,0.974371,090718 Leitores de livros digitais [e-readers],410241 Aluguel de leitores de livros digitais [e-readers]
+9,42,0.897739,1.0,090734 Telefones celulares,420238 Desbloqueio de telefones celulares
+9,43,0.355428,0.399569,090874 Carregadores de energia portáteis,430207 Aluguel de vestiários portáteis
+9,44,0.426696,0.562757,090940 Dispositivos sequenciadores de música,440253 Terapia com música [musicoterapia]
+9,45,0.946574,0.960134,090546 Coletes salva-vidas,450275 Aluguel de coletes salva-vidas
+10,11,1.0,1.0,"100050 Almofadas aquecidas eletricamente, para uso medicinal","110296 Almofadas aquecidas eletricamente, exceto para uso medicinal"
+10,12,0.562146,0.617857,100012 Vibradores de ar quente para uso medicinal,120006 Balões de ar quente
+10,13,0.41647,0.512164,100178 Escovas para limpar as cavidades do corpo,130010 Escovas para limpar armas de fogo
+10,14,0.520909,0.545489,100327 Andadores para animais de estimação,140187 Joias e bijuterias para animais de estimação
+10,15,0.419566,0.629575,100055 Estojos de instrumentos para médicos,150035 Estojos para instrumentos musicais
+10,16,0.589514,0.61047,100007 Agrafos [grampos cirúrgicos],160010 Grampos para papel
+10,17,0.451125,0.560065,100183 Cintas elásticas para uso medicinal,"170038 Fibras elásticas, exceto para uso têxtil"
+10,18,0.570908,0.686503,100327 Andadores para animais de estimação,180135 Roupas para animais de estimação
+10,19,0.436743,0.538377,100130 Lâmpadas a quartzo para uso medicinal,190073 Quartzo para construção
+10,20,0.963413,1.0,100096 Camas d'água para uso medicinal,"200230 Camas d'água, exceto para uso medicinal"
+10,21,0.793509,0.872849,100249 Separadores de dedos do pé para fins ortopédicos,210367 Separadores de dedos do pé para uso por pedicures
+10,22,0.367278,0.425881,100332 Cordões para óculos,220089 Cordões para pendurar quadros
+10,23,0.396184,0.41941,100056 Fios [cirúrgicos],230004 Fios de lã
+10,24,0.552206,0.637204,100327 Andadores para animais de estimação,240121 Cobertores para animais de estimação
+10,25,0.595002,0.655784,100200 Roupas especiais para salas de cirurgia,"250204 Uniformes médicos, exceto para salas de cirurgia"
+10,26,0.507346,0.554446,100332 Cordões para óculos,260067 Cordões de lã
+10,27,0.206996,0.219175,100138 Respiradores para respiração artificial,270003 Grama artificial
+10,28,0.722043,0.910162,100176 Aparelhos para exercícios físicos para uso medicinal,280043 Aparelhos para exercícios físicos
+10,29,0.314893,0.42403,100247 Monitores de gordura corporal,290121 Gordura de coco
+10,30,0.35914,0.445271,100273 Medidores de glicose,300077 Glicose para fins culinários
+10,31,0.587981,0.698786,100327 Andadores para animais de estimação,310142 Bebidas para animais de estimação
+10,32,0.1726,0.202008,100082 Bolsa d'água para uso medicinal,320028 Água de soda
+10,33,0.092777,0.121476,100082 Bolsa d'água para uso medicinal,330041 Água de seltz alcoólica
+10,34,0.397041,0.486949,100109 Vaporizadores para uso medicinal,340041 Vaporizadores para fumantes
+10,35,0.292335,0.369538,100245 Aparelhos para testes de dna e rna para fins médicos,"350090 Testes psicológicos, para seleção de pessoal"
+10,36,0.385409,0.434677,100087 Aparelhos para análise sanguínea,360046 Análise financeira
+10,37,0.612139,0.763507,100214 Aparelhos ortodônticos,370178 Reparo de aparelhos ortodônticos
+10,38,0.203883,0.212117,100104 Aparelhos para enemas para uso medicinal,380060 Aluguel de aparelhos de atendimento telefônico
+10,39,0.401399,0.629971,100150 Mesas de operação,390032 Operação de portas de eclusas
+10,40,0.537261,0.699929,100214 Aparelhos ortodônticos,400102 Fabricação personalizada de aparelhos ortodônticos
+10,41,0.463439,0.611679,100176 Aparelhos para exercícios físicos para uso medicinal,410266 Aluguel de máquinas para exercícios físicos
+10,42,0.449591,0.555818,100180 Aparelhos de análises para uso medicinal,420007 Análises químicas
+10,43,0.270333,0.375631,100200 Roupas especiais para salas de cirurgia,430187 Aluguel de salas de reunião
+10,44,0.765786,0.960747,100242 Máscaras para respiração artificial,440263 Aluguel de máscaras para respiração artificial
+10,45,0.431915,0.50508,100327 Andadores para animais de estimação,450198 Serviços de babá de animais de estimação
+11,12,0.749892,0.935972,110071 Lâmpadas para luzes direcionais para veículos,120228 Luzes direcionais para veículos
+11,13,0.459169,0.498565,110160 Depuradores de gás [partes de instalações de gás],130008 Armas de gás lacrimogêneo
+11,14,0.46657,0.573544,110315 Ventiladores elétricos de uso pessoal,140057 Relógios de uso pessoal
+11,15,0.293679,0.332585,110279 Suportes para fornos,150088 Suportes para instrumentos musicais
+11,16,0.680023,0.808824,110167 Aparelhos e máquinas de gelo,160230 Aparelhos e máquinas para mimeografar
+11,17,0.480026,0.554167,110137 Radiadores elétricos,170074 Mangueiras de conexão para radiadores de veículos
+11,18,0.414156,0.48058,110025 Armações estruturais para fornos,180065 Armações para bolsas [peças estruturais de bolsas]
+11,19,0.631902,0.709135,110233 Instalações e aparelhos de ventilação [ar-condicionado],190235 Dutos não metálicos para instalações de ventilação e ar condicionado
+11,20,0.539859,0.578657,110367 Luminárias de chão,200276 Toalheiros de chão [móveis]
+11,21,1.0,1.0,110266 Frigideiras elétricas,"210136 Frigideiras, não elétricas"
+11,22,0.327531,0.433845,110127 Tanques de água sob pressão,220109 Tanques-rede para piscicultura
+11,23,0.06489,0.072109,"110360 Lâmpadas de cura, exceto para uso medicinal",230018 Fios de borracha para uso têxtil
+11,24,0.43312,0.498259,110046 Bidês [aparelho sanitário],240118 Cobertura de tecido para tampo de vaso sanitário
+11,25,0.626808,0.753756,110393 Canecas aquecidas eletricamente,250207 Meias aquecidas eletricamente
+11,26,0.470059,0.657707,"110087 Esquenta-pés, elétricos ou não elétricos","260127 Bigudis, elétricos e não elétricos, exceto instrumentos manuais"
+11,27,0.411066,0.505093,110256 Luzes para automóveis,270010 Tapetes para automóveis
+11,28,0.564803,0.666231,110318 Aparelhos de cloração para piscinas,280095 Piscinas [brinquedos]
+11,29,0.439066,0.655864,110373 Máquinas elétricas para fazer leite de soja,290163 Leite de soja
+11,30,0.520234,0.714689,"110374 Cápsulas de café, vazias, para máquinas elétricas de café","300286 Cápsulas de café, cheias"
+11,31,0.493116,0.590321,110297 Instalações para sauna,310175 Feixes de ramos de bétula para sauna
+11,32,0.453601,0.498627,110191 Torrefadores de malte,320004 Malte [cerveja]
+11,33,0.269973,0.310859,110191 Torrefadores de malte,"330042 Bebidas alcoólicas de malte fermentadas, aromatizadas, exceto cervejas"
+11,34,0.430099,0.474368,110372 Umidificadores de ar,340038 Umidificadores [caixas para conservar tabaco suficientemente úmido]
+11,35,0.375611,0.449245,110185 Lampiões para decoração [lanternas chinesas],350046 Decoração de vitrines
+11,36,0.178902,0.196341,110160 Depuradores de gás [partes de instalações de gás],"360121 Avaliação financeira de custos de desenvolvimento relacionados com as indústrias de óleo, gás e mine"
+11,37,0.696326,0.955335,110405 Esterilizadores para instrumentos médicos,370169 Aluguel de esterilizadores para instrumentos médicos
+11,38,0.245043,0.283803,110252 Instalações para fornecimento de água,380057 Fornecimento de acesso a redes blockchain
+11,39,0.783701,0.937775,110343 Adegas elétricas,390112 Aluguel de adegas elétricas
+11,40,0.766027,0.856726,110099 Aparelhos de ar-condicionado,400118 Aluguel de aparelhos de ar condicionado
+11,41,0.440029,0.568777,110339 Aparelhos para esterilizar livros,410024 Publicação de livros
+11,42,0.420624,0.459589,110185 Lampiões para decoração [lanternas chinesas],420048 Decoração de interiores
+11,43,0.647354,0.750766,110412 Panelas elétricas para hot pot,430216 Aluguel de panelas para hot pot
+11,44,0.71574,0.900715,110420 Lâmpadas para cultivo de plantas,440231 Cultivo de plantas
+11,45,0.31906,0.3435,110182 Lâmpadas de segurança,450194 Monitorização de alarmes anti-roubo e de segurança
+12,13,0.365674,0.405841,120353 Barcos de combate a incêndio,130071 Tanques [carros de combate]
+12,14,0.526078,0.63521,120011 Molas amortecedoras para veículos,140058 Molas de relógios
+12,15,0.438484,0.622826,120212 Buzinas para veículos,150016 Buzinas grandes [trombetas]
+12,16,0.516625,0.689068,"120203 Aparelhos, máquinas e dispositivos aeronáuticos",160230 Aparelhos e máquinas para mimeografar
+12,17,0.462695,0.500835,120066 Carros enroladores de mangueira,170065 Canos de mangueira de lona
+12,18,0.608134,0.691799,120141 Estribos de veículos,180046 Estribos de couro
+12,19,0.614589,0.686768,120140 Vagões [estradas de ferro],190176 Dormentes não metálicos para estradas de ferro
+12,20,0.603215,0.666368,120254 Baús para bicicletas,200207 Baús não metálicos
+12,21,0.568079,0.69339,120198 Janelas para veículos,210231 Vidro para janelas de veículos [produtos semi-acabados]
+12,22,0.587548,0.788409,120334 Capas adaptadas para painel de veículos,"220075 Capas para veículos, não adaptadas"
+12,24,0.481905,0.561671,120311 Carrinhos de passeio para animais de estimação,240121 Cobertores para animais de estimação
+12,25,0.545832,0.57115,120170 Elevadores para esqui,250167 Luvas de esqui
+12,26,0.397277,0.502574,120122 Redes para bicicletas,260042 Redes para os cabelos
+12,27,0.500586,0.567027,120014 Correntes antiderrapantes,270012 Tapetes antiderrapantes
+12,28,0.689597,1.0,"120257 Veículos de controle remoto, exceto de brinquedo",280185 Veículos de brinquedo de controle remoto
+12,29,0.220787,0.450514,120266 Acendedores de charuto para automóveis,290246 Charuto de repolho recheado com carne
+12,30,0.343286,0.477458,120292 Câmara tipo mousse para pneus,300205 Confeitos sob a forma de mousse
+12,31,0.525782,0.615953,120311 Carrinhos de passeio para animais de estimação,310142 Bebidas para animais de estimação
+12,32,0.080989,0.233156,120263 Pastilhas de freio para veículos,320033 Pastilhas para bebidas efervescentes
+12,34,0.355822,0.433559,120266 Acendedores de charuto para automóveis,340014 Cortadores de charuto
+12,35,0.289674,0.312825,120298 Capas para bancos de motos,350081 Sistematização de informações em bancos de dados de computador
+12,36,0.554101,0.599646,120065 Carros de manutenção,360141 Serviços de corretor de carros
+12,37,0.60558,0.800881,120110 Veículos elétricos,370151 Recarga de veículos elétricos
+12,38,0.284927,0.317444,120122 Redes para bicicletas,380057 Fornecimento de acesso a redes blockchain
+12,39,0.868723,0.948588,120017 Atrelagem de reboque para veículos,390007 Serviços de reboque de veículos em pane
+12,40,0.364366,0.389557,120223 Assentos ejetáveis para aeronaves,400136 Fabricação personalizada de aeronaves
+12,41,0.422704,0.66605,120178 Carros esportivos,410265 Serviços de comentários esportivos
+12,42,0.342358,0.473166,120018 Ônibus para transporte urbano,420192 Planejamento urbano
+12,43,0.287139,0.354161,120359 Barracas de teto concebidas para veículos,430189 Aluguel de barracas [tendas]
+12,44,0.416572,0.474005,120311 Carrinhos de passeio para animais de estimação,440173 Toalete de animais de estimação
+12,45,0.646779,0.951763,120354 Botes salva-vidas,450243 Serviços de salva-vidas
+13,14,0.256274,0.315041,130073 Sprays para fins de defesa pessoal,140057 Relógios de uso pessoal
+13,15,0.14879,0.279779,130019 Estojos [cápsulas] de cartucho,150035 Estojos para instrumentos musicais
+13,16,0.438985,0.502977,130024 Aparelhos para carregar cartuchos,"160102 Cartuchos de papel, de forma cônica"
+13,17,0.31126,0.361287,130021 Canos de espingardas,170030 Gaxetas para canos
+13,18,0.500118,0.605857,130007 Armas motorizadas,180137 Malas motorizadas
+13,19,0.307967,0.341427,130021 Canos de espingardas,"190220 Canos para drenagem, não metálicos"
+13,20,0.456146,0.491198,130019 Estojos [cápsulas] de cartucho,200214 Cápsulas não metálicas para vedação
+13,21,0.44498,0.613183,130010 Escovas para limpar armas de fogo,210278 Escovas para limpar tanques e recipientes
+13,22,0.425916,0.596852,130062 Cordéis detonantes para explosivos,220039 Cordéis para redes
+13,23,0.095177,0.475884,130030 Algodão-pólvora,230002 Fios de algodão
+13,24,0.199091,0.471112,130030 Algodão-pólvora,240028 Tecidos de algodão
+13,25,0.45937,0.583853,130074 Cintos porta-munição,250160 Cintos porta-moedas [vestuário]
+13,26,0.379992,0.543721,130063 Alças de ombro para armas,260026 Fivelas para alças
+13,27,0.236289,0.285253,130077 Armas ligeiras [arma de fogo],"270019 Capachos, resistentes ao fogo, para lareiras e churrasqueiras"
+13,28,0.583613,0.771065,130059 Pistolas de ar [armas],280117 Pistolas de ar de brinquedo
+13,29,0.269311,0.541858,130041 Chumbo de caça [granalha],290050 Carne de caça
+13,30,0.308059,0.431363,130019 Estojos [cápsulas] de cartucho,"300286 Cápsulas de café, cheias"
+13,31,0.177107,0.490779,130028 Cães de espingardas,310031 Biscoitos para cães
+13,32,0.250151,0.416478,130051 Pós explosivos,320066 Pós para fazer refrigerantes
+13,34,0.139467,0.281476,130008 Armas de gás lacrimogêneo,340008 Recipientes de gás para isqueiros para charutos
+13,35,0.28251,0.386991,130073 Sprays para fins de defesa pessoal,"350090 Testes psicológicos, para seleção de pessoal"
+13,36,0.148868,0.43938,130071 Tanques [carros de combate],360141 Serviços de corretor de carros
+13,37,0.216281,0.238969,130024 Aparelhos para carregar cartuchos,370130 Recarga de cartuchos de toner
+13,38,0.149652,0.161033,130024 Aparelhos para carregar cartuchos,380060 Aluguel de aparelhos de atendimento telefônico
+13,39,0.206305,0.230304,"130080 Sinalizadores de resgate, explosivos ou pirotécnicos",390082 Operações de resgate [transporte]
+13,40,0.201028,0.239038,130059 Pistolas de ar [armas],400082 Perfumar o ar
+13,41,0.153378,0.293045,130064 Sinais de neblina explosivos,410105 Interpretação de linguagem de sinais
+13,42,0.165916,0.217044,130073 Sprays para fins de defesa pessoal,420245 eletrônico de informações de identificação pessoal para detecção de furto de identidade
+13,44,0.180648,0.328487,130051 Pós explosivos,440237 Serviços de cuidados pós-natal
+13,45,0.443789,0.503825,130071 Tanques [carros de combate],450179 Combate ao fogo
+14,15,0.342451,0.537916,140014 Tambores [relojoaria],150066 Tambores [baterias]
+14,16,0.544099,0.689595,140109 Objetos de arte de metal precioso,160029 Objetos de arte litografados
+14,17,0.356902,0.374814,140163 Prata semitrabalhada ou batida,"170017 Borracha, bruta ou semitrabalhada"
+14,18,0.475402,0.595111,140187 Joias e bijuterias para animais de estimação,180135 Roupas para animais de estimação
+14,19,0.525078,0.596682,140163 Prata semitrabalhada ou batida,190026 Madeira semitrabalhada
+14,20,0.657691,0.79455,140004 Joias e bijuterias de âmbar amarelo,200005 Âmbar amarelo
+14,21,0.573519,0.641425,140057 Relógios de uso pessoal,210462 Organizadores eletrônicos de comprimidos para uso pessoal Mochilas de hidratação para uso pessoal abrangendo um reservatório para líquidos e
+14,22,0.352345,0.460124,140176 Pulseiras feitas de matéria têxtil bordada [joalheria],"220111 Persianas [toldos] para exteriores, de matéria têxtil"
+14,23,0.430531,0.552386,140008 Prata fiada,230016 Seda fiada
+14,24,0.387166,0.552375,140187 Joias e bijuterias para animais de estimação,240121 Cobertores para animais de estimação
+14,25,0.399148,0.503539,140186 Cordões de pescoço para chaves,250069 Lenços de pescoço*
+14,26,0.867015,1.0,140182 Alfinetes de chapéu [joias e bijuterias],"260143 Alfinetes de chapéu, exceto joias e bijuterias"
+14,27,0.244659,0.505903,140176 Pulseiras feitas de matéria têxtil bordada [joalheria],"270013 Colgaduras, exceto de matéria têxtil"
+14,28,0.448234,0.582383,140187 Joias e bijuterias para animais de estimação,280004 Brinquedos para animais de estimação
+14,29,0.23004,0.352065,"140063 Ouro, não trabalhado ou batido",290141 Creme batido
+14,30,0.215158,0.292,"140063 Ouro, não trabalhado ou batido",300045 Preparações para engrossar creme batido
+14,31,0.507929,0.605759,140187 Joias e bijuterias para animais de estimação,310142 Bebidas para animais de estimação
+14,34,0.358536,0.490293,140004 Joias e bijuterias de âmbar amarelo,340002 Boquilhas de âmbar amarelo para piteiras de cigarro e charuto
+14,35,0.259748,0.358876,140057 Relógios de uso pessoal,"350090 Testes psicológicos, para seleção de pessoal"
+14,36,0.395624,0.484225,140166 Porta-joias,360061 Avaliação de jóias
+14,37,0.86101,0.884899,140006 Amuletos [joias e bijuterias],370175 Limpeza de joias e bijuterias
+14,39,0.246568,0.358979,140186 Cordões de pescoço para chaves,390121 Armazenamento temporário de chaves
+14,40,0.444193,0.488743,140163 Prata semitrabalhada ou batida,400007 Prateação [revestimento com prata]
+14,41,0.378414,0.418266,140173 Caixas para apresentação de joias,410248 Apresentação de exposições em museu
+14,42,0.227245,0.443976,140043 Relógios de controle,420157 Controle de qualidade
+14,43,0.104536,0.188735,140187 Joias e bijuterias para animais de estimação,430134 Pensão para animais
+14,44,0.282399,0.46616,140187 Joias e bijuterias para animais de estimação,440173 Toalete de animais de estimação
+14,45,0.289878,0.437841,140187 Joias e bijuterias para animais de estimação,450198 Serviços de babá de animais de estimação
+15,16,0.489827,0.520506,150020 Cavaletes para tímpanos,160087 Cavaletes para pintura
+15,17,0.433199,0.619179,150090 Balalaicas [instrumentos de cordas],170031 Cordas de borracha
+15,18,0.382099,0.423166,150059 Peles de tambor,180088 Peles de gado
+15,19,0.261532,0.289001,150052 Caixas de música,"190228 Caixas de correspondência, de alvenaria"
+15,20,0.457599,0.522624,150082 Flautas de bambu,200255 Cortinas de bambu
+15,21,0.397568,0.434031,150052 Caixas de música,210243 Caixas de vidro
+15,22,0.521705,0.674968,150090 Balalaicas [instrumentos de cordas],220020 Cordas não metálicas
+15,24,0.095791,0.269462,150059 Peles de tambor,240003 Tecidos imitação de peles de animais
+15,25,0.307366,0.473447,150059 Peles de tambor,250049 Peles [vestuário]
+15,26,0.362371,0.396892,150052 Caixas de música,260049 Caixas de costura
+15,27,0.225653,0.297482,150048 Palhetas para instrumentos de corda,270017 Esteiras de corda entrelaçada para rampas de esqui
+15,28,0.802675,0.826031,150017 Carrilhões [instrumentos musicais],280278 Instrumentos musicais de brinquedo
+15,30,0.119019,0.424732,150005 Nozes de arco para instrumentos musicais,300229 Farinha de nozes
+15,34,0.337912,0.38728,150034 Boquilhas para instrumentos musicais,340023 Boquilhas para piteiras para cigarros
+15,35,0.14001,0.252956,150052 Caixas de música,350174 Aluguel de caixas registradoras
+15,37,0.971725,1.0,150017 Carrilhões [instrumentos musicais],370139 Afinação de instrumentos musicais
+15,38,0.11801,0.155908,150053 Aparelhos para virar páginas de caderno de música,380060 Aluguel de aparelhos de atendimento telefônico
+15,39,0.283205,0.356638,150007 Crinas de cavalos para arcos de instrumentos musicais,390019 Aluguel de cavalos
+15,40,0.377489,0.512811,150066 Tambores [baterias],400141 Aluguel de baterias
+15,41,0.391942,0.462521,150019 Chapéus chineses [instrumento musical],410196 Produção musical
+15,44,0.225587,0.557253,150052 Caixas de música,440253 Terapia com música [musicoterapia]
+16,17,0.789255,1.0,160310 Folhas de viscose para embalar,"170083 Folhas de viscose, exceto para embalar"
+16,18,0.68464,0.712739,"160246 Sacos [invólucros, sacolas] de papel ou plástico para embalar","180079 Sacos [invólucros, sacolas] de couro, para embalar"
+16,19,0.578415,0.614533,160029 Objetos de arte litografados,"190193 Objetos de arte de pedra, concreto ou mármore"
+16,20,0.669772,0.734344,160245 Fitas para máquinas de escrever,200095 Prateleiras para máquinas de escrever
+16,21,0.746473,0.837076,160306 Papel toalha,210476 Suportes para toalha de papel
+16,22,0.678679,0.749415,160280 Caixas de papel ou papelão,"220031 plásticas, papel ou papelão"
+16,23,0.513817,0.637021,160408 Papel de seda,230007 Fios de seda
+16,24,0.80007,1.0,"160186 Toalhas de mesa e guardanapos, de papel","240070 Toalhas de mesa e guardanapos, exceto de papel"
+16,25,0.629093,0.74684,160276 Babadores de papel,"250182 Babadores, com manga, exceto de papel"
+16,26,0.649868,0.677482,160116 Colchetes para papel,260022 Colchetes [vestuário]
+16,27,0.338304,0.354578,160358 Bandejas para pintura de parede,270007 Papel de parede
+16,28,0.650818,0.744614,160410 Decorações de festa em papel,280204 Chapéus de festa em papel
+16,29,0.51733,0.601409,160399 Papel manteiga,290010 Manteiga de coco
+16,30,0.527986,0.593529,160370 Papel de arroz*,300240 Papel comestível de arroz
+16,31,0.546467,0.644029,160371 Sacos plásticos para dejetos de animais de estimação,310142 Bebidas para animais de estimação
+16,32,0.336806,0.449694,160129 Águas-fortes [gravuras],320012 Águas [bebidas]
+16,33,0.259023,0.413691,160370 Papel de arroz*,330043 Vinho de arroz
+16,34,0.416122,0.450363,160016 Anéis de charutos,340008 Recipientes de gás para isqueiros para charutos
+16,35,0.377819,0.466962,160067 Papel para máquinas registradoras,350174 Aluguel de caixas registradoras
+16,36,0.451611,0.537213,160066 Papel carbono,360104 Intermediação de créditos de carbono
+16,37,0.525119,0.794383,160378 Sacos de papel para uso na esterilização de instrumentos médicos,370141 Esterilização de instrumentos médicos
+16,38,0.488808,0.718961,160250 Cartões de felicitações,380046 Transmissão de cartões de felicitações on-line
+16,39,0.476253,0.5586,160130 Papel para embalagem,390086 Embalagem de mercadorias
+16,40,0.441242,0.487197,160216 Telas para pintura,400016 Pintura para calçados
+16,41,0.486156,0.578299,160347 Papéis para pintura e caligrafia,410186 Serviços de caligrafia
+16,42,0.569387,0.617821,160231 Fitas de papel e cartões para gravação de programas de computador,420197 Duplicação de programas de computador
+16,43,0.311364,0.350212,"160159 Materiais de escritório, exceto móveis",430211 Aluguel de móveis de escritório
+16,44,0.389926,0.495611,160371 Sacos plásticos para dejetos de animais de estimação,440173 Toalete de animais de estimação
+16,45,0.32687,0.465503,160371 Sacos plásticos para dejetos de animais de estimação,450198 Serviços de babá de animais de estimação
+17,18,0.797732,0.916645,170046 Fibra vulcanizada,180098 Caixas de fibra vulcanizada
+17,19,0.654361,0.724102,170008 Materiais à prova de som,"190271 Materiais de construção à prova de som, não metálicos"
+17,20,0.665278,0.846537,170129 Etiquetas costuradas de borracha para roupas,200360 Etiquetas costuradas de plástico para roupas
+17,21,0.762481,1.0,170063 Lã de vidro para isolamento,"210152 Lã de vidro, exceto para isolamento"
+17,22,0.858273,1.0,"170096 Fibras de carbono, exceto para uso têxtil",220087 Fibras de carbono para uso têxtil
+17,23,0.736207,1.0,"170038 Fios elásticos, exceto para uso têxtil",230019 Fios elásticos para uso têxtil
+17,24,0.744671,0.858721,170025 Mangueiras de matérias têxteis,240103 Tapeçarias murais [colgadura] de matérias têxteis
+17,25,0.506849,0.65284,170064 Látex [borracha],250188 Vestuário de látex
+17,26,0.444283,0.523642,"170070 Mica, bruta ou semiprocessada",260071 Lantejoulas de mica
+17,27,0.521079,0.850357,170132 Tapetes de borracha antiderrapantes,270025 Tapetes de borracha
+17,28,0.449528,0.529179,170068 Mangas de borracha para proteção de partes de máquinas,280147 Almofadas de proteção [partes de vestimentas desportivas]
+17,29,0.265938,0.294392,170052 Óleos isolantes,290032 Óleos para uso alimentar
+17,30,0.274666,0.296889,170013 Tiras para calafetar,300147 Tiras de alcaçuz [confeito]
+17,31,0.368028,0.46566,"170070 Mica, bruta ou semiprocessada",310078 Cortiça bruta
+17,32,0.215569,0.314439,170062 Lã mineral [isolante],320015 Água mineral [bebida]
+17,34,0.288747,0.334516,170114 Soluções de borracha,340040 Soluções líquidas para uso em cigarros eletrônicos
+17,35,0.2008,0.270284,170133 Filmes isolantes,350104 Produção de filmes publicitários
+17,36,0.234657,0.249156,"170096 Fibras de carbono, exceto para uso têxtil",360104 Intermediação de créditos de carbono
+17,37,0.464301,0.756002,170109 Materiais de borracha para recauchutagem de pneus,370077 Recauchutagem de pneus
+17,38,0.207352,0.231293,170073 Conexões não metálicas para canos,380037 Provimento de conexões de telecomunicações para uma rede mundial de computadores
+17,39,0.254073,0.286895,170112 Suportes de espuma para arranjos de flores [produtos semiacabados],390096 Entrega de flores
+17,40,0.47295,0.619193,170125 Filamentos plásticos para impressão 3d,400127 Impressão 3d para terceiros
+17,41,0.390078,0.488553,170133 Filmes isolantes,"410225 Direção de filmes, exceto filmes publicitários"
+17,42,0.363902,0.476441,170134 Películas de proteção contra interferência eletromagnética [EMI],420206 Serviços de proteção contra vírus de computador
+17,43,0.092833,0.225637,170058 Substâncias para isolamento de construções contra umidade,430160 Aluguel de construções transportáveis
+17,44,0.22932,0.360332,170112 Suportes de espuma para arranjos de flores [produtos semiacabados],440143 Serviços de arranjo de flores
+17,45,0.235913,0.264284,170003 Cortinas de segurança de amianto,450194 Monitorização de alarmes anti-roubo e de segurança
+18,19,0.366923,0.511586,180061 Chicote de nove tiras,190018 Tiras alcatroadas para construção
+18,20,0.861224,0.917113,180039 Couro não trabalhado ou semitrabalhado,"200133 Rattan, não trabalhado ou semitrabalhado"
+18,21,0.754932,1.0,"180094 Peles de camurça, exceto para limpeza",210263 Peles de camurça para limpeza
+18,22,0.545989,0.793155,"180079 Sacos [invólucros, sacolas] de couro, para embalar","220069 Sacos [invólucros, sacolas] de matéria têxtil, para embalar"
+18,23,0.11967,0.191933,180098 Caixas de fibra vulcanizada,230006 Fios de fibra de coco
+18,24,0.764422,0.858804,180146 Etiquetas costuradas de couro para roupas,240134 Etiquetas costuradas de tecido para roupas
+18,25,0.682713,0.761234,180063 Molesquim [imitação de couro],250150 Roupas de imitação de couro
+18,26,0.580042,0.754065,180150 Estruturas para porta-moedas [peças estruturais de porta-moedas],260152 Fechos para porta-moedas
+18,27,0.272957,0.280064,180077 Bolsas de mão,270028 Bolsas para tapetes de ioga
+18,28,0.62184,0.732935,180135 Roupas para animais de estimação,280004 Brinquedos para animais de estimação
+18,29,0.44112,0.584871,180019 Bolsas de caça,290050 Carne de caça
+18,30,0.2832,0.325642,180050 Embornais [saco para alimentação animal],300080 Sêmola para alimentação humana
+18,31,0.639233,0.762353,180135 Roupas para animais de estimação,310142 Bebidas para animais de estimação
+18,32,0.115752,0.140534,180149 Imitações de couro à base de micélio,320029 Bebidas à base de sorvetes
+18,33,0.070209,0.146444,180149 Imitações de couro à base de micélio,330038 Bebidas à base de vinho
+18,34,0.343845,0.371687,180113 Porta-chaves,340031 Porta-fósforos
+18,35,0.280319,0.29479,180007 Varetas para guarda-chuva ou guarda-sol de mão,350015 Guarda-livro [contabilidade]
+18,36,0.409389,0.53337,180125 Porta-cartões de crédito [carteiras],360068 Emissão de cartões de crédito
+18,37,0.70204,0.840782,180066 Sombrinha [guarda-sol de mão],370066 Reparo de guarda-sol de mão
+18,38,0.225086,0.281058,180114 Sacolas de rede para compras,380037 Provimento de conexões de telecomunicações para uma rede mundial de computadores
+18,39,0.563109,0.621863,180026 Capas para cavalos,390019 Aluguel de cavalos
+18,40,0.383173,0.38763,180130 Etiquetas de couro,400019 Tingimento de couro
+18,41,0.442795,0.569646,180118 Bolsas para equipamentos esportivos*,410265 Serviços de comentários esportivos
+18,42,0.29186,0.43183,180073 Maletas para documentos,420210 Digitalização de documentos [scanning]
+18,43,0.308427,0.340954,180054 Capas para animais,430134 Pensão para animais
+18,44,0.399198,0.586667,180135 Roupas para animais de estimação,440173 Toalete de animais de estimação
+18,45,0.373364,0.551027,180135 Roupas para animais de estimação,450198 Serviços de babá de animais de estimação
+19,20,0.774606,0.853193,190074 Degraus não metálicos para escadas,200147 Degraus não metálicos [escadas portáteis]
+19,21,0.84419,1.0,190255 Vidro esmaltado para construção,"210119 Vidro esmaltado, exceto para construção"
+19,22,0.57326,0.804141,"190208 Caixilhos para janelas, não metálicos",220088 Cordões para caixilhos de janelas de guilhotina
+19,23,0.178811,0.212958,190274 Vidro inteligente para construção,230017 Fios de fibra de vidro para uso têxtil
+19,24,0.401802,0.554814,190177 Grade [treliça] não metálica,240016 Tela de treliça
+19,25,0.461591,0.607475,190090 Feltro para construção,250173 Valenki [botas de feltro]
+19,26,0.44572,0.496734,190276 Fitas adesivas para marcação de superfícies de estradas,260145 Fitas adesivas dupla face para vestuário [fashion tape]
+19,27,0.497935,0.625952,190163 Junco para construção,270009 Esteiras de junco
+19,28,0.463791,0.492837,190062 Papel de construção,280041 Jogos de construção
+19,29,0.288656,0.398641,190008 Pó de ardósia,290087 Ovos em pó
+19,30,0.353893,0.37951,190142 Pedra artificial,300075 Gelo natural ou artificial
+19,31,0.608761,0.686129,190231 Aglomerados de bagaços de cana-de-açúcar [material de construção],310131 Bagaços de cana-de-açúcar [matéria-prima]
+19,32,0.235726,0.282267,190042 Caixa para construção debaixo d'água,320028 Água de soda
+19,33,0.226149,0.423457,190231 Aglomerados de bagaços de cana-de-açúcar [material de construção],330036 Bebidas alcoólicas à base de cana-de-açúcar
+19,34,0.388159,0.479815,190141 Pedras de construção,340027 Pedras de isqueiro para fumantes
+19,35,0.363351,0.490488,190020 Barracas de feiras,350082 Organização de feiras comerciais
+19,36,0.213875,0.230524,"190193 Objetos de arte de pedra, concreto ou mármore",360052 Avaliação de arte
+19,37,0.661815,0.760576,190079 Postes não metálicos para linhas de transmissão de energia,370136 Reparo de linhas de transmissão de energia
+19,38,0.182482,0.196825,190079 Postes não metálicos para linhas de transmissão de energia,380035 Transmissão por satélite
+19,39,0.296226,0.32398,190192 Vidro de segurança,390132 Aluguel de drones de segurança
+19,40,0.449334,0.554111,190091 Moldes não metálicos para fundição,400100 Fundição de metal
+19,41,0.377213,0.627689,190190 Aquários [estruturas],410213 Aluguel de aquários indoor
+19,42,0.35354,0.4002,"190165 Sinalização não luminosa, não mecânica e não metálica",420101 Pesquisas em mecânica
+19,43,0.419228,0.752258,190119 Construções transportáveis não metálicas,430160 Aluguel de construções transportáveis
+19,44,0.226473,0.33754,190142 Pedra artificial,440194 Inseminação artificial
+19,45,0.319681,0.358125,190192 Vidro de segurança,450194 Monitorização de alarmes anti-roubo e de segurança
+20,21,0.782372,0.832071,200116 Pedestais para vasos de flores,210133 Vasos para flores
+20,22,0.608412,0.684698,200197 Quadros para pendurar chaves,220089 Cordões para pendurar quadros
+20,23,0.442726,0.516947,200003 Decorações de matérias plásticas para alimentos,230020 Fios de matérias plásticas para uso têxtil
+20,24,0.812165,1.0,"200314 Protetores de berço, exceto roupa de cama",240126 Protetores de berço [roupa de cama]
+20,25,0.631155,0.832327,200323 Tacos não metálicos para saltos de sapatos,250131 Saltos de sapatos
+20,26,0.532226,0.552183,200011 Anéis de cortinas,260120 Fitas para franzir cortinas
+20,27,0.597422,0.620157,200381 Almofadas de meditação,270029 Tapetes de meditação
+20,28,0.634716,0.716193,200271 Almofadas para animais de estimação,280004 Brinquedos para animais de estimação
+20,29,0.404555,0.463071,200076 Marfim vegetal,290272 Óleo vegetal para alimentos
+20,30,0.471858,0.543601,200285 Tampas de rosca não metálicas,300189 Farinha de rosca
+20,31,0.624632,0.74494,200271 Almofadas para animais de estimação,310142 Bebidas para animais de estimação
+20,32,0.223494,0.321121,200017 Tinas de madeira para decantar vinho,320059 Vinho de cevada [cerveja]
+20,33,0.272626,0.374382,200017 Tinas de madeira para decantar vinho,330021 Mosto de pêra [vinho de pêra]
+20,34,0.392817,0.617069,200005 Âmbar amarelo,340002 Boquilhas de âmbar amarelo para piteiras de cigarro e charuto
+20,35,0.512359,0.612852,200200 Vitrines [móveis],350046 Decoração de vitrines
+20,36,0.367453,0.441325,200207 Cofres não metálicos,360022 Serviços de depósito em cofres bancários
+20,37,0.574439,0.698514,200164 Suportes para guarda-chuvas,370065 Reparo de guarda-chuvas
+20,38,0.340848,0.447852,200044 Arquivos [móveis],380047 Transmissão de arquivos digitais
+20,39,0.599235,0.824224,200347 Guarda-volumes para malas,390125 Aluguel de guarda-volumes
+20,40,0.531335,0.599874,200106 Bancadas de trabalho,400064 Trabalho em couro
+20,41,0.510734,0.657452,200024 Prateleiras para bibliotecas,410041 Serviços de bibliotecas itinerantes
+20,42,0.444204,0.456996,200083 Mesas para desenho,420038 Desenho de plantas para construção
+20,43,0.527812,0.775247,200037 Móveis para escritório,430211 Aluguel de móveis de escritório
+20,44,0.486997,0.573266,200271 Almofadas para animais de estimação,440173 Toalete de animais de estimação
+20,45,0.521011,0.699977,200207 Cofres não metálicos,450215 Aluguel de cofres
+21,22,0.838954,1.0,"210283 Fibras de sílica vitrificada, exceto para uso têxtil",220037 Fibras de sílica vitrificada para uso têxtil
+21,23,0.57061,0.77654,"210286 Linha de fibra de vidro, exceto para uso têxtil",230017 Fios de fibra de vidro para uso têxtil
+21,24,0.767202,0.825269,210210 Porta-guardanapos de mesa,240076 Guardanapos de mesa têxteis
+21,25,0.550216,0.663409,210341 Jardineiras para janelas,250169 Jardineiras [vestuário]
+21,26,0.599521,0.625596,"210056 Defumadores [perfumadores], elétricos e não elétricos","260127 Bigudis, elétricos e não elétricos, exceto instrumentos manuais"
+21,27,0.466533,0.543265,210470 Conchas para banheiro,270001 Tapetes de banheiro
+21,28,0.598153,0.717259,210473 Tapetes de lamber para animais de estimação,280004 Brinquedos para animais de estimação
+21,29,0.647491,0.740732,"210154 Travessas para frutas, legumes e verduras","290066 Preparações para sopas [frutas, legumes e verduras]"
+21,30,0.760943,1.0,210099 Formas para cubos de gelo,300254 Cubos de gelo
+21,31,0.647153,0.746048,210473 Tapetes de lamber para animais de estimação,310142 Bebidas para animais de estimação
+21,32,0.51926,0.671466,210118 Garrafas sifão para água gaseificada,320035 Água gaseificada
+21,33,0.431309,0.611336,210155 Baixelas [serviços] para licores,330001 Licores de menta
+21,34,0.414446,0.484197,210328 Cortadores de massa [espátula de padeiro],340014 Cortadores de charuto
+21,35,0.308502,0.404368,210114 Vidro em pó para decoração,350046 Decoração de vitrines
+21,36,0.274097,0.347043,210163 Refugos de lã para limpeza,360107 Avaliação financeira de lã
+21,37,0.582469,0.747692,210179 Tábuas para passar roupa,370062 Prensagem para passar roupa
+21,38,0.278161,0.378608,"210147 Brochas de alcatrão, com cabo longo",380021 Teledifusão por cabo
+21,39,0.481262,0.620518,210073 Escovas para cavalos,390019 Aluguel de cavalos
+21,40,0.492964,0.54613,210163 Refugos de lã para limpeza,400039 Tratamento de lã
+21,41,0.460711,0.590564,210336 Aquários para interiores,410213 Aluguel de aquários indoor
+21,42,0.465462,0.535166,210336 Aquários para interiores,420048 Decoração de interiores
+21,43,0.537024,0.750766,210322 Panelas não elétricas para hot pot,430216 Aluguel de panelas para hot pot
+21,44,0.54169,0.592232,210219 Adornos para centros de mesa,440209 Serviços de centros médicos
+21,45,0.438499,0.539242,210473 Tapetes de lamber para animais de estimação,450198 Serviços de babá de animais de estimação
+22,23,0.670499,0.787375,220018 Fibra de coco,230006 Fios de fibra de coco
+22,24,0.710211,0.830421,220058 Toldos de matérias têxteis,240103 Tapeçarias murais [colgadura] de matérias têxteis
+22,25,0.521031,0.579429,220105 Velas para kite esqui,250167 Luvas de esqui
+22,26,0.483495,0.629329,220011 Redes de pesca comerciais,260058 Navetas para confecção de redes de pesca
+22,27,0.432866,0.606917,"220111 Persianas [toldos] para exteriores, de matéria têxtil","270013 Colgaduras, exceto de matéria têxtil"
+22,28,0.526769,0.61461,220102 Toldos de material sintético,280006 Árvores de natal de material sintético
+22,29,0.458041,0.547648,220041 Flocos de lã,290154 Batata em flocos
+22,30,0.523348,0.561162,220041 Flocos de lã,300043 Flocos de milho
+22,31,0.589944,0.626061,220004 Aparas de madeira para enchimento,310183 Aparas de madeira para cama para animais
+22,34,0.23465,0.367582,220044 Ervas para estofamento,340028 Ervas para fumar *
+22,35,0.303029,0.343142,220011 Redes de pesca comerciais,350040 Comerciais de rádio
+22,36,0.302842,0.446379,220103 Cordas para reboque de carros,360141 Serviços de corretor de carros
+22,37,0.655698,0.959508,220125 Ombrelone / guarda-sol de pátio,370183 Reparo de ombrelone / guarda-sol de pátio
+22,38,0.295437,0.347726,220109 Tanques-rede para piscicultura,380037 Provimento de conexões de telecomunicações para uma rede mundial de computadores
+22,39,0.478984,0.53542,220068 Sacos para transporte e armazenamento de mercadorias a granel,390038 Frete [transporte de mercadorias]
+22,40,0.481555,0.69684,220006 Serragem de madeira,400052 Serragem de materiais
+22,41,0.160339,0.176813,220065 Pêlos de animais,410257 Organização de eventos de corrida de animais
+22,42,0.389517,0.483102,220115 Lonas de proteção contra poeira,420206 Serviços de proteção contra vírus de computador
+22,43,0.290645,0.506504,220122 Bolsas para acampamento,430026 Provimento de acomodações em acampamento
+22,44,0.341354,0.479139,220117 Sacos de bivaque como abrigos,440147 Serviços de abrigos para doentes e desamparados
+22,45,0.383818,0.728259,220107 Sacos mortuários,450250 Serviços de cosmetologistas mortuários
+23,24,0.672033,0.738339,230017 Fios de fibra de vidro para uso têxtil,240104 Tecidos de fibra de vidro para uso têxtil
+23,25,0.152274,0.66609,230003 Fios para bordado,250184 Vestuário bordado
+23,26,0.529376,0.659018,230009 Fios para costura [linhas],"260070 Artigos de armarinho [itens de costura], exceto linhas *"
+23,27,0.148041,0.17309,230018 Fios de borracha para uso têxtil,270025 Tapetes de borracha
+23,28,0.096727,0.322361,230009 Fios para costura [linhas],280084 Linhas de pescar
+23,29,0.291122,0.306151,230006 Fios de fibra de coco,290021 Coco seco
+23,30,0.109427,0.293626,230005 Fios de cânhamo,300305 Sementes de cânhamo processadas [temperos]
+23,31,0.274384,0.351313,230005 Fios de cânhamo,310177 Sementes de cânhamo não processadas
+23,36,0.177511,0.345811,230004 Fios de lã,360107 Avaliação financeira de lã
+23,38,0.17101,0.271963,230031 Passamanaria [fio],380048 Serviços de difusão sem fio [telecomunicações]
+23,40,0.31623,0.544191,230004 Fios de lã,400039 Tratamento de lã
+23,42,0.146551,0.318433,230004 Fios de lã,420214 Avaliação da qualidade da lã
+24,25,0.651915,0.90269,240078 Lenços de bolso têxteis,250161 Lenços de bolso
+24,26,0.48292,0.522724,240038 Tecidos para lingerie,260146 Acessórios para lingerie [armarinho]
+24,27,0.410541,0.560249,"240019 Forros de chapéus, feitos de matéria têxtil","270013 Colgaduras, exceto de matéria têxtil"
+24,28,0.593304,0.680301,240121 Cobertores para animais de estimação,280004 Brinquedos para animais de estimação
+24,29,0.377108,0.40294,240029 Cobertas de cama,290035 Frutas cobertas com açúcar
+24,30,0.418344,0.483085,240130 Toalhas de chá,300186 Chá gelado [bebidas à base de chá]
+24,31,0.593328,0.707607,240121 Cobertores para animais de estimação,310142 Bebidas para animais de estimação
+24,32,0.241464,0.280076,240133 Descansos de tecido para copos de cerveja,320005 Cerveja não fermentada [mosto de cerveja]
+24,34,0.19896,0.292223,240123 Bolsas de lã para envolver bebês,340004 Bolsas para tabaco [fumo]
+24,35,0.147867,0.176136,"240106 Blanquetas para impressão, de material têxtil",350035 Aluguel de material publicitário
+24,36,0.324804,0.352601,240034 Mantas de viagem,360020 Emissão de cheques de viagem
+24,37,0.450336,0.487687,240003 Tecidos imitação de peles de animais,"370048 Conservação, limpeza e conserto de peles [de animais]"
+24,39,0.383305,0.49439,240059 Capas [soltas] para móveis,390047 Transporte de móveis
+24,40,0.49682,0.541454,240052 Tecido de lã frisado,400039 Tratamento de lã
+24,41,0.238272,0.417852,240121 Cobertores para animais de estimação,410261 Provimento de playgrounds para animais de estimação Simulated restaurant services provided in virtual environments for entertainment
+24,42,0.368089,0.417073,240040 Lençóis [têxteis],420109 Teste de têxteis
+24,43,0.323665,0.404343,"240071 Roupa de cama, mesa e banho","430186 Aluguel de cadeiras, mesas, roupa de mesa e vidraria de mesa"
+24,44,0.306445,0.544537,240121 Cobertores para animais de estimação,440173 Toalete de animais de estimação
+24,45,0.265219,0.511456,240121 Cobertores para animais de estimação,450198 Serviços de babá de animais de estimação
+25,26,0.662544,0.867485,250202 Alças para sutiãs,260155 Extensores de alças de sutiãs
+25,27,0.427392,0.572363,250001 Antiderrapantes para calçados,270012 Tapetes antiderrapantes
+25,28,0.705876,0.781873,250179 Uniformes para artes marciais,280286 Almofadas de chute para artes marciais
+25,29,0.160316,0.334497,250150 Roupas de imitação de couro,290268 Imitação de carne à base de plantas
+25,30,0.264133,0.322887,250010 Guarda-pós,300137 Pós para preparar gelados comestíveis
+25,31,0.285053,0.339863,250159 Coletes para pesca,310169 Iscas de pesca liofilizadas
+25,32,0.252065,0.439726,250010 Guarda-pós,320066 Pós para fazer refrigerantes
+25,33,0.070072,0.350359,250183 Vestuário contendo substâncias emagrecedoras,330031 Bebidas alcoólicas contendo frutas
+25,34,0.253921,0.341155,250122 Vestuário de papel,340024 Papel de cigarro
+25,35,0.253888,0.387258,250010 Guarda-pós,350015 Guarda-livro [contabilidade]
+25,36,0.054462,0.198677,250110 Calçados de madeira,360105 Avaliação financeira de madeira em pé
+25,37,0.465274,0.519787,250151 Roupas de couro,370050 Limpeza de roupas
+25,38,0.17403,0.269979,250198 Roupas esportivas com sensores digitais,380047 Transmissão de arquivos digitais
+25,39,0.268238,0.284017,250010 Guarda-pós,390125 Aluguel de guarda-volumes
+25,40,0.496626,0.550436,250110 Calçados de madeira,400016 Pintura para calçados
+25,41,0.57972,0.761615,250179 Uniformes para artes marciais,410220 Ensino de artes marciais
+25,42,0.408266,0.641064,250153 Fantasias [roupas],420264 Desenho de fantasias
+25,43,0.205811,0.372893,"250204 Uniformes médicos, exceto para salas de cirurgia",430187 Aluguel de salas de reunião
+25,44,0.339053,0.421918,250159 Coletes para pesca,440284 Serviços de pesca comercial
+25,45,0.439034,0.627044,250126 Trajes de banho,450046 Aluguel de trajes a rigor
+26,27,0.419849,0.459864,260137 Coroas de plantas artificiais,270027 Revestimentos de parede feitos de plantas artificiais
+26,28,0.568588,0.645058,"260129 Plantas artificiais, exceto árvores de natal",280120 Suportes para árvores de natal
+26,29,0.370003,0.493719,260061 Fruta artificial,290131 Pedaços de fruta
+26,30,0.344776,0.563868,"260129 Plantas artificiais, exceto árvores de natal",300008 Confeitos para decoração de árvores de natal
+26,31,0.387084,0.717079,"260129 Plantas artificiais, exceto árvores de natal",310009 Árvores de natal*
+26,32,0.312361,0.524604,260061 Fruta artificial,320010 Suco de fruta
+26,33,0.064106,0.320528,260061 Fruta artificial,330002 Extratos de fruta alcoólicos
+26,34,0.332436,0.369882,260049 Caixas de costura,340035 Caixas de fósforos
+26,35,0.233403,0.297434,"260123 Contas, exceto para a fabricação de joias",350016 Elaboração de extratos de contas
+26,36,0.281241,0.343274,"260123 Miçangas, exceto para fabricação de joias",360061 Avaliação de jóias
+26,37,0.566348,0.72416,"260100 Alfinetes, exceto joias e bijuterias",370175 Limpeza de joias e bijuterias
+26,38,0.231027,0.315818,260042 Redes para os cabelos,380057 Fornecimento de acesso a redes blockchain
+26,39,0.263057,0.355069,260059 Flores artificiais,390096 Entrega de flores
+26,40,0.572594,0.661539,260096 Fitas para debruar,400010 Debruar roupas
+26,41,0.25793,0.285528,260120 Fitas para franzir cortinas,410069 Aluguel de fitas de vídeo
+26,42,0.375863,0.71952,260151 Berloques decorativos para telefones celulares,420238 Desbloqueio de telefones celulares
+26,43,0.077839,0.134182,"260101 Emblemas para roupa, exceto de metal precioso","430186 Aluguel de cadeiras, mesas, roupa de mesa e vidraria de mesa"
+26,44,0.464322,0.66533,260099 Coroas de flores artificiais,440037 Confecção de coroas de flores
+26,45,0.102471,0.332979,260042 Redes para os cabelos,450218 Serviços de redes sociais on-line
+27,28,0.469186,0.493067,270010 Tapetes para automóveis,280234 Baby gyms [tapetes de atividades para bebês]
+27,29,0.055985,0.156136,270027 Revestimentos de parede feitos de plantas artificiais,290268 Imitação de carne à base de plantas
+27,30,0.170367,0.276818,270003 Grama artificial,300075 Gelo natural ou artificial
+27,31,0.228183,0.393656,270003 Grama artificial,310063 Grama natural
+27,34,0.116872,0.222043,270028 Bolsas para tapetes de ioga,340004 Bolsas para tabaco [fumo]
+27,37,0.534436,0.852263,270003 Grama artificial,370158 Colocação de grama artificial
+27,39,0.274865,0.495417,270010 Tapetes para automóveis,390008 Locação de automóveis
+27,40,0.373543,0.406249,270018 Revestimento em tecido para paredes,400007 Prateação [revestimento com prata]
+27,41,0.170224,0.324131,270004 Colchonetes [tapete] para ginástica,410021 Aulas de ginástica
+27,42,0.239394,0.34855,270022 Revestimentos têxteis para paredes,420109 Teste de têxteis
+27,44,0.19363,0.246205,270003 Grama artificial,440194 Inseminação artificial
+27,45,0.146877,0.247231,"270019 Capachos, resistentes ao fogo, para lareiras e churrasqueiras",450179 Combate ao fogo
+28,29,0.389749,0.455236,280241 Massa gelatinosa de brinquedo,290184 Massa de tomate
+28,30,0.646426,0.707364,280120 Suportes para árvores de natal,300008 Confeitos para decoração de árvores de natal
+28,31,0.79946,0.899564,280120 Suportes para árvores de natal,310009 Árvores de natal*
+28,32,0.174483,0.232884,"280061 Sacos de golfe, com ou sem rodinhas",320065 Cerveja sem álcool
+28,34,0.233047,0.304695,280193 Alvos eletrônicos,340039 Cigarros eletrônicos
+28,35,0.280278,0.314226,280074 Copos para jogos de dados,350117 Atualização e manutenção de dados em bancos de dados de computadores
+28,36,0.192954,0.256706,280207 Cartões de raspar de loteria instantânea,360131 Emissão de cartões-presentes
+28,37,0.663943,0.826031,280278 Instrumentos musicais de brinquedo,370139 Afinação de instrumentos musicais
+28,38,0.352893,0.487817,280074 Copos para jogos de dados,380051 Streaming de dados [distribuição de dados]
+28,39,0.408715,0.437588,280168 Quebra-cabeça de armar,390013 Quebra-gelo
+28,40,0.329896,0.431444,280103 Roupas de bonecas,400038 Tratamento antivincos para roupas
+28,41,0.753361,0.976119,280226 Pranchas para stand up paddle,410270 Aluguel de pranchas para stand up paddle
+28,42,0.364449,0.466128,280074 Copos para jogos de dados,420243 Serviços de encriptação de dados
+28,43,0.44484,0.51985,280111 Mesas para tênis de mesa,"430186 Aluguel de cadeiras, mesas, roupa de mesa e vidraria de mesa"
+28,44,0.447309,0.574119,280004 Brinquedos para animais de estimação,440173 Toalete de animais de estimação
+28,45,0.398016,0.539242,280004 Brinquedos para animais de estimação,450198 Serviços de babá de animais de estimação
+29,30,0.853141,0.876955,290195 Frutos oleaginosos caramelizados,300227 Frutos oleaginosos cobertos com chocolate
+29,31,1.0,1.0,"290037 Crustáceos, não vivos",310134 Crustáceos vivos
+29,32,0.674263,0.795408,290110 Suco de tomate para cozinha,320030 Suco de tomate [bebida]
+29,33,0.483568,0.602318,290164 Milk-shakes [bebidas à base de leite],330038 Bebidas à base de vinho
+29,34,0.318644,0.574162,290246 Charuto de repolho recheado com carne,340014 Cortadores de charuto
+29,35,0.157608,0.242343,290002 Extratos de algas para uso alimentar,350016 Elaboração de extratos de contas
+29,36,0.120642,0.133942,290272 Óleo vegetal para alimentos,"360121 Avaliação financeira de custos de desenvolvimento relacionados com as indústrias de óleo, gás e mine"
+29,37,0.306014,0.403173,290021 Coco seco,370103 Lavagem a seco
+29,39,0.137925,0.300337,"290255 Flores comestíveis, secas",390096 Entrega de flores
+29,40,0.317379,0.337374,290272 Óleo vegetal para alimentos,400091 Processamento de óleo
+29,41,0.275991,0.295522,"290040 Lagostins-do-rio, não vivos",410036 Serviços de modelos vivos para artistas
+29,42,0.210444,0.317981,290139 Ovos de caracol para consumo,420259 Aluguel de medidores para registro do consumo de energia
+29,43,0.318596,0.405837,290067 Caldos de vegetais para cozinha,430213 Serviços de cozinha fantasma
+29,44,0.295763,0.414198,290022 Óleo de nabo silvestre comestível,440234 Gestão de vida selvagem [manejo da fauna silvestre]
+29,45,0.099707,0.118655,290262 Agraço para fins culinários,450202 Inspeção de fábricas para fins de segurança
+30,31,0.968356,1.0,300258 Quinoa processada,310165 Quinoa não processada
+30,32,0.674742,0.798677,300248 Bebidas à base de camomila,320029 Bebidas à base de sorvetes
+30,33,0.681432,0.832261,300248 Bebidas à base de camomila,330038 Bebidas à base de vinho
+30,34,0.776963,0.817098,300141 Flavorizantes/aromatizantes para bebidas,340042 Flavorizantes/aromatizantes para tabaco
+30,35,0.268975,0.334923,300238 Arroz cozido enrolado em folha de alga marinha,350067 Preparação de folha de pagamento
+30,36,0.09436,0.1053,300077 Glicose para fins culinários,360126 Elaboração de cotações para fins de estimativa de custos
+30,37,0.348767,0.397299,300329 Creme de manteiga/buttercream [cobertura],370122 Serviços de cobertura de telhado
+30,38,0.067849,0.170742,300275 Pão sem glúten,380048 Serviços de difusão sem fio [telecomunicações]
+30,39,0.382721,0.522515,300076 Gelo [água congelada],390013 Quebra-gelo
+30,40,0.385218,0.533907,300322 Ouro comestível para decorar alimentos e bebidas,400130 Pasteurização de alimentos e bebidas
+30,41,0.210525,0.249383,300186 Chá gelado [bebidas à base de chá],410210 Ensino de sado [ensino de cerimônia do chá japonesa]
+30,42,0.300138,0.370048,300076 Gelo [água congelada],420216 Análise da água
+30,43,0.532668,0.747092,300273 Macarrão udon,430196 Serviços de restaurante de macarrão udon e soba
+30,44,0.269782,0.302577,300221 Flores ou folhas para uso como substitutos do chá,440143 Serviços de arranjo de flores
+30,45,0.0938,0.116451,300307 Refeições preparadas à base de macarrão [noodles] para crianças pequenas,450269 Serviços jurídicos na área de proteção de crianças
+31,32,0.442178,0.515319,310171 Gengibre fresco,320003 Cerveja de gengibre
+31,33,0.400649,0.671959,310021 Cana-de-açúcar,330036 Bebidas alcoólicas à base de cana-de-açúcar
+31,34,0.196325,0.403872,310141 Objetos comestíveis para mascar para animais,340012 Fumo para mascar
+31,35,0.208715,0.298896,310107 Plantas secas para decoração,350046 Decoração de vitrines
+31,36,0.120251,0.158112,310018 Aparas de madeira para fabricação de pasta de madeira,360105 Avaliação financeira de madeira em pé
+31,37,0.244163,0.335498,310063 Grama natural,370158 Colocação de grama artificial
+31,39,0.336267,0.414672,310091 Bulbos de flores,390096 Entrega de flores
+31,40,0.418101,0.578589,310122 Resíduo de destilação,400134 Serviços de destilação
+31,41,0.40211,0.458235,310142 Bebidas para animais de estimação,410261 Provimento de playgrounds para animais de estimação Simulated restaurant services provided in virtual environments for entertainment
+31,42,0.323942,0.354862,310173 Plantas de cannabis,420038 Desenho de plantas para construção
+31,43,0.35194,0.379159,310035 Alimentos para pássaros,430197 Decoração de alimentos
+31,44,0.602966,0.734563,310050 Animais de criação,440009 Criação de animais
+31,45,0.480954,0.560886,310142 Bebidas para animais de estimação,450198 Serviços de babá de animais de estimação
+32,33,0.881481,1.0,320001 Extratos de fruta não alcoólicos,330002 Extratos de fruta alcoólicos
+32,35,0.246356,0.364207,320054 Bebidas para esportistas enriquecidas com proteínas,350105 Administração de negócios de esportistas
+32,37,0.318622,0.404377,320009 Essências não alcoólicas para fazer bebidas,370170 Reabastecimento de cilindros de gás usados para fazer bebidas gaseificadas
+32,39,0.208563,0.249082,320028 Água de soda,390030 Distribuição de água
+32,40,0.365352,0.447893,320071 Cervejas de uva,400128 Produção de cervejas para terceiros
+32,42,0.248909,0.347487,320028 Água de soda,420216 Análise da água
+32,43,0.251441,0.484099,320063 Misturas secas à base de amido para preparação de bebidas,430212 Aluguel de robôs para preparação de bebidas
+32,44,0.222371,0.26626,320063 Misturas secas à base de amido para preparação de bebidas,440204 Preparação de receitas por farmacêuticos
+33,35,0.105396,0.3327,330025 Extratos alcoólicos,350016 Elaboração de extratos de contas
+33,37,0.139233,0.164926,330003 Bebidas amargas [licor],370170 Reabastecimento de cilindros de gás usados para fazer bebidas gaseificadas
+33,39,0.059166,0.149783,330041 Água de seltz alcoólica,390030 Distribuição de água
+33,40,0.260995,0.339048,"330042 Bebidas alcoólicas de malte fermentadas, aromatizadas, exceto cervejas",400128 Produção de cervejas para terceiros
+33,42,0.089639,0.208958,330041 Água de seltz alcoólica,420216 Análise da água
+33,43,0.179452,0.192294,330003 Bebidas amargas [licor],430208 Serviços de crítica gastronômica [provimento de informações sobre alimentos e bebidas]
+33,44,0.061756,0.186234,330031 Bebidas alcoólicas contendo frutas,440238 Aluguel de garrafas e recipientes contendo gás para fins medicinais
+34,35,0.220422,0.235741,340035 Caixas de fósforos,350174 Aluguel de caixas registradoras
+34,36,0.069391,0.110849,340008 Recipientes de gás para isqueiros para charutos,"360121 Avaliação financeira de custos de desenvolvimento relacionados com as indústrias de óleo, gás e mine"
+34,37,0.228091,0.38363,340027 Pedras de isqueiro para fumantes,370108 Extração de pedras [pedreira]
+34,39,0.313707,0.448567,340010 Pacotes de papéis para cigarros,390022 Embalagem de pacotes
+34,40,0.20865,0.327633,340024 Papel de cigarro,400061 Tratamento para papel
+34,41,0.235067,0.314545,340039 Cigarros eletrônicos,410233 Serviços de esportes eletrônicos
+34,42,0.112844,0.236591,340037 Escarradeira para usuários de tabaco,420279 Serviços de autenticação de usuários utilizando tecnologia blockchain
+34,43,0.063368,0.316839,340028 Ervas para fumar *,430201 Serviços de bares para fumar narguilé
+34,44,0.205332,0.241279,340008 Recipientes de gás para isqueiros para charutos,440238 Aluguel de garrafas e recipientes contendo gás para fins medicinais
+34,45,0.059276,0.067252,"340047 Sachês de nicotina como substituto do tabaco, exceto para fins medicinais",450202 Inspeção de fábricas para fins de segurança
+35,36,0.831545,1.0,350012 Serviços de agências de emprego,360009 Serviços de agências de cobranças de dívidas
+35,37,0.634837,0.704672,350170 Provimento de informações da lista telefônica,370104 Provimento de informações sobre construção
+35,38,0.68287,0.783969,350012 Serviços de agências de emprego,380012 Serviços de agências de notícias
+35,39,0.733433,0.78528,350170 Provimento de informações da lista telefônica,390108 Provimento de informações sobre rotas rodoviárias
+35,40,0.492875,0.522014,350170 Provimento de informações da lista telefônica,400087 Provimento de informações sobre processamento de materiais
+35,41,0.8227,1.0,350101 Serviços de layout para fins publicitários,"410187 Serviços de layout, exceto para fins publicitários"
+35,42,0.692131,0.78528,350170 Provimento de informações da lista telefônica,420275 Provimento de informações geográficas
+35,43,0.54057,0.60291,350012 Serviços de agências de emprego,"430004 Serviços de agências de acomodações [hotéis, pensões]"
+35,44,0.480872,0.573575,350114 Serviços de intermediação comercial,440284 Serviços de pesca comercial
+35,45,0.907327,1.0,350012 Serviços de agências de emprego,450112 Serviços de agências matrimoniais
+36,37,0.60786,0.743236,360060 Provimento de informações sobre seguros,370104 Provimento de informações sobre construção
+36,38,0.63617,0.783969,360009 Serviços de agências de cobranças de dívidas,380012 Serviços de agências de notícias
+36,39,0.74318,0.828254,360060 Provimento de informações sobre seguros,390108 Provimento de informações sobre rotas rodoviárias
+36,40,0.455557,0.550581,360060 Provimento de informações sobre seguros,400087 Provimento de informações sobre processamento de materiais
+36,41,0.621838,0.697912,360060 Provimento de informações sobre seguros,410050 Provimento de informações sobre entretenimento [lazer]
+36,42,0.692835,0.828254,360060 Provimento de informações sobre seguros,420275 Provimento de informações geográficas
+36,43,0.606367,0.661815,360070 Fundos de pensão [aposentadoria],430066 Serviços de pensão
+36,44,0.472786,0.503005,360038 Seguros de saúde,440212 Aconselhamento em questões de saúde
+36,45,0.871353,1.0,360009 Serviços de agências de cobranças de dívidas,450112 Serviços de agências matrimoniais
+37,38,0.572865,0.738073,370090 Aluguel de equipamentos de limpeza,380033 Aluguel de equipamentos de telecomunicação
+37,39,0.833078,0.897352,370104 Provimento de informações sobre construção,390108 Provimento de informações sobre rotas rodoviárias
+37,40,0.694206,0.851207,370126 Restauração de obras de arte,400084 Molduragem de obras de arte
+37,41,0.787637,0.821816,370020 Aluguel de equipamento de construção,410198 Aluguel de equipamento de jogos
+37,42,0.753136,0.897352,370104 Provimento de informações sobre construção,420275 Provimento de informações geográficas
+37,43,0.603401,0.639414,370104 Provimento de informações sobre construção,430199 Provimento de informações e conselhos sobre preparação de refeições
+37,44,0.755839,1.0,"370177 Fumigação para controle de pragas, exceto para agricultura, horticultura e silvicultura","440276 Fumigação para controle de pragas na agricultura, horticultura e silvicultura"
+37,45,0.59884,0.759025,370125 Reparo de fechaduras de segurança,450033 Abertura de fechaduras de segurança
+38,39,0.691397,0.817704,380027 Provimento de informações sobre telecomunicações,390108 Provimento de informações sobre rotas rodoviárias
+38,40,0.582723,0.612079,380055 Aluguel de aparelhos smartphone,400119 Aluguel de aparelhos para aquecimento de ambientes
+38,41,0.65228,0.689951,380012 Serviços de agências de notícias,410103 Serviços de reportagem de notícias
+38,42,0.675325,0.817704,380027 Provimento de informações sobre telecomunicações,420275 Provimento de informações geográficas
+38,43,0.683223,0.793027,380055 Aluguel de aparelhos smartphone,430190 Aluguel de aparelhos de cozimento
+38,44,0.745685,0.833292,380055 Aluguel de aparelhos smartphone,440230 Aluguel de aparelhos para estilização de cabelos
+38,45,0.694406,0.783969,380012 Serviços de agências de notícias,450112 Serviços de agências matrimoniais
+39,40,0.640661,0.714458,390124 Coleta de lixo e resíduos domésticos e industriais,400106 Incineração de lixo e resíduos
+39,41,0.792833,0.842631,390077 Provimento de informações sobre transportes,410050 Provimento de informações sobre entretenimento [lazer]
+39,42,0.885609,1.0,390077 Provimento de informações sobre transportes,420275 Provimento de informações geográficas
+39,43,0.67444,0.712556,390077 Provimento de informações sobre transportes,430199 Provimento de informações e conselhos sobre preparação de refeições
+39,44,0.456032,0.60497,390138 Aluguel de robôs de entrega,440233 Aluguel de robôs cirúrgicos
+39,45,0.75531,1.0,390079 Aluguel de roupas de mergulho atmosféricas,450276 Aluguel de roupas de mergulho*
+40,41,0.74794,0.932083,400084 Molduragem de obras de arte,410212 Aluguel de obras de arte
+40,42,0.62778,0.846851,400084 Molduragem de obras de arte,420132 Autenticação de obras de arte
+40,43,0.52487,0.700142,400130 Pasteurização de alimentos e bebidas,430208 Serviços de crítica gastronômica [provimento de informações sobre alimentos e bebidas]
+40,44,0.567315,0.616387,400104 Aluguel de geradores de eletricidade,440239 Aluguel de geradores de água hidrogenada para banhos
+40,45,0.416656,0.488286,400063 Serviço de bordar,450227 Serviço de consultoria de estilo
+41,42,0.768057,0.842631,410050 Provimento de informações sobre entretenimento [lazer],420275 Provimento de informações geográficas
+41,43,0.698343,0.863755,410055 Colônia de férias,430145 Colônia de férias [alojamento]
+41,44,0.708228,0.828177,410062 Provimento de instalações para museus,440248 Provimento de instalações de jardinagem comunitária
+41,45,0.605005,0.74705,410088 Aluguel de câmeras de vídeo,450262 Aluguel de câmeras de vigilância por vídeo
+42,43,0.593102,0.712556,420275 Provimento de informações geográficas,430199 Provimento de informações e conselhos sobre preparação de refeições
+42,44,0.693719,0.745835,420297 Aluguel de microscópios científicos,440269 Aluguel de microscópios cirúrgicos
+42,45,0.723621,0.744792,420242 Consultoria em segurança de dados,450117 Consultoria em segurança física
+43,44,0.549758,0.660823,430190 Aluguel de aparelhos de cozimento,440230 Aluguel de aparelhos para estilização de cabelos
+43,45,0.589161,0.893164,430200 Serviços de personal chef,450254 Serviços de personal shopping para terceiros
+44,45,0.525814,0.632702,440237 Serviços de cuidados pós-natal,450197 Serviços de cuidados de moradias na ausência dos residentes [ing. house sitting]

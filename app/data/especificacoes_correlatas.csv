@@ -1,23 +1,23 @@
 ncl_a,ncl_b,afinidade,fonte,descricao
-1,2,0.82,expert,Químicos industriais e tintas/vernizes — insumos químicos do mesmo setor industrial
-1,3,0.68,expert,Químicos industriais e cosméticos — matérias-primas químicas usadas em formulações cosméticas
+1,2,0.8271,expert,Químicos industriais e tintas/vernizes — insumos químicos do mesmo setor industrial
+1,3,0.889,expert,Químicos industriais e cosméticos — matérias-primas químicas usadas em formulações cosméticas
 1,4,0.9143,collisions_config,
-1,5,0.65,expert,"Químicos industriais e farmacêuticos — mesma base científica química, overlap em matérias-primas"
+1,5,0.9237,expert,"Químicos industriais e farmacêuticos — mesma base científica química, overlap em matérias-primas"
 1,6,0.75,tabela_correlacoes,
-1,7,0.8088,tabela_correlacoes,
+1,7,0.8715,tabela_correlacoes,
 1,8,0.6308,tabela_correlacoes,
-1,9,0.7829,tabela_correlacoes,
+1,9,0.8595,tabela_correlacoes,
 1,10,0.7171,tabela_correlacoes,
 1,11,0.8143,tabela_correlacoes,
-1,12,0.6838,tabela_correlacoes,
-1,13,0.6244,tabela_correlacoes,
-1,14,0.6294,tabela_correlacoes,
+1,12,0.7481,tabela_correlacoes,
+1,13,0.6412,tabela_correlacoes,
+1,14,0.6341,tabela_correlacoes,
 1,15,0.5621,tabela_correlacoes,
 1,16,0.7769,tabela_correlacoes,
-1,17,0.68,expert,"Químicos e materiais de isolamento — polímeros, borrachas e matérias-primas sintéticas"
+1,17,0.7867,expert,"Químicos e materiais de isolamento — polímeros, borrachas e matérias-primas sintéticas"
 1,18,0.6365,tabela_correlacoes,
-1,19,0.62,expert,"Químicos industriais e construção — adesivos, cimentos e produtos químicos para construção"
-1,20,0.6402,tabela_correlacoes,
+1,19,0.7133,expert,"Químicos industriais e construção — adesivos, cimentos e produtos químicos para construção"
+1,20,0.6941,tabela_correlacoes,
 1,21,0.7302,tabela_correlacoes,
 1,22,0.6622,tabela_correlacoes,
 1,23,0.5211,tabela_correlacoes,
@@ -27,8 +27,8 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 1,27,0.6576,tabela_correlacoes,
 1,28,0.5981,tabela_correlacoes,
 1,29,0.8071,tabela_correlacoes,
-1,30,0.7934,tabela_correlacoes,
-1,31,0.7409,tabela_correlacoes,
+1,30,0.828,tabela_correlacoes,
+1,31,0.7558,tabela_correlacoes,
 1,32,0.7221,tabela_correlacoes,
 1,33,0.589,tabela_correlacoes,
 1,34,0.6538,tabela_correlacoes,
@@ -37,19 +37,19 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 1,37,0.6703,tabela_correlacoes,
 1,38,0.5584,tabela_correlacoes,
 1,39,0.62,expert,Químicos e distribuição — distribuidoras de insumos químicos com marca própria
-1,40,0.72,expert,Químicos industriais e tratamento de materiais — processos químicos industriais integrados
-1,41,0.5847,tabela_correlacoes,
+1,40,0.7216,expert,Químicos industriais e tratamento de materiais — processos químicos industriais integrados
+1,41,0.6203,tabela_correlacoes,
 1,42,0.7,expert,Químicos industriais e serviços de pesquisa química — P&D e produtos do mesmo setor
 1,43,0.5883,tabela_correlacoes,
 1,44,0.7174,tabela_correlacoes,
 1,45,0.5181,tabela_correlacoes,
-2,3,0.72,expert,Tintas/corantes e cosméticos — overlap em tinturas capilares e coloração estética
+2,3,0.7236,expert,Tintas/corantes e cosméticos — overlap em tinturas capilares e coloração estética
 2,4,0.8442,tabela_correlacoes,
 2,5,0.7647,tabela_correlacoes,
 2,6,0.6905,tabela_correlacoes,
-2,7,0.6806,tabela_correlacoes,
+2,7,0.6943,tabela_correlacoes,
 2,8,0.6607,tabela_correlacoes,
-2,9,0.6048,tabela_correlacoes,
+2,9,0.7285,tabela_correlacoes,
 2,10,0.5285,tabela_correlacoes,
 2,11,0.5305,tabela_correlacoes,
 2,12,0.6078,tabela_correlacoes,
@@ -60,10 +60,10 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 2,18,0.7016,tabela_correlacoes,
 2,19,0.78,expert,Tintas/vernizes e materiais de construção — vendidos juntos em lojas de construção
 2,20,0.6652,tabela_correlacoes,
-2,21,0.6083,tabela_correlacoes,
+2,21,0.6117,tabela_correlacoes,
 2,22,0.6217,tabela_correlacoes,
 2,24,0.5328,tabela_correlacoes,
-2,25,0.55,expert,"Tintas/corantes e roupas — tingimento têxtil, impressão em tecidos"
+2,25,0.6138,expert,"Tintas/corantes e roupas — tingimento têxtil, impressão em tecidos"
 2,26,0.5841,tabela_correlacoes,
 2,27,0.6635,tabela_correlacoes,
 2,28,0.5859,tabela_correlacoes,
@@ -82,12 +82,12 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 2,44,0.567,tabela_correlacoes,
 2,45,0.509,tabela_correlacoes,
 3,4,0.8052,tabela_correlacoes,
-3,5,0.9,expert,Cosméticos medicinais e farmacêuticos — fronteira difusa entre produto de beleza e medicamento
+3,5,0.9138,expert,Cosméticos medicinais e farmacêuticos — fronteira difusa entre produto de beleza e medicamento
 3,6,0.6736,tabela_correlacoes,
-3,7,0.7464,tabela_correlacoes,
+3,7,0.832,tabela_correlacoes,
 3,8,0.7752,tabela_correlacoes,
 3,9,0.6583,tabela_correlacoes,
-3,10,0.6,expert,Cosméticos e aparelhos de beleza/saúde — overlap em dispositivos estéticos e de higiene
+3,10,0.7718,expert,Cosméticos e aparelhos de beleza/saúde — overlap em dispositivos estéticos e de higiene
 3,11,0.707,tabela_correlacoes,
 3,12,0.5897,tabela_correlacoes,
 3,13,0.6002,tabela_correlacoes,
@@ -97,7 +97,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 3,18,0.7639,tabela_correlacoes,
 3,19,0.7592,tabela_correlacoes,
 3,20,0.7067,tabela_correlacoes,
-3,21,0.72,expert,"Cosméticos e utensílios domésticos — pincéis, escovas e acessórios de beleza"
+3,21,0.7815,expert,"Cosméticos e utensílios domésticos — pincéis, escovas e acessórios de beleza"
 3,22,0.6636,tabela_correlacoes,
 3,23,0.5582,tabela_correlacoes,
 3,24,0.8119,tabela_correlacoes,
@@ -106,13 +106,13 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 3,27,0.6091,tabela_correlacoes,
 3,28,0.6526,tabela_correlacoes,
 3,29,0.6783,tabela_correlacoes,
-3,30,0.7333,tabela_correlacoes,
+3,30,0.7538,tabela_correlacoes,
 3,31,0.6703,tabela_correlacoes,
 3,32,0.693,tabela_correlacoes,
 3,33,0.5545,tabela_correlacoes,
 3,34,0.5832,tabela_correlacoes,
 3,35,0.624,tabela_correlacoes,
-3,37,0.7722,tabela_correlacoes,
+3,37,0.81,tabela_correlacoes,
 3,39,0.5261,tabela_correlacoes,
 3,40,0.769,collisions_config,
 3,41,0.5561,tabela_correlacoes,
@@ -142,44 +142,44 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 4,27,0.5737,tabela_correlacoes,
 4,28,0.6495,tabela_correlacoes,
 4,29,0.7759,tabela_correlacoes,
-4,30,0.6262,tabela_correlacoes,
+4,30,0.6746,tabela_correlacoes,
 4,31,0.6757,tabela_correlacoes,
 4,32,0.5585,tabela_correlacoes,
 4,34,0.621,tabela_correlacoes,
 4,37,0.72,expert,Combustíveis/lubrificantes e reparo de veículos — mesmo canal automotivo
 4,38,0.6214,tabela_correlacoes,
-4,40,0.6,expert,Combustíveis e tratamento industrial — insumos de processos industriais
+4,40,0.6166,expert,Combustíveis e tratamento industrial — insumos de processos industriais
 4,41,0.5305,tabela_correlacoes,
 4,42,0.6006,tabela_correlacoes,
 4,43,0.6587,tabela_correlacoes,
 4,44,0.5416,tabela_correlacoes,
 5,6,0.712,tabela_correlacoes,
 5,7,0.6952,tabela_correlacoes,
-5,8,0.6454,tabela_correlacoes,
+5,8,0.6951,tabela_correlacoes,
 5,9,0.7769,tabela_correlacoes,
-5,10,0.88,expert,Produtos farmacêuticos e instrumentos médicos — mesmo canal hospitalar e farmácias
+5,10,0.95,expert,Produtos farmacêuticos e instrumentos médicos — mesmo canal hospitalar e farmácias
 5,11,0.8085,tabela_correlacoes,
-5,12,0.5618,tabela_correlacoes,
+5,12,0.6102,tabela_correlacoes,
 5,13,0.6528,tabela_correlacoes,
-5,14,0.5675,tabela_correlacoes,
+5,14,0.6306,tabela_correlacoes,
 5,15,0.5088,tabela_correlacoes,
 5,16,0.7688,tabela_correlacoes,
 5,17,0.7402,tabela_correlacoes,
-5,18,0.6179,tabela_correlacoes,
+5,18,0.7372,tabela_correlacoes,
 5,19,0.6426,tabela_correlacoes,
 5,20,0.7852,tabela_correlacoes,
 5,21,0.7693,tabela_correlacoes,
 5,22,0.6923,tabela_correlacoes,
 5,23,0.6065,tabela_correlacoes,
-5,24,0.7314,tabela_correlacoes,
+5,24,0.7726,tabela_correlacoes,
 5,25,0.7407,tabela_correlacoes,
 5,26,0.6589,tabela_correlacoes,
 5,27,0.5961,tabela_correlacoes,
-5,28,0.6722,tabela_correlacoes,
-5,29,0.65,expert,"Farmacêuticos e alimentos — overlap em suplementos, alimentos funcionais e nutracêuticos"
-5,30,0.6,expert,Farmacêuticos e alimentos industrializados — suplementos e alimentos funcionais
-5,31,0.6,expert,Farmacêuticos e produtos agrícolas/animais — medicamentos veterinários e antiparasitários
-5,32,0.58,expert,"Farmacêuticos e bebidas — bebidas funcionais, energéticos e produtos de saúde"
+5,28,0.6758,tabela_correlacoes,
+5,29,0.7595,expert,"Farmacêuticos e alimentos — overlap em suplementos, alimentos funcionais e nutracêuticos"
+5,30,0.8755,expert,Farmacêuticos e alimentos industrializados — suplementos e alimentos funcionais
+5,31,0.737,expert,Farmacêuticos e produtos agrícolas/animais — medicamentos veterinários e antiparasitários
+5,32,0.7383,expert,"Farmacêuticos e bebidas — bebidas funcionais, energéticos e produtos de saúde"
 5,33,0.5807,tabela_correlacoes,
 5,34,0.7474,tabela_correlacoes,
 5,35,0.5971,tabela_correlacoes,
@@ -192,47 +192,47 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 5,45,0.5807,tabela_correlacoes,
 6,7,0.8076,collisions_config,
 6,8,0.68,expert,"Metais e ferramentas — fabricantes de ferramentas metálicas, mesmo canal industrial"
-6,9,0.8099,tabela_correlacoes,
+6,9,0.8903,tabela_correlacoes,
 6,10,0.7534,tabela_correlacoes,
 6,11,0.7939,collisions_config,
 6,12,0.804,collisions_config,
 6,13,0.6518,tabela_correlacoes,
 6,14,0.92,tabela_correlacoes,
-6,15,0.6076,tabela_correlacoes,
+6,15,0.638,tabela_correlacoes,
 6,16,0.7717,tabela_correlacoes,
-6,17,0.7875,collisions_config,
-6,18,0.7387,tabela_correlacoes,
-6,19,0.82,expert,Metais e materiais de construção — insumos complementares da construção civil
-6,20,0.7,expert,"Metais e mobiliário — móveis metálicos, ferragens e acessórios de decoração"
+6,17,0.7939,collisions_config,
+6,18,0.7517,tabela_correlacoes,
+6,19,0.95,expert,Metais e materiais de construção — insumos complementares da construção civil
+6,20,0.95,expert,"Metais e mobiliário — móveis metálicos, ferragens e acessórios de decoração"
 6,21,0.8333,collisions_config,
 6,22,0.787,tabela_correlacoes,
 6,23,0.7419,tabela_correlacoes,
-6,24,0.6264,tabela_correlacoes,
-6,25,0.7628,tabela_correlacoes,
+6,24,0.6722,tabela_correlacoes,
+6,25,0.7812,tabela_correlacoes,
 6,26,0.7724,tabela_correlacoes,
 6,27,0.5371,tabela_correlacoes,
 6,28,0.7053,tabela_correlacoes,
 6,29,0.5307,tabela_correlacoes,
-6,30,0.625,tabela_correlacoes,
+6,30,0.6608,tabela_correlacoes,
 6,31,0.6465,tabela_correlacoes,
 6,32,0.5082,tabela_correlacoes,
 6,34,0.6002,tabela_correlacoes,
 6,35,0.5538,tabela_correlacoes,
 6,36,0.5026,tabela_correlacoes,
-6,37,0.72,expert,Metais e serviços de construção/instalação — materiais e serviços no mesmo mercado de obra
+6,37,0.7829,expert,Metais e serviços de construção/instalação — materiais e serviços no mesmo mercado de obra
 6,38,0.5046,tabela_correlacoes,
 6,39,0.7428,tabela_correlacoes,
-6,40,0.72,expert,Metais e tratamento/transformação de materiais — overlap em metalurgia e beneficiamento
-6,41,0.5885,tabela_correlacoes,
-6,42,0.5376,tabela_correlacoes,
+6,40,0.7496,expert,Metais e tratamento/transformação de materiais — overlap em metalurgia e beneficiamento
+6,41,0.6609,tabela_correlacoes,
+6,42,0.6976,tabela_correlacoes,
 6,43,0.5852,tabela_correlacoes,
 6,44,0.5632,tabela_correlacoes,
-6,45,0.5619,tabela_correlacoes,
-7,8,0.8,expert,"Máquinas e ferramentas manuais — mesmo setor industrial, fabricantes cobrem ambas"
-7,9,0.72,expert,Máquinas e equipamentos eletrônicos — automação industrial e eletromecânica
+6,45,0.6148,tabela_correlacoes,
+7,8,0.9303,expert,"Máquinas e ferramentas manuais — mesmo setor industrial, fabricantes cobrem ambas"
+7,9,0.7668,expert,Máquinas e equipamentos eletrônicos — automação industrial e eletromecânica
 7,10,0.7999,tabela_correlacoes,
 7,11,0.92,collisions_config,
-7,12,0.85,expert,Máquinas/motores e veículos — fabricantes de motores frequentemente abrangem ambos
+7,12,0.95,expert,Máquinas/motores e veículos — fabricantes de motores frequentemente abrangem ambos
 7,13,0.6759,tabela_correlacoes,
 7,14,0.599,tabela_correlacoes,
 7,15,0.6882,tabela_correlacoes,
@@ -241,48 +241,48 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 7,18,0.7207,tabela_correlacoes,
 7,19,0.7039,tabela_correlacoes,
 7,20,0.8488,tabela_correlacoes,
-7,21,0.8666,tabela_correlacoes,
+7,21,0.95,tabela_correlacoes,
 7,22,0.7228,tabela_correlacoes,
 7,23,0.5209,tabela_correlacoes,
 7,24,0.6619,tabela_correlacoes,
-7,25,0.644,tabela_correlacoes,
+7,25,0.6856,tabela_correlacoes,
 7,26,0.7244,tabela_correlacoes,
 7,27,0.6009,tabela_correlacoes,
 7,28,0.8754,tabela_correlacoes,
-7,29,0.7396,tabela_correlacoes,
+7,29,0.7662,tabela_correlacoes,
 7,30,0.7041,tabela_correlacoes,
-7,31,0.6932,tabela_correlacoes,
+7,31,0.6981,tabela_correlacoes,
 7,32,0.7012,tabela_correlacoes,
 7,33,0.5684,tabela_correlacoes,
 7,34,0.692,tabela_correlacoes,
 7,35,0.5435,tabela_correlacoes,
 7,36,0.5194,tabela_correlacoes,
-7,37,0.78,expert,Máquinas e serviços de reparo/manutenção — marcas de equipamentos que oferecem assistência técnica
+7,37,0.8896,expert,Máquinas e serviços de reparo/manutenção — marcas de equipamentos que oferecem assistência técnica
 7,38,0.582,tabela_correlacoes,
-7,39,0.7392,tabela_correlacoes,
-7,40,0.8212,collisions_config,
+7,39,0.7718,tabela_correlacoes,
+7,40,0.8443,collisions_config,
 7,41,0.5596,tabela_correlacoes,
-7,42,0.6448,collisions_config,
+7,42,0.6746,collisions_config,
 7,43,0.6415,tabela_correlacoes,
-7,44,0.6066,tabela_correlacoes,
+7,44,0.6305,tabela_correlacoes,
 7,45,0.518,tabela_correlacoes,
 8,9,0.7796,tabela_correlacoes,
 8,10,0.7734,tabela_correlacoes,
 8,11,0.7292,tabela_correlacoes,
-8,12,0.6317,tabela_correlacoes,
+8,12,0.6428,tabela_correlacoes,
 8,13,0.7701,tabela_correlacoes,
 8,14,0.6967,tabela_correlacoes,
 8,15,0.6041,tabela_correlacoes,
 8,16,0.758,tabela_correlacoes,
-8,17,0.6519,tabela_correlacoes,
-8,18,0.6769,tabela_correlacoes,
+8,17,0.6593,tabela_correlacoes,
+8,18,0.6964,tabela_correlacoes,
 8,19,0.65,expert,"Ferramentas e materiais de construção — mesma loja de construção, mesmo comprador"
 8,20,0.7228,tabela_correlacoes,
-8,21,0.72,expert,Ferramentas manuais e utensílios domésticos — overlap em cutelaria e utensílios de cozinha
-8,22,0.5565,tabela_correlacoes,
+8,21,0.8029,expert,Ferramentas manuais e utensílios domésticos — overlap em cutelaria e utensílios de cozinha
+8,22,0.6068,tabela_correlacoes,
 8,23,0.6398,tabela_correlacoes,
 8,24,0.5522,tabela_correlacoes,
-8,25,0.6079,tabela_correlacoes,
+8,25,0.614,tabela_correlacoes,
 8,26,0.7285,tabela_correlacoes,
 8,28,0.7251,collisions_config,
 8,29,0.7626,tabela_correlacoes,
@@ -296,17 +296,17 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 8,40,0.6676,tabela_correlacoes,
 8,43,0.5534,tabela_correlacoes,
 8,44,0.6635,tabela_correlacoes,
-9,10,0.92,collisions_config,
-9,11,0.78,expert,Eletrônica e aparelhos domésticos — eletrodomésticos e eletrônicos no mesmo varejo
-9,12,0.78,expert,"Eletrônica e veículos — tecnologia embarcada, GPS, sistemas automotivos eletrônicos"
-9,13,0.58,expert,"Eletrônica e armas — miras eletrônicas, sistemas de visão noturna e acessórios"
+9,10,0.95,collisions_config,
+9,11,0.865,expert,Eletrônica e aparelhos domésticos — eletrodomésticos e eletrônicos no mesmo varejo
+9,12,0.8284,expert,"Eletrônica e veículos — tecnologia embarcada, GPS, sistemas automotivos eletrônicos"
+9,13,0.8707,expert,"Eletrônica e armas — miras eletrônicas, sistemas de visão noturna e acessórios"
 9,14,0.7782,collisions_config,
 9,15,0.8376,collisions_config,
-9,16,0.58,expert,Eletrônica e mídia — marcas de tech expandem para conteúdo digital e publicações
+9,16,0.7706,expert,Eletrônica e mídia — marcas de tech expandem para conteúdo digital e publicações
 9,17,0.7962,tabela_correlacoes,
 9,18,0.723,tabela_correlacoes,
-9,19,0.7148,tabela_correlacoes,
-9,20,0.8257,tabela_correlacoes,
+9,19,0.778,tabela_correlacoes,
+9,20,0.8317,tabela_correlacoes,
 9,21,0.8257,tabela_correlacoes,
 9,22,0.7169,tabela_correlacoes,
 9,23,0.7082,tabela_correlacoes,
@@ -314,23 +314,23 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 9,25,0.7634,tabela_correlacoes,
 9,26,0.7782,tabela_correlacoes,
 9,28,0.8,expert,"Eletrônica e games/brinquedos — consoles, periféricos e videogames no mesmo canal"
-9,29,0.5123,tabela_correlacoes,
+9,29,0.6446,tabela_correlacoes,
 9,30,0.5317,tabela_correlacoes,
-9,31,0.574,tabela_correlacoes,
+9,31,0.6363,tabela_correlacoes,
 9,32,0.5357,tabela_correlacoes,
-9,34,0.7343,tabela_correlacoes,
-9,35,0.7026,collisions_config,
-9,36,0.6676,collisions_config,
+9,34,0.7508,tabela_correlacoes,
+9,35,0.7865,collisions_config,
+9,36,0.7732,collisions_config,
 9,37,0.7981,collisions_config,
 9,38,0.88,expert,Equipamentos eletrônicos e telecomunicações — hardware e serviços de telecom integrados
-9,39,0.7419,collisions_config,
-9,40,0.768,collisions_config,
-9,41,0.75,expert,"Eletrônica e entretenimento — marcas de games, streaming e dispositivos se sobrepõem"
+9,39,0.8465,collisions_config,
+9,40,0.839,collisions_config,
+9,41,0.9184,expert,"Eletrônica e entretenimento — marcas de games, streaming e dispositivos se sobrepõem"
 9,42,0.9,expert,Equipamentos eletrônicos e serviços de software/TI — mesma indústria de tecnologia
 9,43,0.575,tabela_correlacoes,
 9,44,0.6561,tabela_correlacoes,
-9,45,0.7501,tabela_correlacoes,
-10,11,0.8693,tabela_correlacoes,
+9,45,0.916,tabela_correlacoes,
+10,11,0.95,tabela_correlacoes,
 10,12,0.7431,tabela_correlacoes,
 10,13,0.6765,tabela_correlacoes,
 10,14,0.6948,tabela_correlacoes,
@@ -339,7 +339,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 10,17,0.6478,tabela_correlacoes,
 10,18,0.7151,tabela_correlacoes,
 10,19,0.563,tabela_correlacoes,
-10,20,0.8375,tabela_correlacoes,
+10,20,0.9267,tabela_correlacoes,
 10,21,0.8275,tabela_correlacoes,
 10,22,0.6334,tabela_correlacoes,
 10,23,0.6822,tabela_correlacoes,
@@ -350,14 +350,14 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 10,28,0.8563,tabela_correlacoes,
 10,29,0.5839,tabela_correlacoes,
 10,30,0.5931,tabela_correlacoes,
-10,31,0.6122,tabela_correlacoes,
+10,31,0.6878,tabela_correlacoes,
 10,34,0.6815,tabela_correlacoes,
 10,35,0.6387,tabela_correlacoes,
 10,36,0.5445,tabela_correlacoes,
-10,37,0.658,tabela_correlacoes,
+10,37,0.7032,tabela_correlacoes,
 10,38,0.5891,tabela_correlacoes,
 10,39,0.549,tabela_correlacoes,
-10,40,0.655,tabela_correlacoes,
+10,40,0.6555,tabela_correlacoes,
 10,41,0.6227,tabela_correlacoes,
 10,42,0.72,expert,"Equipamentos médicos e P&D em saúde — healthtech, dispositivos e pesquisa médica"
 10,43,0.5315,tabela_correlacoes,
@@ -365,17 +365,17 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 10,45,0.6284,tabela_correlacoes,
 11,12,0.8469,tabela_correlacoes,
 11,13,0.6707,tabela_correlacoes,
-11,14,0.5912,tabela_correlacoes,
+11,14,0.6105,tabela_correlacoes,
 11,15,0.5848,tabela_correlacoes,
-11,16,0.7211,tabela_correlacoes,
+11,16,0.7464,tabela_correlacoes,
 11,17,0.7285,tabela_correlacoes,
 11,18,0.6346,tabela_correlacoes,
 11,19,0.72,expert,Aparelhos de iluminação e construção — especificados juntos em projetos de obra
 11,20,0.72,expert,"Aparelhos domésticos e mobiliário — mesmo ambiente residencial, venda em conjunto"
-11,21,0.75,expert,Iluminação/eletrodomésticos e utensílios — mesmo canal de distribuição casa e decoração
+11,21,0.95,expert,Iluminação/eletrodomésticos e utensílios — mesmo canal de distribuição casa e decoração
 11,22,0.5481,tabela_correlacoes,
 11,24,0.5366,tabela_correlacoes,
-11,25,0.6899,tabela_correlacoes,
+11,25,0.7125,tabela_correlacoes,
 11,26,0.6376,tabela_correlacoes,
 11,27,0.6442,tabela_correlacoes,
 11,28,0.7541,tabela_correlacoes,
@@ -385,41 +385,41 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 11,32,0.7262,tabela_correlacoes,
 11,34,0.6771,tabela_correlacoes,
 11,35,0.6,tabela_correlacoes,
-11,37,0.72,expert,Aparelhos domésticos e serviços de reparo/instalação — marcas que cobrem produto e assistência
+11,37,0.7568,expert,Aparelhos domésticos e serviços de reparo/instalação — marcas que cobrem produto e assistência
 11,38,0.561,tabela_correlacoes,
-11,39,0.6915,tabela_correlacoes,
-11,40,0.7755,collisions_config,
+11,39,0.8124,tabela_correlacoes,
+11,40,0.8011,collisions_config,
 11,41,0.6397,tabela_correlacoes,
 11,42,0.6225,tabela_correlacoes,
-11,43,0.704,tabela_correlacoes,
-11,44,0.6732,tabela_correlacoes,
+11,43,0.7256,tabela_correlacoes,
+11,44,0.7691,tabela_correlacoes,
 12,13,0.6755,tabela_correlacoes,
-12,14,0.5963,tabela_correlacoes,
+12,14,0.6484,tabela_correlacoes,
 12,15,0.5878,tabela_correlacoes,
 12,16,0.6562,tabela_correlacoes,
 12,17,0.72,expert,"Veículos e materiais elastoméricos — pneus, vedações e componentes de borracha automotivos"
 12,18,0.7895,tabela_correlacoes,
-12,19,0.6934,tabela_correlacoes,
+12,19,0.7047,tabela_correlacoes,
 12,20,0.8096,tabela_correlacoes,
 12,21,0.743,tabela_correlacoes,
 12,22,0.7686,tabela_correlacoes,
 12,24,0.6359,tabela_correlacoes,
-12,25,0.6102,tabela_correlacoes,
+12,25,0.661,tabela_correlacoes,
 12,26,0.516,tabela_correlacoes,
 12,27,0.7645,tabela_correlacoes,
 12,28,0.8564,collisions_config,
-12,31,0.5657,tabela_correlacoes,
+12,31,0.6482,tabela_correlacoes,
 12,34,0.5847,tabela_correlacoes,
-12,36,0.6177,tabela_correlacoes,
+12,36,0.6662,tabela_correlacoes,
 12,37,0.88,expert,Veículos e serviços de manutenção/reparo — fabricantes cobrem assistência técnica e peças
 12,38,0.5715,tabela_correlacoes,
-12,39,0.8,expert,Veículos e serviços de transporte — marcas de veículos expandem para serviços de mobilidade
+12,39,0.8665,expert,Veículos e serviços de transporte — marcas de veículos expandem para serviços de mobilidade
 12,40,0.6585,tabela_correlacoes,
 12,41,0.5831,tabela_correlacoes,
 12,42,0.7654,tabela_correlacoes,
 12,43,0.5338,tabela_correlacoes,
 12,44,0.5855,tabela_correlacoes,
-12,45,0.6211,tabela_correlacoes,
+12,45,0.7252,tabela_correlacoes,
 13,14,0.5321,tabela_correlacoes,
 13,15,0.571,tabela_correlacoes,
 13,16,0.6608,tabela_correlacoes,
@@ -433,7 +433,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 13,24,0.638,tabela_correlacoes,
 13,25,0.6434,tabela_correlacoes,
 13,26,0.5902,tabela_correlacoes,
-13,28,0.52,expert,"Armas e jogos — overlap em simuladores, réplicas airsoft e jogos de tiro"
+13,28,0.685,expert,"Armas e jogos — overlap em simuladores, réplicas airsoft e jogos de tiro"
 13,29,0.5179,tabela_correlacoes,
 13,30,0.5256,tabela_correlacoes,
 13,32,0.5258,tabela_correlacoes,
@@ -451,12 +451,12 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 14,23,0.7157,tabela_correlacoes,
 14,24,0.6301,tabela_correlacoes,
 14,25,0.82,expert,Joias e roupas — marcas de moda e luxo frequentemente abrangem ambas as classes
-14,26,0.65,expert,"Joias e adereços — overlap em bijuterias, ornamentos e acessórios de vestuário"
+14,26,0.8654,expert,"Joias e adereços — overlap em bijuterias, ornamentos e acessórios de vestuário"
 14,28,0.6124,tabela_correlacoes,
-14,31,0.5715,tabela_correlacoes,
+14,31,0.6369,tabela_correlacoes,
 14,34,0.6752,tabela_correlacoes,
 14,36,0.6038,tabela_correlacoes,
-14,37,0.7963,tabela_correlacoes,
+14,37,0.8616,tabela_correlacoes,
 14,39,0.60,expert,Joias/bijuterias e distribuição — distribuidoras de acessórios com marca própria
 14,40,0.6895,collisions_config,
 14,41,0.6,collisions_config,
@@ -471,15 +471,15 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 15,24,0.5056,tabela_correlacoes,
 15,25,0.567,tabela_correlacoes,
 15,26,0.6091,tabela_correlacoes,
-15,28,0.65,expert,Instrumentos musicais e jogos — overlap em instrumentos-brinquedo e jogos musicais
+15,28,0.8244,expert,Instrumentos musicais e jogos — overlap em instrumentos-brinquedo e jogos musicais
 15,30,0.517,tabela_correlacoes,
 15,34,0.6052,tabela_correlacoes,
-15,37,0.7753,tabela_correlacoes,
+15,37,0.932,tabela_correlacoes,
 15,39,0.5594,tabela_correlacoes,
 15,40,0.6433,tabela_correlacoes,
 15,41,0.88,expert,Instrumentos musicais e entretenimento/shows — mesmo mercado de música e educação artística
 15,44,0.5246,tabela_correlacoes,
-16,17,0.8076,tabela_correlacoes,
+16,17,0.8159,tabela_correlacoes,
 16,18,0.7852,tabela_correlacoes,
 16,19,0.7746,tabela_correlacoes,
 16,20,0.8465,tabela_correlacoes,
@@ -490,17 +490,17 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 16,25,0.7855,tabela_correlacoes,
 16,26,0.7998,tabela_correlacoes,
 16,27,0.6847,tabela_correlacoes,
-16,28,0.62,expert,"Publicações e brinquedos/jogos — overlap em jogos de tabuleiro, livros infantis"
-16,29,0.55,expert,Papel/embalagens e alimentos — marcas de embalagens em produtos alimentícios
+16,28,0.7278,expert,"Publicações e brinquedos/jogos — overlap em jogos de tabuleiro, livros infantis"
+16,29,0.6428,expert,Papel/embalagens e alimentos — marcas de embalagens em produtos alimentícios
 16,30,0.6856,tabela_correlacoes,
-16,31,0.6363,tabela_correlacoes,
+16,31,0.6614,tabela_correlacoes,
 16,32,0.6035,tabela_correlacoes,
 16,33,0.5208,tabela_correlacoes,
 16,34,0.774,tabela_correlacoes,
 16,35,0.7,expert,"Papel/publicações e publicidade — gráficas e agências, mesmo mercado de comunicação"
-16,36,0.564,tabela_correlacoes,
-16,37,0.6411,tabela_correlacoes,
-16,38,0.6,collisions_config,
+16,36,0.601,tabela_correlacoes,
+16,37,0.6478,tabela_correlacoes,
+16,38,0.6247,collisions_config,
 16,39,0.6284,tabela_correlacoes,
 16,40,0.68,expert,Papel e tratamento/processamento — indústria gráfica e acabamento de impressos
 16,41,0.8,expert,Publicações e entretenimento/educação — editoras que oferecem cursos e conteúdo
@@ -508,11 +508,11 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 16,43,0.6242,tabela_correlacoes,
 16,44,0.624,tabela_correlacoes,
 16,45,0.5208,tabela_correlacoes,
-17,18,0.6551,tabela_correlacoes,
+17,18,0.8213,tabela_correlacoes,
 17,19,0.8,expert,Materiais de isolamento e construção — insumos complementares na construção civil
-17,20,0.6,expert,Materiais plásticos e mobiliário — overlap em móveis de plástico e componentes
-17,21,0.7616,tabela_correlacoes,
-17,22,0.8336,tabela_correlacoes,
+17,20,0.737,expert,Materiais plásticos e mobiliário — overlap em móveis de plástico e componentes
+17,21,0.7989,tabela_correlacoes,
+17,22,0.8598,tabela_correlacoes,
 17,23,0.8206,tabela_correlacoes,
 17,24,0.799,tabela_correlacoes,
 17,25,0.676,tabela_correlacoes,
@@ -528,37 +528,37 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 17,41,0.5269,tabela_correlacoes,
 17,42,0.5795,tabela_correlacoes,
 18,19,0.5227,tabela_correlacoes,
-18,20,0.7992,tabela_correlacoes,
+18,20,0.8617,tabela_correlacoes,
 18,21,0.8011,tabela_correlacoes,
 18,22,0.7811,tabela_correlacoes,
 18,24,0.8259,collisions_config,
 18,25,0.92,expert,"Couro/bolsas e roupas/calçados — mesmo universo de moda, marcas de luxo cobrem ambos"
 18,26,0.7666,collisions_config,
 18,27,0.6463,tabela_correlacoes,
-18,28,0.65,expert,"Couro/bolsas e artigos esportivos — itens de couro esportivos, bolas, luvas"
+18,28,0.7094,expert,"Couro/bolsas e artigos esportivos — itens de couro esportivos, bolas, luvas"
 18,29,0.6107,tabela_correlacoes,
 18,30,0.5603,tabela_correlacoes,
-18,31,0.6862,tabela_correlacoes,
+18,31,0.7204,tabela_correlacoes,
 18,34,0.6962,tabela_correlacoes,
 18,35,0.5643,tabela_correlacoes,
 18,36,0.5978,tabela_correlacoes,
-18,37,0.6524,tabela_correlacoes,
-18,39,0.6699,tabela_correlacoes,
+18,37,0.7604,tabela_correlacoes,
+18,39,0.672,tabela_correlacoes,
 18,40,0.7338,tabela_correlacoes,
 18,41,0.6027,tabela_correlacoes,
 18,43,0.602,tabela_correlacoes,
 18,44,0.5283,tabela_correlacoes,
 18,45,0.6386,tabela_correlacoes,
-19,20,0.72,expert,Materiais de construção e mobiliário — overlap em lojas de acabamento e decoração
-19,21,0.7625,tabela_correlacoes,
-19,22,0.55,expert,"Cordas e materiais de construção — usados em obras, mesmo canal industrial"
+19,20,0.8066,expert,Materiais de construção e mobiliário — overlap em lojas de acabamento e decoração
+19,21,0.8508,tabela_correlacoes,
+19,22,0.6784,expert,"Cordas e materiais de construção — usados em obras, mesmo canal industrial"
 19,24,0.637,tabela_correlacoes,
 19,25,0.6805,tabela_correlacoes,
 19,26,0.5811,tabela_correlacoes,
 19,27,0.75,expert,Pisos/revestimentos de construção e tapetes — sobreposição em revestimento de piso
 19,28,0.741,tabela_correlacoes,
 19,30,0.5738,tabela_correlacoes,
-19,31,0.6632,tabela_correlacoes,
+19,31,0.701,tabela_correlacoes,
 19,34,0.6011,tabela_correlacoes,
 19,35,0.5051,tabela_correlacoes,
 19,36,0.5216,tabela_correlacoes,
@@ -572,13 +572,13 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 20,21,0.82,expert,Mobiliário e utensílios domésticos — mesmo canal de varejo de casa e decoração
 20,22,0.8378,tabela_correlacoes,
 20,23,0.6108,tabela_correlacoes,
-20,24,0.72,expert,"Mobiliário e tecidos — estofados, decoração têxtil e revestimentos de móveis"
+20,24,0.8305,expert,"Mobiliário e tecidos — estofados, decoração têxtil e revestimentos de móveis"
 20,25,0.8054,tabela_correlacoes,
 20,26,0.8202,tabela_correlacoes,
 20,27,0.8,expert,Mobiliário e tapetes/revestimentos — mesmo setor de decoração de interiores
 20,28,0.828,tabela_correlacoes,
 20,29,0.5785,tabela_correlacoes,
-20,30,0.5953,tabela_correlacoes,
+20,30,0.6139,tabela_correlacoes,
 20,31,0.769,tabela_correlacoes,
 20,32,0.5302,tabela_correlacoes,
 20,33,0.5543,tabela_correlacoes,
@@ -589,20 +589,20 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 20,38,0.5143,tabela_correlacoes,
 20,39,0.8021,tabela_correlacoes,
 20,40,0.7242,collisions_config,
-20,41,0.6321,tabela_correlacoes,
+20,41,0.6386,tabela_correlacoes,
 20,42,0.65,expert,Mobiliário e design de interiores — marcas de móveis que oferecem serviço de decoração
 20,43,0.7915,tabela_correlacoes,
 20,44,0.6631,tabela_correlacoes,
 20,45,0.6701,tabela_correlacoes,
-21,22,0.7755,tabela_correlacoes,
+21,22,0.8475,tabela_correlacoes,
 21,23,0.6838,tabela_correlacoes,
 21,24,0.8368,tabela_correlacoes,
 21,25,0.8209,tabela_correlacoes,
 21,26,0.7949,tabela_correlacoes,
 21,27,0.6581,tabela_correlacoes,
 21,28,0.8029,tabela_correlacoes,
-21,29,0.55,expert,Utensílios de cozinha e alimentos — overlap em kits gourmet e marcas de culinária
-21,30,0.52,expert,Utensílios domésticos e alimentos — marcas culinárias que cobrem utensílios e temperos
+21,29,0.7257,expert,Utensílios de cozinha e alimentos — overlap em kits gourmet e marcas de culinária
+21,30,0.7979,expert,Utensílios domésticos e alimentos — marcas culinárias que cobrem utensílios e temperos
 21,31,0.7445,tabela_correlacoes,
 21,32,0.7524,tabela_correlacoes,
 21,33,0.7188,tabela_correlacoes,
@@ -614,22 +614,22 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 21,39,0.7011,tabela_correlacoes,
 21,40,0.7937,tabela_correlacoes,
 21,41,0.6881,tabela_correlacoes,
-21,42,0.6063,tabela_correlacoes,
-21,43,0.6,expert,Utensílios de cozinha e restaurantes — equipamentos e louças para serviços de alimentação
+21,42,0.6098,tabela_correlacoes,
+21,43,0.6554,expert,Utensílios de cozinha e restaurantes — equipamentos e louças para serviços de alimentação
 21,44,0.7601,tabela_correlacoes,
 21,45,0.6941,tabela_correlacoes,
-22,23,0.65,expert,"Cordas/fibras e fios — insumos têxteis relacionados, mesmo setor de fibras"
+22,23,0.7403,expert,"Cordas/fibras e fios — insumos têxteis relacionados, mesmo setor de fibras"
 22,24,0.92,collisions_config,
 22,25,0.6982,tabela_correlacoes,
 22,26,0.7524,tabela_correlacoes,
 22,27,0.7207,collisions_config,
-22,28,0.58,expert,Cordas/redes e esportes/brinquedos — equipamentos esportivos e de lazer ao ar livre
+22,28,0.6489,expert,Cordas/redes e esportes/brinquedos — equipamentos esportivos e de lazer ao ar livre
 22,29,0.6109,tabela_correlacoes,
-22,30,0.6082,tabela_correlacoes,
+22,30,0.6467,tabela_correlacoes,
 22,31,0.7565,tabela_correlacoes,
 22,35,0.5115,tabela_correlacoes,
 22,36,0.5827,tabela_correlacoes,
-22,37,0.7001,tabela_correlacoes,
+22,37,0.7309,tabela_correlacoes,
 22,38,0.5788,tabela_correlacoes,
 22,39,0.7531,tabela_correlacoes,
 22,40,0.77,tabela_correlacoes,
@@ -651,7 +651,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 24,28,0.7558,tabela_correlacoes,
 24,29,0.5771,tabela_correlacoes,
 24,30,0.6031,tabela_correlacoes,
-24,31,0.6509,tabela_correlacoes,
+24,31,0.6912,tabela_correlacoes,
 24,32,0.545,tabela_correlacoes,
 24,37,0.6158,tabela_correlacoes,
 24,39,0.6192,tabela_correlacoes,
@@ -662,7 +662,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 24,44,0.6192,tabela_correlacoes,
 25,26,0.8,expert,Roupas e aviamentos/acessórios de vestuário — complementares no mesmo setor têxtil
 25,27,0.52,expert,"Roupas e tapetes — overlap em produtos têxteis, marcas de moda-casa podem colidir"
-25,28,0.62,expert,"Roupas e brinquedos — overlap em fantasias, personagens infantis e bonecas"
+25,28,0.7628,expert,"Roupas e brinquedos — overlap em fantasias, personagens infantis e bonecas"
 25,30,0.5188,tabela_correlacoes,
 25,31,0.528,tabela_correlacoes,
 25,32,0.519,tabela_correlacoes,
@@ -670,19 +670,19 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 25,35,0.6,collisions_config,
 25,37,0.6417,tabela_correlacoes,
 25,39,0.6643,collisions_config,
-25,40,0.62,expert,Roupas e tratamento/confecção — overlap em serviços de confecção e beneficiamento têxtil
+25,40,0.6297,expert,Roupas e tratamento/confecção — overlap em serviços de confecção e beneficiamento têxtil
 25,41,0.72,expert,"Roupas e entretenimento — licenciamento de personagens em vestuário, moda-show"
 25,42,0.6,collisions_config,
 25,44,0.5085,tabela_correlacoes,
 25,45,0.68,expert,Roupas e serviços pessoais/aluguel de trajes — marcas de vestuário que alugam trajes
 26,27,0.6977,tabela_correlacoes,
-26,28,0.58,expert,"Aviamentos e brinquedos — overlap em fantasias, adereços e artigos de carnaval"
+26,28,0.6755,expert,"Aviamentos e brinquedos — overlap em fantasias, adereços e artigos de carnaval"
 26,29,0.5718,tabela_correlacoes,
 26,30,0.5222,tabela_correlacoes,
 26,31,0.605,tabela_correlacoes,
 26,32,0.5223,tabela_correlacoes,
 26,34,0.5819,tabela_correlacoes,
-26,37,0.6731,tabela_correlacoes,
+26,37,0.674,tabela_correlacoes,
 26,39,0.5796,tabela_correlacoes,
 26,40,0.7164,tabela_correlacoes,
 26,44,0.6804,tabela_correlacoes,
@@ -694,11 +694,11 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 27,40,0.6813,tabela_correlacoes,
 27,41,0.5214,tabela_correlacoes,
 28,29,0.5858,tabela_correlacoes,
-28,30,0.6217,tabela_correlacoes,
-28,31,0.52,expert,"Brinquedos e animais — brinquedos para pets, alimentos e acessórios para animais"
+28,30,0.725,tabela_correlacoes,
+28,31,0.8224,expert,"Brinquedos e animais — brinquedos para pets, alimentos e acessórios para animais"
 28,35,0.526,tabela_correlacoes,
 28,36,0.513,tabela_correlacoes,
-28,37,0.7133,tabela_correlacoes,
+28,37,0.7361,tabela_correlacoes,
 28,38,0.6913,tabela_correlacoes,
 28,39,0.6007,tabela_correlacoes,
 28,40,0.5147,tabela_correlacoes,
@@ -708,7 +708,7 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 28,44,0.6883,tabela_correlacoes,
 28,45,0.5857,tabela_correlacoes,
 29,30,0.88,expert,Alimentos processados e de mercearia — mesmo ponto de venda e consumidor idêntico
-29,31,0.72,expert,Alimentos processados derivados de produtos agrícolas — cadeia produtiva integrada
+29,31,0.95,expert,Alimentos processados derivados de produtos agrícolas — cadeia produtiva integrada
 29,32,0.8,expert,Alimentos e bebidas não alcoólicas — marcas de alimentos frequentemente cobrem bebidas
 29,33,0.68,expert,Alimentos e bebidas alcoólicas — mesmo canal de distribuição em supermercados
 29,34,0.505,tabela_correlacoes,
@@ -717,10 +717,10 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 29,40,0.6327,collisions_config,
 29,41,0.5464,tabela_correlacoes,
 29,43,0.85,expert,Alimentos e restaurantes — marcas de alimentos expandem para serviços gastronômicos
-30,31,0.7,expert,Cereais e produtos agrícolas frescos — fronteira tênue entre processado e in natura
+30,31,0.9299,expert,Cereais e produtos agrícolas frescos — fronteira tênue entre processado e in natura
 30,32,0.78,expert,Alimentos industrializados e bebidas — mesmo canal e marcas frequentemente coexistem
-30,33,0.65,expert,"Alimentos e bebidas alcoólicas — mesmo canal supermercadista, marcas podem colidir"
-30,34,0.42,expert,"Alimentos e tabaco — overlap em cigarros de ervas, produtos de nicotina alimentar"
+30,33,0.7473,expert,"Alimentos e bebidas alcoólicas — mesmo canal supermercadista, marcas podem colidir"
+30,34,0.8081,expert,"Alimentos e tabaco — overlap em cigarros de ervas, produtos de nicotina alimentar"
 30,35,0.6,collisions_config,
 30,37,0.5079,tabela_correlacoes,
 30,39,0.6,collisions_config,
@@ -750,43 +750,43 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 34,37,0.5379,tabela_correlacoes,
 34,39,0.5666,tabela_correlacoes,
 34,43,0.58,expert,"Tabaco e bares/restaurantes — consumo no mesmo local, marcas de lifestyle adulto"
-35,36,0.68,expert,Gestão de negócios e serviços financeiros — consultorias integradas de negócios e finanças
+35,36,0.8428,expert,Gestão de negócios e serviços financeiros — consultorias integradas de negócios e finanças
 35,37,0.7781,tabela_correlacoes,
-35,38,0.6,expert,Publicidade/marketing e telecomunicações — agências digitais e provedores de mídia
-35,39,0.65,expert,Gestão de negócios e transporte — operadores logísticos e gestão da cadeia de suprimentos
+35,38,0.7482,expert,Publicidade/marketing e telecomunicações — agências digitais e provedores de mídia
+35,39,0.7804,expert,Gestão de negócios e transporte — operadores logísticos e gestão da cadeia de suprimentos
 35,40,0.8298,collisions_config,
-35,41,0.65,expert,Publicidade e entretenimento — agências de marketing de conteúdo e produtoras
-35,42,0.68,expert,Gestão de negócios e serviços de TI — consultorias que integram gestão e tecnologia
-35,43,0.65,expert,Gestão de negócios e restaurantes — franquias e gestão de redes de alimentação
+35,41,0.8372,expert,Publicidade e entretenimento — agências de marketing de conteúdo e produtoras
+35,42,0.7541,expert,Gestão de negócios e serviços de TI — consultorias que integram gestão e tecnologia
+35,43,0.6576,expert,Gestão de negócios e restaurantes — franquias e gestão de redes de alimentação
 35,44,0.8727,collisions_config,
 35,45,0.92,collisions_config,
-36,37,0.65,expert,Serviços financeiros/imobiliários e construção — mercado imobiliário integrado
+36,37,0.7005,expert,Serviços financeiros/imobiliários e construção — mercado imobiliário integrado
 36,38,0.8632,tabela_correlacoes,
-36,39,0.55,expert,"Serviços financeiros e transporte — seguros de veículos, logística financeira"
+36,39,0.7866,expert,"Serviços financeiros e transporte — seguros de veículos, logística financeira"
 36,40,0.8085,tabela_correlacoes,
 36,41,0.8788,collisions_config,
-36,42,0.72,expert,"Serviços financeiros e TI — fintechs, bancos digitais, software financeiro"
-36,43,0.55,expert,"Serviços financeiros e hospedagem — seguro viagem, serviços de turismo financeiro"
+36,42,0.7545,expert,"Serviços financeiros e TI — fintechs, bancos digitais, software financeiro"
+36,43,0.6995,expert,"Serviços financeiros e hospedagem — seguro viagem, serviços de turismo financeiro"
 36,44,0.898,collisions_config,
-36,45,0.72,expert,"Serviços financeiros e jurídicos — escritórios de advocacia financeira, compliance"
+36,45,0.8681,expert,"Serviços financeiros e jurídicos — escritórios de advocacia financeira, compliance"
 37,38,0.8089,tabela_correlacoes,
-37,39,0.8308,collisions_config,
-37,40,0.65,expert,Serviços de construção/reparo e tratamento de materiais — serviços industriais complementares
+37,39,0.8438,collisions_config,
+37,40,0.7554,expert,Serviços de construção/reparo e tratamento de materiais — serviços industriais complementares
 37,41,0.8198,collisions_config,
 37,42,0.8,expert,Serviços de construção e arquitetura/engenharia — serviços complementares na construção
 37,43,0.8177,tabela_correlacoes,
 37,44,0.8693,tabela_correlacoes,
 37,45,0.8496,tabela_correlacoes,
-38,39,0.55,expert,"Telecomunicações e transporte — rastreamento, logística conectada, mesma infraestrutura"
+38,39,0.7536,expert,"Telecomunicações e transporte — rastreamento, logística conectada, mesma infraestrutura"
 38,40,0.8041,tabela_correlacoes,
-38,41,0.72,expert,"Telecomunicações e entretenimento — streaming, rádio e TV via internet, mesmo player"
+38,41,0.7287,expert,"Telecomunicações e entretenimento — streaming, rádio e TV via internet, mesmo player"
 38,42,0.88,expert,"Telecomunicações e serviços de TI — convergência digital, mesmo mercado tech"
 38,43,0.9151,tabela_correlacoes,
 38,44,0.9034,tabela_correlacoes,
 38,45,0.8782,tabela_correlacoes,
 39,40,0.8412,collisions_config,
-39,41,0.65,expert,Transporte/turismo e entretenimento — operadoras de turismo com entretenimento integrado
-39,42,0.68,expert,"Transporte e TI — plataformas de mobilidade, apps de transporte, logtech"
+39,41,0.8182,expert,Transporte/turismo e entretenimento — operadoras de turismo com entretenimento integrado
+39,42,0.8772,expert,"Transporte e TI — plataformas de mobilidade, apps de transporte, logtech"
 39,43,0.78,expert,"Transporte e hospedagem — serviços de turismo integrado, mesmo consumidor"
 39,44,0.847,collisions_config,
 39,45,0.8767,tabela_correlacoes,
@@ -795,13 +795,13 @@ ncl_a,ncl_b,afinidade,fonte,descricao
 40,43,0.8508,collisions_config,
 40,44,0.8853,collisions_config,
 40,45,0.8328,collisions_config,
-41,42,0.75,expert,"Entretenimento/educação e serviços de TI/pesquisa — edtech, plataformas de ensino online"
-41,43,0.75,expert,"Entretenimento e restaurantes — bares temáticos, parques com alimentação, mesmo público"
+41,42,0.8024,expert,"Entretenimento/educação e serviços de TI/pesquisa — edtech, plataformas de ensino online"
+41,43,0.758,expert,"Entretenimento e restaurantes — bares temáticos, parques com alimentação, mesmo público"
 41,44,0.8955,collisions_config,
-41,45,0.48,expert,Entretenimento/educação e serviços jurídicos — overlap em mediação e arbitragem de conflitos
+41,45,0.6986,expert,Entretenimento/educação e serviços jurídicos — overlap em mediação e arbitragem de conflitos
 42,43,0.8309,tabela_correlacoes,
-42,44,0.65,expert,"Serviços de TI e saúde — telemedicina, healthtech, prontuário eletrônico"
-42,45,0.6,expert,TI e serviços jurídicos/segurança — cybersegurança e privacidade de dados
+42,44,0.7551,expert,"Serviços de TI e saúde — telemedicina, healthtech, prontuário eletrônico"
+42,45,0.7741,expert,TI e serviços jurídicos/segurança — cybersegurança e privacidade de dados
 43,44,0.9082,tabela_correlacoes,
 43,45,0.8738,tabela_correlacoes,
 44,45,0.65,expert,"Serviços de saúde e serviços pessoais — bem-estar, SPAs, serviços de cuidados pessoais"
