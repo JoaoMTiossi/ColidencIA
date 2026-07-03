@@ -215,9 +215,22 @@ class TestCamada1:
         assert alertas[0]["classificacao"] == "MEDIA"
 
     def test_nucleo_identico_cross_class_nao_colidente_nivel(self):
-        """Núcleo idêntico em classes sem relação → VIGIAR."""
-        carteira = [_marca("IBM BRASIL", 35)]
-        rpi = [_marca("IBM SOLUCOES", 12)]   # NCL 35 × 12 não colidem
+        """Núcleo idêntico em classes sem relação → VIGIAR.
+
+        NCL 1 × 45 (não 35 × 12 como antes): desde a unificação de "classes
+        colidem" via classes_afins (mesma regra material da elegibilidade
+        do C2), a classe 35 é transversal e tem piso AFINIDADE_TRANSVERSAL
+        (0.70) de afinidade contra QUALQUER outra classe — por design
+        (CLASSES_TRANSVERSAIS em config.py: uma marca de comércio/varejo
+        classe 35 pode legitimamente colidir com o produto correspondente
+        em qualquer classe de bens). Logo 35×12 agora é um par que colide
+        de fato, não mais um exemplo válido de "sem relação". NCL 1×45 não
+        está na matriz COLLISIONS nem tem afinidade tabelada/transversal
+        (_afinidade_classes(1, 45) ≈ 0.52 < 0.60), preservando o cenário
+        original do teste.
+        """
+        carteira = [_marca("IBM BRASIL", 1)]
+        rpi = [_marca("IBM SOLUCOES", 45)]   # NCL 1 × 45 não colidem
         alertas, _ = camada1(carteira, rpi)
         assert alertas[0]["nivel"] == "VIGIAR"
         assert alertas[0]["score_final"] == 0.70

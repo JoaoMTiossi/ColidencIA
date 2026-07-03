@@ -87,6 +87,23 @@ def _afinidade_classes(ncl_a: int, ncl_b: int) -> float:
     return 0.0
 
 
+@lru_cache(maxsize=4096)
+def classes_afins(ncl_a: int, ncl_b: int) -> bool:
+    """
+    Retorna True se as classes NCL a e b têm afinidade real >= 0.60.
+
+    Fonte única de verdade para "classes colidem" — a MESMA regra material
+    usada pela elegibilidade de blocking do C2 (_classes_elegiveis): cobre
+    mesma classe (0.95), afinidade tabelada em especificacoes_correlatas.csv,
+    classes transversais/não-classificada (piso AFINIDADE_TRANSVERSAL) e o
+    fallback da matriz COLLISIONS (0.60). Substitui classes_colidem() (que
+    usa só COLLISIONS) nos pontos que gravam/decidem colidência de fato,
+    para que um par elegível via CSV não chegue ao relatório com o flag
+    "não colidem".
+    """
+    return _afinidade_classes(ncl_a, ncl_b) >= 0.60
+
+
 # ---------------------------------------------------------------------------
 # Estratégia 3C (legado) — TF-IDF cosine similarity
 # Mantido como fallback caso os embeddings não estejam disponíveis.

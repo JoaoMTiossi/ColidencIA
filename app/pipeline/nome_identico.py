@@ -4,8 +4,8 @@ Hash lookup: se nomes normalizados são iguais → colidência automática.
 """
 from __future__ import annotations
 
-from ..config import classes_colidem
 from ..utils.normalizacao import normalizar_para_hash
+from .especificacao import classes_afins
 
 
 def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dict]]:
@@ -66,7 +66,7 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
 
         # Match por nome completo idêntico
         for idx_c, marca_base in carteira_por_hash.get(hash_rpi, []):
-            colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
+            colidem = classes_afins(marca_base["ncl"], marca_rpi["ncl"])
             alertas.append(_criar_alerta(
                 marca_base=marca_base,
                 marca_rpi=marca_rpi,
@@ -89,7 +89,7 @@ def camada1(carteira: list[dict], rpi: list[dict]) -> tuple[list[dict], list[dic
                     continue  # par já capturado por nome_identico — mais forte
                 if marca_base.get("is_marca_generica"):
                     continue
-                colidem = classes_colidem(marca_base["ncl"], marca_rpi["ncl"])
+                colidem = classes_afins(marca_base["ncl"], marca_rpi["ncl"])
                 alertas.append(_criar_alerta(
                     marca_base=marca_base,
                     marca_rpi=marca_rpi,

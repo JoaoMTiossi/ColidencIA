@@ -23,11 +23,12 @@ from __future__ import annotations
 
 from collections import defaultdict
 
-from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, ELEMENTOS_DESGASTADOS, THRESHOLD_FONETICO, classes_colidem
+from ..config import CLASSES_TRANSVERSAIS, COLLISIONS, ELEMENTOS_DESGASTADOS, THRESHOLD_FONETICO
 from ..utils.distintividade import tokens_distintivos
 from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import jaccard_bigramas, normalizar_base
 from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
+from .especificacao import classes_afins
 
 
 _AFINIDADE_MIN_CLASSE: float = 0.60
@@ -286,7 +287,7 @@ def camada2(
         for marca_base in todos_candidatos:
             score = _score_fonetico(marca_base, marca_rpi)
             if score >= THRESHOLD_FONETICO:
-                col = classes_colidem(marca_base.get("ncl", 0), ncl_rpi)
+                col = classes_afins(marca_base.get("ncl", 0), ncl_rpi)
                 candidatos.append(_criar_candidato(marca_base, marca_rpi, score, col))
 
     return candidatos, []
