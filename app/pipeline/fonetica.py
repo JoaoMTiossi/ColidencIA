@@ -22,6 +22,7 @@ A busca usa match exato para tokens/núcleo e Levenshtein-1 para nome completo.
 from __future__ import annotations
 
 from collections import defaultdict
+from functools import lru_cache
 
 from ..config import (
     CLASSES_TRANSVERSAIS,
@@ -40,12 +41,22 @@ from .especificacao import classes_afins
 _AFINIDADE_MIN_CLASSE: float = 0.60
 
 
-def _classes_elegiveis(ncl: int) -> set[int]:
-    """Retorna o conjunto de classes NCL elegíveis para comparação com ncl."""
+@lru_cache(maxsize=64)
+def _classes_elegiveis(ncl: int) -> frozenset[int]:
+    """Retorna o conjunto (imutável) de classes NCL elegíveis para comparação com ncl.
+
+    Cacheado com lru_cache: esta função é chamada uma vez por marca da RPI e,
+    sem cache, varria o dict de correlatas inteiro a cada chamada — como o
+    universo de valores de `ncl` é pequeno (classes NCL 0-45), o cache satura
+    rapidamente e elimina a varredura repetida. Retorna frozenset porque o
+    resultado é compartilhado entre todas as chamadas com o mesmo `ncl`
+    (mutar o retorno corromperia o cache); nenhum caller deve mutar o
+    conjunto retornado.
+    """
     from .especificacao import _carregar_correlatas
     elegiveis: set[int] = {ncl}
     if ncl in CLASSES_TRANSVERSAIS or ncl == 0:
-        return set(range(0, 46))
+        return frozenset(range(0, 46))
     correlatas = _carregar_correlatas()
     for (a, b), af in correlatas.items():
         if a == ncl and af >= _AFINIDADE_MIN_CLASSE:
@@ -54,7 +65,7 @@ def _classes_elegiveis(ncl: int) -> set[int]:
         elegiveis.add(cls)
     elegiveis |= CLASSES_TRANSVERSAIS
     elegiveis.add(0)
-    return elegiveis
+    return frozenset(elegiveis)
 
 
 def _levenshtein_1(a: str, b: str) -> bool:
@@ -76,7 +87,7 @@ def _levenshtein_1(a: str, b: str) -> bool:
 def _busca_exata(
     codigo: str,
     index: dict[tuple[int, str], list[dict]],
-    classes: set[int],
+    classes: frozenset[int],
 ) -> list[dict]:
     """Busca marcas no bucket exato de cada classe elegível."""
     resultado: list[dict] = []
@@ -88,7 +99,7 @@ def _busca_exata(
 def _busca_com_vizinhos(
     codigo: str,
     index: dict[tuple[int, str], list[dict]],
-    classes: set[int],
+    classes: frozenset[int],
     chaves_por_classe: dict[int, list[str]],
 ) -> list[dict]:
     """Busca no bucket exato + buckets com Levenshtein-1 (tolerância a variações).
@@ -97,10 +108,18 @@ def _busca_com_vizinhos(
     apenas os códigos da classe corrente — sem isso, cada busca percorria
     TODAS as chaves do índice para cada classe elegível (O(classes × chaves)),
     o que degenerava em quase full-scan com carteiras grandes.
+
+    Códigos metaphone de 1-2 caracteres têm vizinhança Levenshtein-1 enorme
+    (qualquer código de até 3 caracteres com 1 edição é "vizinho"), gerando
+    ruído sem sinal fonético real — para esses, pula-se o loop de vizinhos e
+    faz-se apenas busca exata.
     """
     resultado: list[dict] = []
+    busca_vizinhos = len(codigo) > 2
     for cls in classes:
         resultado.extend(index.get((cls, codigo), []))
+        if not busca_vizinhos:
+            continue
         for k in chaves_por_classe.get(cls, ()):
             if k != codigo and _levenshtein_1(codigo, k):
                 resultado.extend(index[(cls, k)])
@@ -326,6 +345,9 @@ def camada2(
         #    bigramas compartilhados por marca e só calcula o Jaccard exato para
         #    quem atinge o mínimo necessário: J = i/(a+b-i) ≥ 0.3 com b ≥ i
         #    implica i ≥ 0.3·a — condição necessária usada como pré-filtro.
+        #    NOTA: subir o corte para 0.4 (alinhado ao threshold final de
+        #    score 0.60) foi avaliado e revertido — custava 1 TP do gold set
+        #    (335→334), então o corte permanece em 0.3 (ver TAREFA D, item 3).
         cands_bigrama: list[dict] = []
         if bg_rpi:
             contagem: dict[int, list] = {}  # id(marca) → [marca, n_compartilhados]
