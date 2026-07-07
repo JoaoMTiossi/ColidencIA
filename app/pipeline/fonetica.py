@@ -272,6 +272,16 @@ def camada2(
         for bg in marca.get("bigrams_set", ()):
             indice_bigrama[(ncl, bg)].append(marca)
 
+        # 5b. Bigramas do NÚCLEO distintivo — o índice do nome completo dilui
+        #     o Jaccard quando o nome tem muitas palavras descritivas
+        #     ("MECÂNICA DE MACTECH" × "MARCTEC": nomes divergem, núcleos
+        #     "mactech"/"marctec" compartilham 4 de 6 bigramas). Indexado com
+        #     prefixo para não colidir com os bigramas do nome.
+        nuc_dist = (marca.get("nucleo_distintivo") or "").replace(" ", "")
+        if len(nuc_dist) >= 4:
+            for i in range(len(nuc_dist) - 1):
+                indice_bigrama[(ncl, "n:" + nuc_dist[i:i + 2])].append(marca)
+
         # 6. Índice GLOBAL (sem classe na chave) — bypass de classe para
         #    sinal fonético muito forte. Mesmas chaves fortes do índice por
         #    classe, sem o gate de elegibilidade de classe.
@@ -366,6 +376,30 @@ def camada2(
                     bg_cart = marca.get("bigrams_set", set())
                     union = len(bg_rpi | bg_cart)
                     if union > 0 and inter / union >= 0.3:
+                        cands_bigrama.append(marca)
+
+        # 4b. Bigramas do núcleo distintivo (Jaccard >= 0.5, mais exigente por
+        #     ser string curta) — recupera variações do núcleo que o nome
+        #     completo dilui e que o metaphone separa ("mactech"/"marctec").
+        nuc_dist_rpi = (marca_rpi.get("nucleo_distintivo") or "").replace(" ", "")
+        if len(nuc_dist_rpi) >= 4:
+            bg_nuc_rpi = {nuc_dist_rpi[i:i + 2] for i in range(len(nuc_dist_rpi) - 1)}
+            contagem_n: dict[int, list] = {}
+            for cls in classes_ok:
+                for bg in bg_nuc_rpi:
+                    for marca in indice_bigrama.get((cls, "n:" + bg), ()):
+                        mid = id(marca)
+                        ent = contagem_n.get(mid)
+                        if ent is None:
+                            contagem_n[mid] = [marca, 1]
+                        else:
+                            ent[1] += 1
+            for marca, inter in contagem_n.values():
+                if inter >= 0.5 * len(bg_nuc_rpi):
+                    nd = (marca.get("nucleo_distintivo") or "").replace(" ", "")
+                    bg_c = {nd[i:i + 2] for i in range(len(nd) - 1)}
+                    union = len(bg_nuc_rpi | bg_c)
+                    if union > 0 and inter / union >= 0.5:
                         cands_bigrama.append(marca)
 
         # 5. Bypass de classe: consulta o índice global com as mesmas chaves

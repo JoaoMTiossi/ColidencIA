@@ -156,6 +156,9 @@ def normalizar_base(text: str, considerar_dobra: bool = False) -> str:
         lambda m: m.group(0).replace(".", ""),
         t,
     )
+    # Letra única + ponto + palavra: estilização de nome ("I.DEAL" → "ideal",
+    # "D.CASA" → "dcasa") — o ponto é ornamental, não separador de sigla.
+    t = re.sub(r"(?<![a-z\d])([a-z])\.(?=[a-z]{2,})", r"\1", t)
     # Hífen entre palavras → espaço
     t = re.sub(r"(?<=\w)-(?=\w)", " ", t)
     # & entre letras → concatena sem espaço (L&L → LL, M&M → MM, S&P → SP)

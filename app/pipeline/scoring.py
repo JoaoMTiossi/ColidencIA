@@ -135,7 +135,7 @@ def _af_minima(s_sim: float) -> float:
     if s_sim >= 0.65:
         return 0.68   # Similaridade média-baixa
     if s_sim >= 0.55:
-        return 0.85   # Baixa similaridade: precisa de afinidade muito alta
+        return 0.80   # Baixa similaridade: precisa de afinidade muito alta
     return 1.01        # Impossível — descarta
 
 
@@ -224,7 +224,7 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         desg_a = {t for t in normalizar_base(par.get("marca_base", "")).split()
                   if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
         desgastado_comum = False
-        if desg_a and af_classes >= 0.65:
+        if desg_a and af_classes >= 0.60:
             desg_b = {t for t in normalizar_base(par.get("marca_rpi", "")).split()
                       if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
             desgastado_comum = bool(desg_a & desg_b)

@@ -229,6 +229,8 @@ COMPLEMENTOS_DESCRITIVOS: frozenset[str] = frozenset({
     "agencia", "agencias",
     # Gastronomia — tipos de estabelecimento que faltavam
     "tapiocaria", "açaiteria", "acaiteria", "crepe", "creperia", "doceria",
+    # Perfumaria — estrangeirismos de setor (ex: KMEY PARFUM -> nucleo=kmey)
+    "parfum", "parfums", "perfumaria",
     # Hospedagem e turismo
     "resort", "pousada", "hotel", "hostel", "motel", "hotelaria",
     # Esporte/atividade física complementar
