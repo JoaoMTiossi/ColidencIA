@@ -139,8 +139,12 @@ def normalizar_base(text: str, considerar_dobra: bool = False) -> str:
     # para não tocar em artigos/preposições minúsculos como "a", "o", "e").
     # Exemplos: "M G" → "MG", "H.O.F" → "HOF", "M. G." → "MG", "J C B" → "JCB"
     # Requer sequência de 2+ letras maiúsculas separadas só por espaços/pontos.
+    # Os lookarounds incluem letras ACENTUADAS (À-ÖØ-öø-ÿ): sem isso, o "O" final
+    # de "CONSTRUÇÃO" era tratado como letra isolada (Ã ∉ [A-Za-z]) e
+    # "CONSTRUÇÃO E REFORMAS" colapsava para "construcaoe reformas" — corrompendo
+    # o núcleo e disparando is_sigla=True em nomes longos.
     t = re.sub(
-        r"(?<![A-Za-z\d])([A-Z])(?:[. ]+[A-Z])+[. ]*(?![A-Za-z\d])",
+        r"(?<![A-Za-zÀ-ÖØ-öø-ÿ\d])([A-Z])(?:[. ]+[A-Z])+[. ]*(?![A-Za-zÀ-ÖØ-öø-ÿ\d])",
         lambda m: re.sub(r"[. ]", "", m.group(0)),
         t,
     )

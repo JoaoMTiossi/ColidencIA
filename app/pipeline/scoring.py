@@ -213,16 +213,36 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # afinidade mercadológica (risco de diluição / prazo de oposição).
         nucleo_forte = max(md if md is not None else 0.0, s_nome) >= 0.92
 
+        # Vigilância de termo desgastado idêntico: quando as duas marcas
+        # compartilham o MESMO termo desgastado ("TOP" × "TOP SENSE",
+        # "MAX EVENTOS" × "MAX MUSIC") em classes com afinidade real, o
+        # titular da marca fraca precisa do alerta (prazo de oposição) mesmo
+        # sem distintividade — o gold set do especialista marca esses pares.
+        # O par não é descartado pelos gates; o piso é o threshold (score
+        # mínimo → classificação BAIXA) e o nível de severidade comunica a
+        # prioridade real (VIGIAR/MEDIA), espelhando o modelo do nucleo_forte.
+        desg_a = {t for t in normalizar_base(par.get("marca_base", "")).split()
+                  if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
+        desgastado_comum = False
+        if desg_a and af_classes >= 0.65:
+            desg_b = {t for t in normalizar_base(par.get("marca_rpi", "")).split()
+                      if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
+            desgastado_comum = bool(desg_a & desg_b)
+
         # ── Gate: Regra Inversa LPI ────────────────────────────────────────
-        # Melhor evidência de similaridade entre os sinais
-        s_sim = max(s_nome, s_nucleo, s_fon_adj)
+        # Melhor evidência de similaridade entre os sinais. Inclui md: a
+        # similaridade do ELEMENTO DISTINTIVO é o sinal juridicamente
+        # relevante (art. 124, XIX) — sem ele, pares como "MM MARCIEL
+        # CONSTRUÇÃO" × "MACIEL EDIFICA" (md=0.72, nome completo divergente)
+        # eram descartados com exigência de afinidade impossível (1.01).
+        s_sim = max(s_nome, s_nucleo, s_fon_adj, md if md is not None else 0.0)
         # Melhor evidência de afinidade mercadológica
         s_af = max(s_spec, af_classes)
 
         # Se a afinidade disponível não alcança o mínimo para este nível de
         # similaridade, o par não configura risco — EXCETO quando o núcleo é
         # idêntico/quase (vigilância marcária supera a Regra Inversa).
-        if s_af < _af_minima(s_sim) and not nucleo_forte:
+        if s_af < _af_minima(s_sim) and not nucleo_forte and not desgastado_comum:
             continue
         # ──────────────────────────────────────────────────────────────────
 
@@ -239,7 +259,7 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # Gate: ambos núcleos triviais — só passa se quase idêntico ou
         # mesma classe com núcleo quase igual
         ambos_genericos = par.get("nucleo_base_generico") and par.get("nucleo_rpi_generico")
-        if ambos_genericos:
+        if ambos_genericos and not desgastado_comum:
             if s_nome < 0.92 and not (ncl_a == ncl_b and s_nucleo >= 0.95):
                 continue
 
@@ -272,7 +292,16 @@ def camada4(candidatos: list[dict]) -> list[dict]:
                 s_fon >= 0.90 or s_nucleo >= 0.90
                 or (s_fon >= 0.80 and s_spec >= 0.70)
             )
-            if not allow_mc and not allow_xc:
+            # Containment de núcleo: todos os tokens do núcleo distintivo de
+            # uma marca aparecem no da outra ("CHEF" ⊂ "DU CHEF", "CANA" ⊂
+            # "APIARIOS CANA") com afinidade de mercado relevante — o núcleo
+            # menor está reproduzido dentro do maior (vigilância marcária).
+            if not allow_mc and not allow_xc and s_spec >= 0.75:
+                toks_na = set((par.get("nucleo_distintivo_base") or "").split())
+                toks_nb = set((par.get("nucleo_distintivo_rpi") or "").split())
+                if toks_na and toks_nb and (toks_na <= toks_nb or toks_nb <= toks_na):
+                    allow_mc = allow_xc = True
+            if not allow_mc and not allow_xc and not desgastado_comum:
                 if s_nome < 0.92:
                     continue
         elif mesma_classe:
@@ -290,7 +319,28 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             # Inclui s_fon_adj no sinal cross-class: fonética alta é evidência tão
             # forte quanto similaridade de nome para detectar cópia fonética.
             s_sem = par.get("score_spec_semantico", 0.0) or 0.0
-            s_sig_cross = max(md if md is not None else 0, s_nome, s_fon_adj)
+            # Sinal cross-class enriquecido com dois detectores de variação:
+            #   • Aglutinação: "KI SABOR" × "KISABOR" — JW dos núcleos
+            #     distintivos SEM espaços reaproxima o que a tokenização separa.
+            #   • Primeiro token do núcleo: "IMPÉRIO x" × "IMPÉRIO y" — o token
+            #     líder idêntico é o elemento primário mesmo quando removido de
+            #     tokens_distintivos pelo vocabulário de corpus.
+            from ..utils.similaridade import jaro_winkler as _jw
+            nuc_a = par.get("nucleo_distintivo_base") or par.get("nucleo_base", "")
+            nuc_b = par.get("nucleo_distintivo_rpi") or par.get("nucleo_rpi", "")
+            jw_colado = 0.0
+            jw_first_tok = 0.0
+            if nuc_a and nuc_b:
+                jw_colado = _jw(nuc_a.replace(" ", ""), nuc_b.replace(" ", ""))
+                ft_a, ft_b = nuc_a.split()[0], nuc_b.split()[0]
+                if len(ft_a) >= 3 and len(ft_b) >= 3:
+                    sim_ft = _jw(ft_a, ft_b)
+                    if sim_ft >= 0.92:
+                        jw_first_tok = sim_ft
+            s_sig_cross = max(
+                md if md is not None else 0, s_nome, s_fon_adj,
+                jw_colado, jw_first_tok,
+            )
             # Bypass de classe (C2): par cross-class sem afinidade de blocking
             # cujo sinal de nome/núcleo é muito forte. Os gates de sig/afinidade
             # abaixo foram calibrados para pares que já passaram pelo filtro de
@@ -301,7 +351,7 @@ def camada4(candidatos: list[dict]) -> list[dict]:
             bypass_forte = bool(par.get("bypass_classe")) and (
                 nucleo_forte or _nucleos_metafonicamente_equivalentes(par)
             )
-            if not nucleo_forte and not bypass_forte:
+            if not nucleo_forte and not bypass_forte and not desgastado_comum:
                 # Escape graduado: sinal moderado (≥ 0.70) é aceito quando a
                 # afinidade de especificação é alta (≥ 0.80) — mercado próximo
                 # compensa sinal de nome intermediário.
@@ -352,7 +402,7 @@ def camada4(candidatos: list[dict]) -> list[dict]:
         # Vigilância marcária: núcleo idêntico/quase não pode ser descartado
         # pelo threshold de score — recebe piso para sobreviver. O nível de
         # severidade (atribuído abaixo) é quem comunica a prioridade real.
-        if nucleo_forte:
+        if nucleo_forte or desgastado_comum:
             score = max(score, threshold)
 
         if score >= threshold:

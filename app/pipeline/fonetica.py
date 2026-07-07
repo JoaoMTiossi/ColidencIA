@@ -484,6 +484,19 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
                     if score_containment:
                         break
 
+    # Token DESGASTADO compartilhado ("KING" ⊂ "KING MASSAS" e "BREAD KING"):
+    # tokens_distintivos remove esses termos, então o containment acima nunca
+    # os vê — mas o especialista marca esses pares para vigilância quando o
+    # termo desgastado é o elemento de ligação. Crédito 0.62: acima do
+    # THRESHOLD_FONETICO (0.60) para virar candidato, baixo o suficiente para
+    # que C3 (afinidade) e C4 (gates de distintividade) decidam o mérito.
+    if not score_containment:
+        desg_a = {t for t in nome_a.split() if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
+        if desg_a:
+            desg_b = {t for t in nome_b.split() if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
+            if desg_a & desg_b:
+                score_containment = 0.62
+
     # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
             or len(nome_a) <= 4 or len(nome_b) <= 4):
