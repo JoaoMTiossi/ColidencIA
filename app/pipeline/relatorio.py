@@ -20,6 +20,9 @@ import openpyxl
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
+from ..config import ELEMENTOS_DESGASTADOS
+from ..utils.normalizacao import normalizar_base
+
 # ---------------------------------------------------------------------------
 # Paleta e estilos
 # ---------------------------------------------------------------------------
@@ -29,6 +32,7 @@ _COR_TITULO_BG = "2E75B6"   # azul médio (título do relatório)
 _COR_META_BG = "D6E4F0"    # azul muito claro (linhas de metadados)
 _COR_OPOSICAO = "FDECEA"   # vermelho claro
 _COR_PAN = "FFF3CD"        # amarelo claro
+_COR_VIGILANCIA_AGRUPADA = "E7E6E6"  # cinza claro (linha-resumo de vigilância)
 
 _BORDA_FINA = Border(
     left=Side(style="thin"),
@@ -149,6 +153,71 @@ def _aplicar_estilo_header_col(ws, row_num: int, headers: list[str], bg: str, fg
 
 
 # ---------------------------------------------------------------------------
+# Agrupamento de vigilância (aba Relatório) — reduz poluição de termos comuns
+# ---------------------------------------------------------------------------
+#
+# Alertas fracos (nivel VIGIAR ou classificacao BAIXA) cujo único elo entre as
+# marcas é um termo desgastado compartilhado ("MEGA", "TOP", "MAX"...) geram,
+# por RPI, dezenas de linhas quase idênticas na aba de entrega ao cliente
+# ("MEGA X" × "MEGA Y", "MEGA X" × "MEGA Z", ...). Agrupamos essas linhas em
+# um único resumo por (marca_base, token desgastado comum) — os pares
+# individuais continuam TODOS disponíveis na aba "Análise Técnica".
+
+def _token_desgastado_comum(r: dict) -> str | None:
+    """Token de ELEMENTOS_DESGASTADOS compartilhado pelas duas marcas do par,
+    ou None se não houver nenhum em comum.
+
+    Recomputa sobre o nome normalizado em vez de depender só do booleano
+    ``is_desgastado`` (que só indica que ALGUMA das duas tem termo
+    desgastado, não que é o mesmo termo compartilhado pelas duas).
+    """
+    toks_base = set(normalizar_base(r.get("marca_base", "")).split())
+    toks_rpi = set(normalizar_base(r.get("marca_rpi", "")).split())
+    comuns = (toks_base & toks_rpi) & ELEMENTOS_DESGASTADOS
+    if not comuns:
+        return None
+    # Desempate determinístico: token mais longo primeiro, depois alfabético.
+    return sorted(comuns, key=lambda t: (-len(t), t))[0]
+
+
+def _elegivel_para_agrupamento(r: dict) -> str | None:
+    """Retorna o token desgastado comum se o alerta é candidato a agrupamento
+    de vigilância (nivel VIGIAR ou classificacao BAIXA), senão None."""
+    if r.get("nivel") != "VIGIAR" and r.get("classificacao") != "BAIXA":
+        return None
+    return _token_desgastado_comum(r)
+
+
+def _agrupar_vigilancia(resultados: list[dict]) -> list[dict]:
+    """
+    Consolida alertas fracos de vigilância de termo desgastado em linhas-resumo.
+
+    Retorna uma lista de "linhas" na ordem de primeira aparição: alertas
+    ALTA/MEDIA (e BAIXA/VIGIAR sem token desgastado comum) passam adiante
+    como {"resumo": None, "dados": r}; grupos de (marca_base, token) viram
+    uma única {"resumo": {"token": ..., "count": ..., "amostra": r}} na
+    posição da primeira ocorrência do grupo.
+    """
+    grupos: dict[tuple, dict] = {}
+    linhas: list[dict] = []
+
+    for r in resultados:
+        token = _elegivel_para_agrupamento(r)
+        if token is None:
+            linhas.append({"resumo": None, "dados": r})
+            continue
+        chave = (r.get("marca_base", ""), token)
+        grp = grupos.get(chave)
+        if grp is None:
+            grp = {"token": token, "count": 0, "amostra": r}
+            grupos[chave] = grp
+            linhas.append({"resumo": grp})
+        grp["count"] += 1
+
+    return linhas
+
+
+# ---------------------------------------------------------------------------
 # Aba 1 — Relatório (formato de entrega ao cliente)
 # ---------------------------------------------------------------------------
 
@@ -214,43 +283,75 @@ def _build_aba_relatorio(
     ws.row_dimensions[7].height = 22
 
     # --- Dados (a partir da linha 8) ---
+    # Alertas fracos de vigilância de termo desgastado (nivel VIGIAR ou
+    # classificacao BAIXA) que compartilham o mesmo termo desgastado são
+    # agrupados em uma única linha-resumo por (marca_base, token) — os pares
+    # individuais continuam TODOS na aba "Análise Técnica" (nada é perdido).
+    linhas = _agrupar_vigilancia(resultados)
+
     fill_oposicao = PatternFill(start_color=_COR_OPOSICAO, end_color=_COR_OPOSICAO, fill_type="solid")
     fill_pan = PatternFill(start_color=_COR_PAN, end_color=_COR_PAN, fill_type="solid")
+    fill_vigilancia = PatternFill(
+        start_color=_COR_VIGILANCIA_AGRUPADA, end_color=_COR_VIGILANCIA_AGRUPADA, fill_type="solid"
+    )
     font_data = Font(size=10)
+    font_vigilancia = Font(size=10, italic=True)
     align_centro = Alignment(horizontal="center", vertical="center")
     align_esq = Alignment(horizontal="left", vertical="center")
 
-    for i, r in enumerate(resultados, start=8):
-        tipo_acao = r.get("tipo_acao", "")
-        tipo = _tipo_label(tipo_acao)
-        prazo = _prazo(rpi_data, tipo_acao)
+    for i, linha in enumerate(linhas, start=8):
+        resumo = linha.get("resumo")
+        if resumo is not None:
+            r = resumo["amostra"]
+            token = resumo["token"]
+            n = resumo["count"]
+            valores = [
+                r.get("processo_base", ""),
+                r.get("marca_base", ""),
+                _ncl_label(r.get("ncl_base", 0), r.get("ncl_versao_base", 12)),
+                r.get("titular_base", ""),
+                "",
+                f"'{token.upper()}': {n} marcas da RPI (vigilância)",
+                "",
+                "",
+                "",
+                "",
+            ]
+            row_fill = fill_vigilancia
+            font_row = font_vigilancia
+        else:
+            r = linha["dados"]
+            tipo_acao = r.get("tipo_acao", "")
+            tipo = _tipo_label(tipo_acao)
+            prazo = _prazo(rpi_data, tipo_acao)
 
-        row_fill = fill_oposicao if tipo_acao == "OPOSICAO" else fill_pan
+            row_fill = fill_oposicao if tipo_acao == "OPOSICAO" else fill_pan
+            font_row = font_data
 
-        valores = [
-            r.get("processo_base", ""),
-            r.get("marca_base", ""),
-            _ncl_label(r.get("ncl_base", 0), r.get("ncl_versao_base", 12)),
-            r.get("titular_base", ""),
-            r.get("processo_rpi", ""),
-            r.get("marca_rpi", ""),
-            _ncl_label(r.get("ncl_rpi", 0), 12),
-            tipo,
-            prazo,
-            r.get("despacho_nome", r.get("despacho_codigo", "")),
-        ]
+            valores = [
+                r.get("processo_base", ""),
+                r.get("marca_base", ""),
+                _ncl_label(r.get("ncl_base", 0), r.get("ncl_versao_base", 12)),
+                r.get("titular_base", ""),
+                r.get("processo_rpi", ""),
+                r.get("marca_rpi", ""),
+                _ncl_label(r.get("ncl_rpi", 0), 12),
+                tipo,
+                prazo,
+                r.get("despacho_nome", r.get("despacho_codigo", "")),
+            ]
 
         for col, val in enumerate(valores, start=1):
             cell = ws.cell(row=i, column=col, value=val)
             cell.fill = row_fill
-            cell.font = font_data
+            cell.font = font_row
             cell.border = _BORDA_FINA
             # Colunas de texto longo: alinhamento esquerda
             cell.alignment = align_esq if col in (2, 4, 6, 10) else align_centro
 
     # --- Formatação final ---
     ws.freeze_panes = "A8"
-    ws.auto_filter.ref = f"A7:{get_column_letter(n_cols)}{max(7, 7 + len(resultados))}"
+    ws.auto_filter.ref = f"A7:{get_column_letter(n_cols)}{max(7, 7 + len(linhas))}"
 
     larguras = [18, 35, 14, 35, 18, 35, 14, 12, 14, 45]
     for col, w in enumerate(larguras, start=1):
