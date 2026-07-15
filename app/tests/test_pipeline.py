@@ -486,6 +486,54 @@ class TestLoteIA:
         mapa = _parsear_resposta_lote(content, 1)
         assert mapa[1]["classificacao"] == "ALTA"
 
+    def test_prompt_menciona_criterio_de_termo_desgastado(self):
+        """Item 3a: critério de par de termo desgastado presente nos dois prompts."""
+        from app.pipeline.ia_refinamento import _SYSTEM_PROMPT, _SYSTEM_PROMPT_LOTE
+        for prompt in (_SYSTEM_PROMPT, _SYSTEM_PROMPT_LOTE):
+            assert "TERMO DESGASTADO" in prompt
+            assert "NENHUMA" in prompt
+
+    def test_ordem_prioridade_ia_poe_baixa_vigiar_primeiro(self):
+        """Item 3b: BAIXA/VIGIAR antes de MEDIA, que vem antes de ALTA;
+        ordem relativa preservada dentro de cada tier (estável)."""
+        from app.pipeline.ia_refinamento import _ordem_prioridade_ia
+
+        pares = [
+            {"classificacao": "ALTA", "nivel": "ALTA"},        # idx 0
+            {"classificacao": "BAIXA", "nivel": "VIGIAR"},     # idx 1
+            {"classificacao": "MEDIA", "nivel": "MEDIA"},      # idx 2
+            {"classificacao": "MEDIA", "nivel": "ALTA"},       # idx 3 (MEDIA por classificacao)
+            {"classificacao": "ALTA", "nivel": "VIGIAR"},      # idx 4 (VIGIAR manda: tier 0)
+            {"classificacao": "BAIXA", "nivel": "MEDIA"},      # idx 5 (BAIXA manda: tier 0)
+        ]
+        ordem = _ordem_prioridade_ia(pares)
+
+        # Tier 0 (BAIXA ou VIGIAR): índices 1, 4, 5 — nessa ordem relativa original.
+        assert ordem[:3] == [1, 4, 5]
+        # Tier 1 (MEDIA): índices 2, 3.
+        assert ordem[3:5] == [2, 3]
+        # Tier 2 (ALTA): índice 0.
+        assert ordem[5:] == [0]
+        # Nenhum índice perdido/duplicado — é uma permutação de range(len(pares)).
+        assert sorted(ordem) == list(range(len(pares)))
+
+    def test_ordem_prioridade_ia_respeita_limite_max_pares(self, monkeypatch):
+        """A reordenação acontece ANTES do corte por MAX_PARES_IA — pares da
+        banda poluída não são descartados pelo limite enquanto houver pares
+        ALTA sobrando."""
+        import app.pipeline.ia_refinamento as ia
+        monkeypatch.setattr(ia, "MAX_PARES_IA", 2)
+
+        pares = [
+            {"classificacao": "ALTA", "nivel": "ALTA"},   # idx 0
+            {"classificacao": "ALTA", "nivel": "ALTA"},   # idx 1
+            {"classificacao": "BAIXA", "nivel": "VIGIAR"},  # idx 2
+        ]
+        ordem = ia._ordem_prioridade_ia(pares)[:min(len(pares), ia.MAX_PARES_IA)]
+        # idx 2 (BAIXA/VIGIAR) deve entrar no corte; um dos ALTA fica de fora.
+        assert 2 in ordem
+        assert len(ordem) == 2
+
 
 class TestNomeProprioApresentacao:
     """Campos is_nome_proprio e apresentacao consumidos pelo pipeline (R5)."""

@@ -33,6 +33,7 @@ CRITÉRIOS (nesta ordem):
 3. AFINIDADE MERCADOLÓGICA: natureza, finalidade, complementariedade, canais, público, origem
 4. REGRA INVERSA: menor semelhança entre sinais → maior afinidade necessária
 5. EXCEÇÕES: elementos desgastados (analisar conjunto), siglas (só gráfico), marcas genéricas
+6. PARES DE TERMO DESGASTADO: quando o ÚNICO elemento comum entre as marcas é termo desgastado/genérico (TOP, MEGA, MAX, GOLD, SOLUÇÃO...), classifique NENHUMA salvo se o CONJUNTO das marcas for similar OU a especificação indicar concorrência direta e específica.
 
 CLASSIFICAÇÃO:
 - ALTA: reprodução/imitação clara + afinidade evidente
@@ -53,6 +54,7 @@ CRITÉRIOS (nesta ordem):
 3. AFINIDADE MERCADOLÓGICA: natureza, finalidade, complementariedade, canais, público, origem
 4. REGRA INVERSA: menor semelhança entre sinais → maior afinidade necessária
 5. EXCEÇÕES: elementos desgastados (analisar conjunto), siglas (só gráfico), marcas genéricas
+6. PARES DE TERMO DESGASTADO: quando o ÚNICO elemento comum entre as marcas é termo desgastado/genérico (TOP, MEGA, MAX, GOLD, SOLUÇÃO...), classifique NENHUMA salvo se o CONJUNTO das marcas for similar OU a especificação indicar concorrência direta e específica.
 
 CLASSIFICAÇÃO:
 - ALTA: reprodução/imitação clara + afinidade evidente
@@ -114,6 +116,39 @@ def _montar_prompt_lote(pares: list[dict]) -> str:
     return "\n\n".join(
         f"=== PAR {i + 1} ===\n{_montar_prompt_par(p)}" for i, p in enumerate(pares)
     )
+
+
+def _tier_prioridade_ia(par: dict) -> int:
+    """
+    Tier de prioridade de envio à IA — menor valor = enviado primeiro.
+
+    0 = banda poluída (nivel VIGIAR ou classificacao BAIXA): é onde se
+        acumulam os falsos positivos de termo comum ("MEGA" × "MEGA-x") —
+        a triagem da IA é mais valiosa (e mais urgente) aqui.
+    1 = MEDIA.
+    2 = ALTA (e qualquer outro valor): risco já mais evidente pelo score
+        composto — menor prioridade de triagem por IA.
+    """
+    if par.get("nivel") == "VIGIAR" or par.get("classificacao") == "BAIXA":
+        return 0
+    if par.get("classificacao") == "MEDIA":
+        return 1
+    return 2
+
+
+def _ordem_prioridade_ia(pares_scored: list[dict]) -> list[int]:
+    """
+    Índices ORIGINAIS de ``pares_scored`` reordenados por prioridade de envio
+    à IA: banda poluída (BAIXA/VIGIAR) primeiro, depois MEDIA, depois ALTA.
+
+    Ordenação estável — preserva a ordem relativa original dentro de cada
+    tier. Os valores retornados são índices na lista original, não posições
+    novas: quem consome esta lista deve usar o índice para atualizar
+    ``resultados[idx]`` (mapeamento global preservado, ver camada5_*_async).
+    """
+    indices = list(range(len(pares_scored)))
+    indices.sort(key=lambda i: _tier_prioridade_ia(pares_scored[i]))
+    return indices
 
 
 def _parsear_resposta_lote(content: str, n_pares: int) -> dict[int, dict]:
@@ -245,10 +280,15 @@ async def camada5_claude_async(
     client = AsyncAnthropic(api_key=ANTHROPIC_API_KEY)
     resultados = list(pares_scored)
     custo_acumulado = [custo_inicial]
-    pares_para_ia = min(len(pares_scored), MAX_PARES_IA)
+    # Prioriza a banda poluída (BAIXA/VIGIAR) dentro do limite MAX_PARES_IA —
+    # ver _ordem_prioridade_ia. Os índices em `ordem` são globais (posições
+    # em pares_scored/resultados), então o mapeamento resultados[idx] segue
+    # correto mesmo com a ordem de envio alterada.
+    ordem = _ordem_prioridade_ia(pares_scored)[:min(len(pares_scored), MAX_PARES_IA)]
+    pares_para_ia = len(ordem)
 
     grupos = [
-        [(i, pares_scored[i]) for i in range(inicio, min(inicio + PARES_POR_CHAMADA_IA, pares_para_ia))]
+        [(i, pares_scored[i]) for i in ordem[inicio:inicio + PARES_POR_CHAMADA_IA]]
         for inicio in range(0, pares_para_ia, PARES_POR_CHAMADA_IA)
     ]
 
@@ -388,10 +428,15 @@ async def camada5_openai_async(
     client = AsyncOpenAI(api_key=OPENAI_API_KEY)
     resultados = list(pares_scored)
     custo_acumulado = [custo_inicial]
-    pares_para_ia = min(len(pares_scored), MAX_PARES_IA)
+    # Prioriza a banda poluída (BAIXA/VIGIAR) dentro do limite MAX_PARES_IA —
+    # ver _ordem_prioridade_ia. Os índices em `ordem` são globais (posições
+    # em pares_scored/resultados), então o mapeamento resultados[idx] segue
+    # correto mesmo com a ordem de envio alterada.
+    ordem = _ordem_prioridade_ia(pares_scored)[:min(len(pares_scored), MAX_PARES_IA)]
+    pares_para_ia = len(ordem)
 
     grupos = [
-        [(i, pares_scored[i]) for i in range(inicio, min(inicio + PARES_POR_CHAMADA_IA, pares_para_ia))]
+        [(i, pares_scored[i]) for i in ordem[inicio:inicio + PARES_POR_CHAMADA_IA]]
         for inicio in range(0, pares_para_ia, PARES_POR_CHAMADA_IA)
     ]
 
