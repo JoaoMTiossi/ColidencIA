@@ -32,6 +32,7 @@ from ..config import (
     THRESHOLD_FONETICO_BYPASS,
 )
 from ..utils.distintividade import tokens_distintivos
+from ..utils.idf_corpus import peso_idf
 from ..utils.metaphone_ptbr import metaphone_ptbr
 from ..utils.normalizacao import jaccard_bigramas, normalizar_base
 from ..utils.similaridade import jaro_winkler, similaridade_fonetica, token_sort
@@ -39,6 +40,24 @@ from .especificacao import classes_afins
 
 
 _AFINIDADE_MIN_CLASSE: float = 0.60
+
+# Piso de segurança aplicado ao peso IDF quando ele participa do crédito de
+# token compartilhado que também funciona como GATE de candidatura (score
+# precisa superar THRESHOLD_FONETICO para o par nem virar candidato). Sem
+# piso, peso_idf(token desgastado) = 0.5 faria 0.62*0.5=0.31 (bem abaixo do
+# threshold 0.60) e derrubaria pares do gold set que dependem exclusivamente
+# do termo desgastado compartilhado (ex.: KING/MAX/TOP — ver docstring de
+# _score_fonetico). O piso preserva a maior parte do crédito no gate (que
+# decide passa/não-passa) enquanto ainda permite alguma dosagem: tokens
+# desgastados MUITO comuns no corpus (peso_idf < piso) não são elevados além
+# do piso, e o valor efetivo continua disponível a jusante (C4) como sinal
+# mais fraco que um token distintivo raro na mesma faixa.
+PISO_PESO_DESGASTADO_GATE: float = 0.97
+
+
+def _peso_idf_gate(token: str) -> float:
+    """peso_idf(token) com piso de segurança para não quebrar o gate do C2."""
+    return max(peso_idf(token), PISO_PESO_DESGASTADO_GATE)
 
 
 @lru_cache(maxsize=64)
@@ -492,10 +511,18 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
     if toks_a and toks_b:
         set_a = set(toks_a)
         set_b = set(toks_b)
-        # Token compartilhado exato
+        # Token compartilhado exato. tokens_distintivos() normalmente já
+        # remove termos desgastados — mas uma marca cujo ÚNICO token é um
+        # desgastado ("TOP" sozinha) o preserva (proteção de marca curta em
+        # distintividade.py). Nesse caso especial, o crédito de exato (0.72)
+        # é dosado pelo peso IDF do termo, como no ramo desgastado abaixo.
         shared = set_a & set_b
         if shared:
-            score_containment = 0.72
+            desg_shared = shared & ELEMENTOS_DESGASTADOS
+            if desg_shared:
+                score_containment = 0.72 * _peso_idf_gate(next(iter(desg_shared)))
+            else:
+                score_containment = 0.72
         else:
             # Token de uma quase-idêntico a token da outra
             for t_a in toks_a:
@@ -513,7 +540,12 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
                 if cod_a:
                     for t_b in toks_b:
                         if cod_a == metaphone_ptbr(t_b):
-                            score_containment = max(score_containment, 0.72)
+                            valor = 0.72
+                            if t_a in ELEMENTOS_DESGASTADOS:
+                                valor = 0.72 * _peso_idf_gate(t_a)
+                            elif t_b in ELEMENTOS_DESGASTADOS:
+                                valor = 0.72 * _peso_idf_gate(t_b)
+                            score_containment = max(score_containment, valor)
                             break
                     if score_containment:
                         break
@@ -521,15 +553,25 @@ def _score_fonetico(marca_base: dict, marca_rpi: dict) -> float:
     # Token DESGASTADO compartilhado ("KING" ⊂ "KING MASSAS" e "BREAD KING"):
     # tokens_distintivos remove esses termos, então o containment acima nunca
     # os vê — mas o especialista marca esses pares para vigilância quando o
-    # termo desgastado é o elemento de ligação. Crédito 0.62: acima do
+    # termo desgastado é o elemento de ligação. Crédito base 0.62: acima do
     # THRESHOLD_FONETICO (0.60) para virar candidato, baixo o suficiente para
     # que C3 (afinidade) e C4 (gates de distintividade) decidam o mérito.
+    # O crédito é dosado pelo peso IDF do termo compartilhado: termos MUITO
+    # comuns ("MEGA", "TOP") recebem menos crédito que termos desgastados
+    # relativamente menos onipresentes — sujeito a um piso de segurança para
+    # não derrubar pares do gold set que dependem só deste sinal (ver
+    # PISO_PESO_DESGASTADO_GATE).
     if not score_containment:
         desg_a = {t for t in nome_a.split() if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
         if desg_a:
             desg_b = {t for t in nome_b.split() if len(t) >= 2 and t in ELEMENTOS_DESGASTADOS}
-            if desg_a & desg_b:
-                score_containment = 0.62
+            comuns = desg_a & desg_b
+            if comuns:
+                # Entre múltiplos termos desgastados compartilhados, usa o de
+                # maior peso IDF (menos "comum" entre os comuns) — mais
+                # conservador para não penalizar além do necessário.
+                melhor_peso = max(_peso_idf_gate(t) for t in comuns)
+                score_containment = 0.62 * melhor_peso
 
     # Siglas e nomes curtos — usar max(ratio, jaro_winkler)
     if (marca_base.get("is_sigla") or marca_rpi.get("is_sigla")
